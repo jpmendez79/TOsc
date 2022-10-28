@@ -1,0 +1,111 @@
+
+void func_canv_margin(TCanvas *canv, double left, double right, double top, double bot)
+{
+  canv->SetLeftMargin(left);
+  canv->SetRightMargin(right);
+  canv->SetTopMargin(top);
+  canv->SetBottomMargin(bot);
+}
+
+void func_canv_margin(TVirtualPad *canv, double left, double right, double top, double bot)
+{
+  canv->SetLeftMargin(left);
+  canv->SetRightMargin(right);
+  canv->SetTopMargin(top);
+  canv->SetBottomMargin(bot);
+}
+
+void func_canv_margin(TPad *canv, double left, double right, double top, double bot)
+{
+  canv->SetLeftMargin(left);
+  canv->SetRightMargin(right);
+  canv->SetTopMargin(top);
+  canv->SetBottomMargin(bot);
+}
+
+///////////
+
+void func_title_size(THStack *h1, double xlabel, double xtitle, double ylabel, double ytitle)
+{
+  h1->GetXaxis()->SetTitleSize(xtitle);
+  h1->GetXaxis()->SetLabelSize(xlabel);
+  h1->GetYaxis()->SetTitleSize(ytitle);
+  h1->GetYaxis()->SetLabelSize(ylabel);
+}
+
+void func_title_size(TH1 *h1, double xlabel, double xtitle, double ylabel, double ytitle)
+{
+  h1->GetXaxis()->SetTitleSize(xtitle);
+  h1->GetXaxis()->SetLabelSize(xlabel);
+  h1->GetYaxis()->SetTitleSize(ytitle);
+  h1->GetYaxis()->SetLabelSize(ylabel);
+}
+
+void func_title_size(TF1 *h1, double xlabel, double xtitle, double ylabel, double ytitle)
+{
+  h1->GetXaxis()->SetTitleSize(xtitle);
+  h1->GetXaxis()->SetLabelSize(xlabel);
+  h1->GetYaxis()->SetTitleSize(ytitle);
+  h1->GetYaxis()->SetLabelSize(ylabel);
+}
+
+void func_title_size(TH2 *h2, double xlabel, double xtitle, double ylabel, double ytitle)
+{
+  h2->GetXaxis()->SetTitleSize(xtitle);
+  h2->GetXaxis()->SetLabelSize(xlabel);
+  h2->GetYaxis()->SetTitleSize(ytitle);
+  h2->GetYaxis()->SetLabelSize(ylabel);
+}
+
+void func_title_size(TGraph *gh, double xlabel, double xtitle, double ylabel, double ytitle)
+{
+  gh->GetXaxis()->SetTitleSize(xtitle);
+  gh->GetXaxis()->SetLabelSize(xlabel);
+  gh->GetYaxis()->SetTitleSize(ytitle);
+  gh->GetYaxis()->SetLabelSize(ylabel);
+}
+
+void func_center_title(TH1* h1)
+{
+  h1->GetXaxis()->CenterTitle(1); h1->GetYaxis()->CenterTitle(1);  
+}
+
+void func_center_title(TGraph* h1)
+{
+  h1->GetXaxis()->CenterTitle(1); h1->GetYaxis()->CenterTitle(1);  
+}
+
+void func_style_graph(TGraph *gh, TString strname, int color, int style, double style_size)
+{
+  gh->SetName( strname );
+  gh->SetLineColor( color );
+  gh->SetMarkerColor( color );
+  gh->SetMarkerStyle( style );
+  gh->SetMarkerSize( style_size );
+}
+
+void func_xy_title(TGraph *gh, TString xtitle, TString ytitle)
+{
+  gh->GetXaxis()->SetTitle(xtitle);
+  gh->GetYaxis()->SetTitle(ytitle);
+}
+
+void func_xy_title(TH1 *gh, TString xtitle, TString ytitle)
+{
+  gh->GetXaxis()->SetTitle(xtitle);
+  gh->GetYaxis()->SetTitle(ytitle);
+}
+
+void func_xy_title(TH2 *gh, TString xtitle, TString ytitle)
+{
+  gh->GetXaxis()->SetTitle(xtitle);
+  gh->GetYaxis()->SetTitle(ytitle);
+}
+
+// roostr = "canv_h1_dQdx_proton_mc_reco_ab_5to10cm";
+// TCanvas *canv_h1_dQdx_proton_mc_reco_ab_5to10cm = new TCanvas(roostr, roostr, 900, 650);
+// func_canv_margin(canv_h1_dQdx_proton_mc_reco_ab_5to10cm, 0.15, 0.2,0.1,0.15);
+// h1_dQdx_proton_mc_reco_ab_5to10cm->Draw("hist");
+// h1_dQdx_proton_mc_reco_ab_5to10cm->SetStats(0);
+// h1_dQdx_proton_mc_reco_ab_5to10cm->SetTitle("");
+// func_title_size(h1_dQdx_proton_mc_reco_ab_5to10cm, 0.05, 0.05, 0.05, 0.05);
