@@ -40,6 +40,14 @@ flycheck_*.el
 
 # projectiles files
 .projectile
+compile_commands.json
 
 # directory configuration
 .dir-locals.el
+
+# objects
+*.o
+
+# binaries
+bin/*
+

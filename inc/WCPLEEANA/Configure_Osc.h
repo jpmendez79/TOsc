@@ -2,12 +2,12 @@ namespace Configure_Osc
 {
   /////////////////////////// default files for spectra and covariance matrixes
   
-  TString default_cv_file      = "/dybfs2/users/jixp/work_winxp/TOsc_nature2_after_20240522/version_to_Jesse_2025/dataset_input/merge.root";
-  TString default_dirtadd_file = "/dybfs2/users/jixp/work_winxp/TOsc_nature2_after_20240522/version_to_Jesse_2025/dataset_input/merge.root";
-  TString default_mcstat_file  = "/dybfs2/users/jixp/work_winxp/TOsc_nature2_after_20240522/version_to_Jesse_2025/dataset_input/0.log";// mc_stat from no oscillation
-  TString default_fluxXs_dir   = "/dybfs2/users/jixp/work_winxp/TOsc_nature2_after_20240522/version_to_Jesse_2025/dataset_input/hist_rootfiles/XsFlux_edit/";// hack flux for NuMI
-  TString default_detector_dir = "/dybfs2/users/jixp/work_winxp/TOsc_nature2_after_20240522/version_to_Jesse_2025/dataset_input/hist_rootfiles/DetVar_edit/";// hack oscillation: use the intrinsic
-  TString default_eventlist_dir= "/dybfs2/users/jixp/work_winxp/TOsc_nature2_after_20240522/version_to_Jesse_2025/dataset_input/";
+  TString default_cv_file      = "/scratch/jmendez/TOsc_input/xiangpan/dataset_input/merge.root";
+  TString default_dirtadd_file = "/scratch/jmendez/TOsc_input/xiangpan/dataset_input/merge.root";
+  TString default_mcstat_file  = "/scratch/jmendez/TOsc_input/xiangpan/dataset_input/0.log";// mc_stat from no oscillation
+  TString default_fluxXs_dir   = "/scratch/jmendez/TOsc_input/xiangpan/dataset_input/hist_rootfiles/XsFlux_edit/";// hack flux for NuMI
+  TString default_detector_dir = "/scratch/jmendez/TOsc_input/xiangpan/dataset_input/hist_rootfiles/DetVar_edit/";// hack oscillation: use the intrinsic
+  TString default_eventlist_dir= "/scratch/jmendez/TOsc_input/xiangpan/dataset_input/";
   
   /////////////////////////// By default 1. Don't modify the two values below. (X. JI)
 
