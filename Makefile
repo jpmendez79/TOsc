@@ -7,12 +7,13 @@ SOURCES=read_oscillation_v01.cxx $(wildcard $(DIR_SRC)/*.cxx)
 OBJECTS=$(SOURCES:.cxx=.o)
 EXECUTABLE=read_oscillation_v01
 
-ROOTSYS=/home/xji/data0/software/root_build
+#ROOTSYS=/home/xji/data0/software/root_build
 
 CFLAGS += $(shell $(ROOTSYS)/bin/root-config --cflags)
 LDFLAGS += $(shell $(ROOTSYS)/bin/root-config --libs) 
 
-CFLAGS += -std=c++11 -I./inc/ -I$(ROOTSYS)/include/
+#CFLAGS += -std=c++11 -I./inc/ -I$(ROOTSYS)/include/
+CFLAGS += -I./inc/ -I$(ROOTSYS)/include/
 
 all: $(SOURCES) $(EXECUTABLE)
 

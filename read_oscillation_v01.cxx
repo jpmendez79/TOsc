@@ -20,7 +20,7 @@ using namespace std;
 //auto time_stop = chrono::high_resolution_clock::now();
 //auto time_duration = chrono::duration_cast<chrono::seconds>(time_stop - time_start);
 //cout<<endl<<" ---> check time duration "<<time_duration.count()<<endl<<endl;
-//milliseconds, minutes
+//microseconds, milliseconds, seconds, minutes
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////// MAIN //////////////////////////////////////////////////
@@ -105,9 +105,16 @@ int main(int argc, char** argv)
 
   ///////
 
-  osc_test->scaleF_POT_BNB  = scaleF_POT_BNB;
-  osc_test->scaleF_POT_NuMI = scaleF_POT_NuMI;
+  osc_test->tosc_scaleF_POT_BNB  = scaleF_POT_BNB;
+  osc_test->tosc_scaleF_POT_NuMI = scaleF_POT_NuMI;
      
+  ///////
+
+  osc_test->flag_apply_oscillation_BNB  = Configure_Osc::flag_apply_oscillation_BNB;
+  osc_test->flag_apply_oscillation_NuMI = Configure_Osc::flag_apply_oscillation_NuMI;
+
+  osc_test->flag_goodness_of_fit_CNP    = Configure_Osc::flag_goodness_of_fit_CNP;
+
   ///////
 
   osc_test->flag_syst_dirt   = Configure_Osc::flag_syst_dirt;
@@ -119,12 +126,12 @@ int main(int argc, char** argv)
   
   ///////
 
-  osc_test->flag_NuMI_nueCC_from_intnue       = Configure_Osc::flag_NuMI_nueCC_from_intnue;
-  osc_test->flag_NuMI_nueCC_from_overlaynumu  = Configure_Osc::flag_NuMI_nueCC_from_overlaynumu;
-  osc_test->flag_NuMI_nueCC_from_appnue       = Configure_Osc::flag_NuMI_nueCC_from_appnue;
-  osc_test->flag_NuMI_nueCC_from_appnumu      = Configure_Osc::flag_NuMI_nueCC_from_appnumu;
-  osc_test->flag_NuMI_nueCC_from_overlaynueNC = Configure_Osc::flag_NuMI_nueCC_from_overlaynueNC;
-  osc_test->flag_NuMI_nueCC_from_overlaynumuNC= Configure_Osc::flag_NuMI_nueCC_from_overlaynumuNC;
+  osc_test->flag_NuMI_nueCC_from_intnue         = Configure_Osc::flag_NuMI_nueCC_from_intnue;
+  osc_test->flag_NuMI_nueCC_from_overlaynumu    = Configure_Osc::flag_NuMI_nueCC_from_overlaynumu;
+  osc_test->flag_NuMI_nueCC_from_appnue         = Configure_Osc::flag_NuMI_nueCC_from_appnue;
+  osc_test->flag_NuMI_nueCC_from_appnumu        = Configure_Osc::flag_NuMI_nueCC_from_appnumu;
+  osc_test->flag_NuMI_nueCC_from_overlaynueNC   = Configure_Osc::flag_NuMI_nueCC_from_overlaynueNC;
+  osc_test->flag_NuMI_nueCC_from_overlaynumuNC  = Configure_Osc::flag_NuMI_nueCC_from_overlaynumuNC;
   
   osc_test->flag_NuMI_numuCC_from_overlaynumu   = Configure_Osc::flag_NuMI_numuCC_from_overlaynumu;
   osc_test->flag_NuMI_numuCC_from_overlaynue    = Configure_Osc::flag_NuMI_numuCC_from_overlaynue;
@@ -133,25 +140,25 @@ int main(int argc, char** argv)
   osc_test->flag_NuMI_numuCC_from_overlaynumuNC = Configure_Osc::flag_NuMI_numuCC_from_overlaynumuNC;
   osc_test->flag_NuMI_numuCC_from_overlaynueNC  = Configure_Osc::flag_NuMI_numuCC_from_overlaynueNC;  
   
-  osc_test->flag_NuMI_CCpi0_from_overlaynumu  = Configure_Osc::flag_NuMI_CCpi0_from_overlaynumu;
-  osc_test->flag_NuMI_CCpi0_from_appnue       = Configure_Osc::flag_NuMI_CCpi0_from_appnue;
-  osc_test->flag_NuMI_CCpi0_from_overlaynumuNC= Configure_Osc::flag_NuMI_CCpi0_from_overlaynumuNC;
-  osc_test->flag_NuMI_CCpi0_from_overlaynueNC = Configure_Osc::flag_NuMI_CCpi0_from_overlaynueNC;
+  osc_test->flag_NuMI_CCpi0_from_overlaynumu    = Configure_Osc::flag_NuMI_CCpi0_from_overlaynumu;
+  osc_test->flag_NuMI_CCpi0_from_appnue         = Configure_Osc::flag_NuMI_CCpi0_from_appnue;
+  osc_test->flag_NuMI_CCpi0_from_overlaynumuNC  = Configure_Osc::flag_NuMI_CCpi0_from_overlaynumuNC;
+  osc_test->flag_NuMI_CCpi0_from_overlaynueNC   = Configure_Osc::flag_NuMI_CCpi0_from_overlaynueNC;
   
-  osc_test->flag_NuMI_NCpi0_from_overlaynumu  = Configure_Osc::flag_NuMI_NCpi0_from_overlaynumu;
-  osc_test->flag_NuMI_NCpi0_from_appnue       = Configure_Osc::flag_NuMI_NCpi0_from_appnue;
-  osc_test->flag_NuMI_NCpi0_from_overlaynumuNC= Configure_Osc::flag_NuMI_NCpi0_from_overlaynumuNC;
-  osc_test->flag_NuMI_NCpi0_from_overlaynueNC = Configure_Osc::flag_NuMI_NCpi0_from_overlaynueNC;
+  osc_test->flag_NuMI_NCpi0_from_overlaynumu    = Configure_Osc::flag_NuMI_NCpi0_from_overlaynumu;
+  osc_test->flag_NuMI_NCpi0_from_appnue         = Configure_Osc::flag_NuMI_NCpi0_from_appnue;
+  osc_test->flag_NuMI_NCpi0_from_overlaynumuNC  = Configure_Osc::flag_NuMI_NCpi0_from_overlaynumuNC;
+  osc_test->flag_NuMI_NCpi0_from_overlaynueNC   = Configure_Osc::flag_NuMI_NCpi0_from_overlaynueNC;
 
 
   ///////
   
-  osc_test->flag_BNB_nueCC_from_intnue       = Configure_Osc::flag_BNB_nueCC_from_intnue;
-  osc_test->flag_BNB_nueCC_from_overlaynumu  = Configure_Osc::flag_BNB_nueCC_from_overlaynumu;
-  osc_test->flag_BNB_nueCC_from_appnue       = Configure_Osc::flag_BNB_nueCC_from_appnue;
-  osc_test->flag_BNB_nueCC_from_appnumu      = Configure_Osc::flag_BNB_nueCC_from_appnumu;
-  osc_test->flag_BNB_nueCC_from_overlaynueNC = Configure_Osc::flag_BNB_nueCC_from_overlaynueNC;
-  osc_test->flag_BNB_nueCC_from_overlaynumuNC= Configure_Osc::flag_BNB_nueCC_from_overlaynumuNC;
+  osc_test->flag_BNB_nueCC_from_intnue         = Configure_Osc::flag_BNB_nueCC_from_intnue;
+  osc_test->flag_BNB_nueCC_from_overlaynumu    = Configure_Osc::flag_BNB_nueCC_from_overlaynumu;
+  osc_test->flag_BNB_nueCC_from_appnue         = Configure_Osc::flag_BNB_nueCC_from_appnue;
+  osc_test->flag_BNB_nueCC_from_appnumu        = Configure_Osc::flag_BNB_nueCC_from_appnumu;
+  osc_test->flag_BNB_nueCC_from_overlaynueNC   = Configure_Osc::flag_BNB_nueCC_from_overlaynueNC;
+  osc_test->flag_BNB_nueCC_from_overlaynumuNC  = Configure_Osc::flag_BNB_nueCC_from_overlaynumuNC;
   
   osc_test->flag_BNB_numuCC_from_overlaynumu   = Configure_Osc::flag_BNB_numuCC_from_overlaynumu;
   osc_test->flag_BNB_numuCC_from_overlaynue    = Configure_Osc::flag_BNB_numuCC_from_overlaynue;
@@ -160,16 +167,17 @@ int main(int argc, char** argv)
   osc_test->flag_BNB_numuCC_from_overlaynumuNC = Configure_Osc::flag_BNB_numuCC_from_overlaynumuNC;
   osc_test->flag_BNB_numuCC_from_overlaynueNC  = Configure_Osc::flag_BNB_numuCC_from_overlaynueNC;  
   
-  osc_test->flag_BNB_CCpi0_from_overlaynumu  = Configure_Osc::flag_BNB_CCpi0_from_overlaynumu;
-  osc_test->flag_BNB_CCpi0_from_appnue       = Configure_Osc::flag_BNB_CCpi0_from_appnue;
-  osc_test->flag_BNB_CCpi0_from_overlaynumuNC= Configure_Osc::flag_BNB_CCpi0_from_overlaynumuNC;
-  osc_test->flag_BNB_CCpi0_from_overlaynueNC = Configure_Osc::flag_BNB_CCpi0_from_overlaynueNC;
+  osc_test->flag_BNB_CCpi0_from_overlaynumu    = Configure_Osc::flag_BNB_CCpi0_from_overlaynumu;
+  osc_test->flag_BNB_CCpi0_from_appnue         = Configure_Osc::flag_BNB_CCpi0_from_appnue;
+  osc_test->flag_BNB_CCpi0_from_overlaynumuNC  = Configure_Osc::flag_BNB_CCpi0_from_overlaynumuNC;
+  osc_test->flag_BNB_CCpi0_from_overlaynueNC   = Configure_Osc::flag_BNB_CCpi0_from_overlaynueNC;
   
-  osc_test->flag_BNB_NCpi0_from_overlaynumu  = Configure_Osc::flag_BNB_NCpi0_from_overlaynumu;
-  osc_test->flag_BNB_NCpi0_from_appnue       = Configure_Osc::flag_BNB_NCpi0_from_appnue;
-  osc_test->flag_BNB_NCpi0_from_overlaynumuNC= Configure_Osc::flag_BNB_NCpi0_from_overlaynumuNC;
-  osc_test->flag_BNB_NCpi0_from_overlaynueNC = Configure_Osc::flag_BNB_NCpi0_from_overlaynueNC;
+  osc_test->flag_BNB_NCpi0_from_overlaynumu    = Configure_Osc::flag_BNB_NCpi0_from_overlaynumu;
+  osc_test->flag_BNB_NCpi0_from_appnue         = Configure_Osc::flag_BNB_NCpi0_from_appnue;
+  osc_test->flag_BNB_NCpi0_from_overlaynumuNC  = Configure_Osc::flag_BNB_NCpi0_from_overlaynumuNC;
+  osc_test->flag_BNB_NCpi0_from_overlaynueNC   = Configure_Osc::flag_BNB_NCpi0_from_overlaynueNC;
   
+  /////// set only one time
   /////// set only one time
   
   osc_test->Set_default_cv_cov(Configure_Osc::default_cv_file,
@@ -180,114 +188,190 @@ int main(int argc, char** argv)
   
   osc_test->Set_oscillation_base(Configure_Osc::default_eventlist_dir);
   
+  /////////////////////////////////////////////////////////// choose to use the dataset of BNB+NuMI, BNB, or NuMI??
+  //
+  // A trick way: do it in the function of  "TOsc::FCN(const double *par)".
+  // The lines below "modify".
+  //
+  /////////////////////////////////////////////////////////// change the oscillation prob equations??
+  //
+  // Do it in the function of "TOsc::Prob_oscillaion(double Etrue, double baseline, int strflag_osc)"
+  // There are examples of "dm2 vs. sin2_2Tue vs. t24", "dm2 vs. sin2_2Tee vs. t24", and "dm2 vs. t14 vs. t24".
+  //
+  //
+  // The class-data-members used in the TOsc for the oscillation analysis are
+  //
+  // double tosc_dm2_41
+  // double tosc_sin2_2theta_14
+  // double tosc_sin2_theta_24
+  // double tosc_sin2_theta_34
+  //
+  // which are defined in "TOsc.h"
+  //
+  ///////////////////////////////////////////////////////////
+
   /////// Set_oscillation_pars(double val_dm2_41, double val_sin2_2theta_14, double val_sin2_theta_24, double val_sin2_theta_34)
-  
-  double val_dm2_41         = 7.3;
+
+  double val_dm2_41         = 0;
   double val_sin2_2theta_14 = 0.36;
   double val_sin2_theta_24  = 0;
   double val_sin2_theta_34  = 0;
-  
-  /////////////////////////////////////////////////////////////////////////////////
 
   /// standard order
-  // val_dm2_41         = 0;
-  // val_sin2_2theta_14 = 0.1;
-  // val_sin2_theta_24  = 0.1;
+  /// standard order
   
-  // osc_test->Set_oscillation_pars(val_dm2_41, val_sin2_2theta_14, val_sin2_theta_24, val_sin2_theta_34);  
-  // osc_test->Apply_oscillation();  
-  // osc_test->Set_apply_POT();// meas, CV, COV: all ready
-  
-  // osc_test->Set_meas2fitdata();
-  
-  // osc_test->Set_asimov2fitdata();
+  val_dm2_41         = 0;
+  val_sin2_2theta_14 = 0.236;
+  val_sin2_theta_24  = 0.3;  
+  osc_test->Set_oscillation_pars(val_dm2_41, val_sin2_2theta_14, val_sin2_theta_24, val_sin2_theta_34);  
+  osc_test->Apply_oscillation();
+  osc_test->Set_apply_POT();// meas, CV, COV: all ready
+  osc_test->Set_meas2fitdata();// set the real measurement as the "data", which will be compared with the "pred"
+  //osc_test->Set_asimov2fitdata();// set the "asimov toy sample" as the "data", which will be compared with the "pred"
 
-  // osc_test->FCN(const double *par);
- 
-  // osc_test->Minimization_OscPars_FullCov(dm2, t14, t24, t34, "str_flag_fixpar");
-
-  // osc_test->Set_toy_variations(int num_toys);
-  // osc_test->Set_toy2fitdata(int itoy)
-
-  //
-  //
-  // The statistic test is implemented by the comination of the above functions
-  //
-  //
-  
-  ///////////////////////////////////////////////////////////////////////////////// one example: chi2 calculation
+  /// one example: calculate a chi2
+  /// one example: calcualte a chi2
 
   if( 0 ) {
-    val_dm2_41         = 0;// no-oscillation
-    val_sin2_2theta_14 = 0.1;
-    val_sin2_theta_24  = 0.1;
-    val_sin2_theta_34  = 0;
-    osc_test->Set_oscillation_pars(val_dm2_41, val_sin2_2theta_14, val_sin2_theta_24, val_sin2_theta_34);// dm2, t14, t24, t34
-    osc_test->Apply_oscillation();// Oscillation formula: Prob_oscillaion(double Etrue, double baseline, int strflag_osc);
-                                  // the meaning of dm2, t14, t24, t34 are decided by the definitions in Prob_oscillaion(...)
-    osc_test->Set_apply_POT();// meas, CV, COV ---> all ready
-
-    //osc_test->Set_meas2fitdata();// set the measured data to be used in the chi2 or fitting
-    osc_test->Set_asimov2fitdata();// set the Asimov data to be used in the chi2 or fitting,
-                                   // which is produced by the above: Set_oscillation_pars(...), Apply_oscillation(), Set_apply_POT()
-
-    double pars_4v[4] = {0, 0.5, 0.5, 0};// dm2, t14, t24, t34
-    double chi2_result = osc_test->FCN( pars_4v );
-    cout<<endl<<" ---> chi2 result: "<<chi2_result<<endl<<endl;;
-  }
-
-  ///////////////////////////////////////////////////////////////////////////////// one example: minimization
-
-  if( 0 ) {
-    val_dm2_41         = 2;
-    val_sin2_2theta_14 = 0.1;
-    val_sin2_theta_24  = 0.1;
-    val_sin2_theta_34  = 0;
-    osc_test->Set_oscillation_pars(val_dm2_41, val_sin2_2theta_14, val_sin2_theta_24, val_sin2_theta_34);// dm2, t14, t24, t34
-    osc_test->Apply_oscillation();// Oscillation formula: Prob_oscillaion(double Etrue, double baseline, int strflag_osc);
-    osc_test->Set_apply_POT();// meas, CV, COV ---> all ready
     
-    //osc_test->Set_meas2fitdata();// set the measured data to be used in the chi2 or fitting
-    osc_test->Set_asimov2fitdata();// set the Asimov data to be used in the chi2 or fitting,
-                                   // which is produced by the above: Set_oscillation_pars(...), Apply_oscillation(), Set_apply_POT()
-
-    double initial_dm2 = 1.9;
-    double initial_t14 = 0.09;
-    double initial_t24 = 0.09;
-    osc_test->Minimization_OscPars_FullCov(initial_dm2, initial_t14, initial_t24, 0, "");
-
-    // Minimization_OscPars_FullCov(double init_dm2_41, double init_sin2_2theta_14, double init_sin2_theta_24, double init_sin2_theta_34, TString roostr_flag_fixpar);
-    // the meaning of oscillation paramters are decided by the definitions in Prob_oscillaion(...)
-    // roostr_flag_fixpar: fix oscllation par(s)?
-    //       if roostr_flag_fixpar contains "dm2", "t14", or "t24", then it will fix the par(s) at the initial value(s) 
-    //       ---> roostr_flag_fixpar = "t14" : fix the value at init_sin2_2theta_14
-    //       ---> roostr_flag_fixpar = "t14_dm2" : fix the two pars at init_sin2_2theta_14 and initial_dm2
-    //       ---> roostr_flag_fixpar = "dm2_t14_t24": fix all three pars
+    val_dm2_41         = 1.19;
+    val_sin2_2theta_14 = 0.8;
+    val_sin2_theta_24  = 0.015;  
+    osc_test->Set_oscillation_pars(val_dm2_41, val_sin2_2theta_14, val_sin2_theta_24, val_sin2_theta_34);  
+    osc_test->Apply_oscillation();
+    osc_test->Set_apply_POT();// meas, CV, COV: all ready
+    //osc_test->Set_meas2fitdata();// set the real measurement as the "data", which will be compared with the "pred"
+    osc_test->Set_asimov2fitdata();// set the "asimov toy sample" as the "data", which will be compared with the "pred"
+    
+    double pars_4v_testA[4] = {2, 0.3, 0.1, 0};// dm2, sin_theta14, sin_theta24, other
+    double chi2_testA = osc_test->FCN( pars_4v_testA );
+    cout<<endl<<" ---> chi2_testA "<<chi2_testA<<endl<<endl;
+    
+    double pars_4v_testB[4] = {1.19, 0.8, 0.015};// dm2, sin_theta14, sin_theta24, other
+    double chi2_testB = osc_test->FCN( pars_4v_testB );
+    cout<<endl<<" ---> chi2_testB "<<chi2_testB<<endl<<endl;
+    
+    ///////
+    
+    osc_test->Set_meas2fitdata();// set the real measurement as the "data", which will be compared with the "pred"
+    double pars_4v_testC[4] = {1.19, 0.8, 0.015};// dm2, sin_theta14, sin_theta24, other
+    double chi2_testC = osc_test->FCN( pars_4v_testC );
+    cout<<endl<<" ---> chi2_testC "<<chi2_testC<<endl<<endl;
+        
   }
   
-  ///////////////////////////////////////////////////////////////////////////////// one example: produce toys
+  /// one example: calculate a chi2 with pseudo experiment(s)
+  /// one example: calcualte a chi2 with pseudo experiment(s)
 
   if( 0 ) {
-    val_dm2_41         = 0;// no-oscillation
-    val_sin2_2theta_14 = 0.1;
-    val_sin2_theta_24  = 0.1;
-    val_sin2_theta_34  = 0;
-    osc_test->Set_oscillation_pars(val_dm2_41, val_sin2_2theta_14, val_sin2_theta_24, val_sin2_theta_34);// dm2, t14, t24, t34
-    osc_test->Apply_oscillation();// Oscillation formula: Prob_oscillaion(double Etrue, double baseline, int strflag_osc);
-    osc_test->Set_apply_POT();// meas, CV, COV ---> all ready
+  
+    val_dm2_41         = 1.19;
+    val_sin2_2theta_14 = 0.8;
+    val_sin2_theta_24  = 0.015;  
+    osc_test->Set_oscillation_pars(val_dm2_41, val_sin2_2theta_14, val_sin2_theta_24, val_sin2_theta_34);  
+    osc_test->Apply_oscillation();
+    osc_test->Set_apply_POT();// meas, CV, COV: all ready
+    //osc_test->Set_meas2fitdata();// set the real measurement as the "data", which will be compared with the "pred"
+    osc_test->Set_asimov2fitdata();// set the "asimov toy sample" as the "data", which will be compared with the "pred"
+    
+    double pars_4v_testB[4] = {1.19, 0.8, 0.015};// dm2, sin_theta14, sin_theta24, other
+    double chi2_testB = osc_test->FCN( pars_4v_testB );
+    cout<<endl<<" ---> chi2_testB "<<chi2_testB<<endl<<endl;
 
-    //osc_test->Set_meas2fitdata();// set the measured data to be used in the chi2 or fitting
-    //osc_test->Set_asimov2fitdata();// set the Asimov data to be used in the chi2 or fitting,
-                                     // which is produced by the above: Set_oscillation_pars(...), Apply_oscillation(), Set_apply_POT()
+    /////// 
 
-    osc_test->Set_toy_variations( 10 );// produce 10 toy samples use above oscillation pars: Set_toy_variations(int num_toys), num_toys >=1
-    osc_test->Set_toy2fitdata( 3 );// set the 3rd toy sample to be used in the chi2 or fitting: Set_toy2fitdata(int itoy), itoy <=num_toys
+    val_dm2_41         = 1.19;
+    val_sin2_2theta_14 = 0.8;
+    val_sin2_theta_24  = 0.015;  
+    osc_test->Set_oscillation_pars(val_dm2_41, val_sin2_2theta_14, val_sin2_theta_24, val_sin2_theta_34);  
+    osc_test->Apply_oscillation();
+    osc_test->Set_apply_POT();// meas, CV, COV: all ready
+    //osc_test->Set_meas2fitdata();// set the real measurement as the "data", which will be compared with the "pred"
+    osc_test->Set_asimov2fitdata();// set the "asimov toy sample" as the "data", which will be compared with the "pred"
+        
+    int NUM_TOYS = 10;
+    osc_test->Set_toy_variations( NUM_TOYS );// produce NUM_TOYS pseudo experiments
 
-    double pars_4v[4] = {0, 0.5, 0.5, 0};// dm2, t14, t24, t34
-    double chi2_result = osc_test->FCN( pars_4v );
-    cout<<endl<<" ---> chi2 result: "<<chi2_result<<endl<<endl;;
+    osc_test->Set_toy2fitdata( 1 );// use the 1st pseudo experiment as the "data", which will be compared with the "pred"
+    double chi2_testB1 = osc_test->FCN( pars_4v_testB );
+    cout<<endl<<" ---> chi2_testB1 "<<chi2_testB1<<endl<<endl;
+    
+    osc_test->Set_toy2fitdata( 2 );// use the 2nd pseudo experiment as the "data", which will be compared with the "pred"
+    double chi2_testB2 = osc_test->FCN( pars_4v_testB );
+    cout<<endl<<" ---> chi2_testB2 "<<chi2_testB2<<endl<<endl;
+    
+    osc_test->Set_toy2fitdata( 9 );// use the 9th pseudo experiment as the "data", which will be compared with the "pred"
+    double chi2_testB9 = osc_test->FCN( pars_4v_testB );
+    cout<<endl<<" ---> chi2_testB9 "<<chi2_testB9<<endl<<endl;
+    
   }
 
+  /////// a test of the minimization
+  /////// a test of the minimization
+
+  if( 0 ) {
+    //osc_test->Plot_user();  
+    val_dm2_41         = 1.19;
+    val_sin2_2theta_14 = 0.8;
+    val_sin2_theta_24  = 0.015;  
+    osc_test->Set_oscillation_pars(val_dm2_41, val_sin2_2theta_14, val_sin2_theta_24, val_sin2_theta_34);  
+    osc_test->Apply_oscillation();
+    osc_test->Set_apply_POT();// meas, CV, COV: all ready
+    //osc_test->Set_meas2fitdata();// set the real measurement as the "data", which will be compared with the "pred"
+    osc_test->Set_asimov2fitdata();// set the "asimov toy sample" as the "data", which will be compared with the "pred"
+  
+    osc_test->Minimization_OscPars_FullCov(1.1, 0.7, 0.02, 0, "str_flag_fixpar");
+  }
+
+  /////////////////////////////////////////////////////////// cross-check GoF
+  /////////////////////////////////////////////////////////// cross-check GoF
+
+  if( 0 ) {
+      
+    /// standard order
+    val_dm2_41         = 0;
+    val_sin2_2theta_14 = 0.2;
+    val_sin2_theta_24  = 0.3;  
+    osc_test->Set_oscillation_pars(val_dm2_41, val_sin2_2theta_14, val_sin2_theta_24, val_sin2_theta_34);  
+    osc_test->Apply_oscillation();
+    osc_test->Set_apply_POT();// meas, CV, COV: all ready
+    osc_test->Set_meas2fitdata();
+
+    if( 1 ) {
+      int rows = 25;
+      int num_Y = 25;
+
+      TMatrixD matrix_gof_trans( osc_test->Get_newworld_rows(), rows );// oldworld, newworld
+      for( int ibin=1; ibin<=25; ibin++) matrix_gof_trans(26*7 + ibin-1, ibin-1) = 1; 
+
+      TMatrixD matrix_gof_trans_T = matrix_gof_trans.T(); matrix_gof_trans.T(); 
+      TMatrixD matrix_gof_pred = osc_test->matrix_tosc_eff_newworld_pred * matrix_gof_trans;
+      TMatrixD matrix_gof_data = osc_test->matrix_tosc_fitdata_newworld * matrix_gof_trans;
+      TMatrixD matrix_gof_syst = matrix_gof_trans_T * (osc_test->matrix_tosc_eff_newworld_abs_syst_total) * matrix_gof_trans;     
+      osc_test->Exe_Goodness_of_fit( num_Y, rows-num_Y, matrix_gof_pred, matrix_gof_data, matrix_gof_syst, 501 );
+    }    
+
+    if( 0 ) {
+      int rows = 25;
+      int num_Y = 25;
+
+      TMatrixD matrix_gof_trans( osc_test->Get_newworld_rows(), rows );// oldworld, newworld
+      for( int ibin=1; ibin<=25; ibin++) matrix_gof_trans(26*8 + ibin-1, ibin-1) = 1; 
+
+      TMatrixD matrix_gof_trans_T = matrix_gof_trans.T(); matrix_gof_trans.T();
+      TMatrixD matrix_gof_pred = osc_test->matrix_tosc_eff_newworld_pred * matrix_gof_trans;
+      TMatrixD matrix_gof_data = osc_test->matrix_tosc_fitdata_newworld * matrix_gof_trans;
+      TMatrixD matrix_gof_syst = matrix_gof_trans_T * (osc_test->matrix_tosc_eff_newworld_abs_syst_total) * matrix_gof_trans;
+      osc_test->Exe_Goodness_of_fit( num_Y, rows-num_Y, matrix_gof_pred, matrix_gof_data, matrix_gof_syst, 502 );
+    }
+   
+  }
+
+  ///////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////
+  
+
+  ///////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////
 
   cout<<endl;
@@ -295,19 +379,17 @@ int main(int argc, char** argv)
   cout<<" ------------------------------ check at the final step ------------------------------"<<endl;
 
   cout<<endl;
-  cout<<TString::Format(" ---> display(-d) %d, ifile(-f) %d, scaleF_POT_BNB(-pbnb) %6.4f, scaleF_POT_NuMI(-pnumi) %6.4f, dm2(-idm2) %d, theta14(-it14) %d, theta24(-it24) %d",
-			display, ifile, osc_test->scaleF_POT_BNB, osc_test->scaleF_POT_NuMI, idm2, it14, it24)<<endl;
+  cout<<TString::Format(" ---> display(-d) %d, ifile(-f) %d, scaleF_POT_BNB(-pbnb) %6.4f, scaleF_POT_NuMI(-pnumi) %6.4f, theta14(-it14) %d, dm2(-idm2) %d, theta24(-it24) %d",
+			display, ifile, osc_test->tosc_scaleF_POT_BNB, osc_test->tosc_scaleF_POT_NuMI, it14, idm2, it24)<<endl;
+  cout<<endl;
 
+  cout<<" ---> flag_apply_oscillation_BNB  "<< osc_test->flag_apply_oscillation_BNB<<endl;
+  cout<<" ---> flag_apply_oscillation_NuMI "<< osc_test->flag_apply_oscillation_NuMI<<endl;
   cout<<endl;
-  cout<<TString::Format(" ---> Files/Directories: ")<<endl;
-  cout<<TString::Format("      ---> default_cv_file       %-50s", Configure_Osc::default_cv_file.Data())<<endl;
-  cout<<TString::Format("      ---> default_dirtadd_file  %-50s", Configure_Osc::default_dirtadd_file.Data())<<endl;
-  cout<<TString::Format("      ---> default_mcstat_file   %-50s", Configure_Osc::default_mcstat_file.Data())<<endl;
-  cout<<TString::Format("      ---> default_fluxXs_dir    %-50s", Configure_Osc::default_fluxXs_dir.Data())<<endl;
-  cout<<TString::Format("      ---> default_detector_dir  %-50s", Configure_Osc::default_detector_dir.Data())<<endl;
-  cout<<TString::Format("      ---> default_eventlist_dir %-50s", Configure_Osc::default_eventlist_dir.Data())<<endl;
-  
+
+  cout<<" ---> flag_goodness_of_fit_CNP    "<< osc_test->flag_goodness_of_fit_CNP<<endl;
   cout<<endl;
+
   cout<<TString::Format(" ---> flag_syst_dirt    %d", osc_test->flag_syst_dirt)<<endl;
   cout<<TString::Format(" ---> flag_syst_mcstat  %d", osc_test->flag_syst_mcstat)<<endl;
   cout<<TString::Format(" ---> flag_syst_flux    %d", osc_test->flag_syst_flux)<<endl;

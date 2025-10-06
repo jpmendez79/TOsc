@@ -1,15 +1,22 @@
 namespace Configure_Osc
 {
   /////////////////////////// default files for spectra and covariance matrixes
-
-  TString default_cv_file       = "./data_inputs/yyyd_BNBplusNuMI_OSC/merge.root";
-  TString default_dirtadd_file  = "./data_inputs/yyyd_BNBplusNuMI_OSC/merge.root";
-  TString default_mcstat_file   = "./data_inputs/yyyd_BNBplusNuMI_OSC/mc_stat/0.log";// mc_stat from no-oscillation    
-  TString default_fluxXs_dir    = "./data_inputs/yyyd_BNBplusNuMI_OSC/XsFlux_edit/";// hack flux for NuMI: only one knob represents all NuMI knobs
-  TString default_detector_dir  = "./data_inputs/yyyd_BNBplusNuMI_OSC/DetVar_edit/";// hack oscillation part to use the intrinsic nue
-  TString default_eventlist_dir = "./data_inputs/yyyd_BNBplusNuMI_OSC/";
   
-  ///////////////////////////
+  TString default_cv_file      = "/dybfs2/users/jixp/work_winxp/TOsc_nature2_after_20240522/version_to_Jesse_2025/dataset_input/merge.root";
+  TString default_dirtadd_file = "/dybfs2/users/jixp/work_winxp/TOsc_nature2_after_20240522/version_to_Jesse_2025/dataset_input/merge.root";
+  TString default_mcstat_file  = "/dybfs2/users/jixp/work_winxp/TOsc_nature2_after_20240522/version_to_Jesse_2025/dataset_input/0.log";// mc_stat from no oscillation
+  TString default_fluxXs_dir   = "/dybfs2/users/jixp/work_winxp/TOsc_nature2_after_20240522/version_to_Jesse_2025/dataset_input/hist_rootfiles/XsFlux_edit/";// hack flux for NuMI
+  TString default_detector_dir = "/dybfs2/users/jixp/work_winxp/TOsc_nature2_after_20240522/version_to_Jesse_2025/dataset_input/hist_rootfiles/DetVar_edit/";// hack oscillation: use the intrinsic
+  TString default_eventlist_dir= "/dybfs2/users/jixp/work_winxp/TOsc_nature2_after_20240522/version_to_Jesse_2025/dataset_input/";
+  
+  /////////////////////////// By default 1. Don't modify the two values below. (X. JI)
+
+  bool flag_apply_oscillation_BNB  = 1;
+  bool flag_apply_oscillation_NuMI = 1;
+
+  bool flag_goodness_of_fit_CNP    = 0;
+
+  /////////////////////////// Systematics
 
   bool flag_syst_dirt   = 1;
   bool flag_syst_mcstat = 1;
