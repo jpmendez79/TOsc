@@ -16,11 +16,7 @@ using namespace std;
 #include "TApplication.h"
 #include "TParameter.h"
 #include <chrono> // timer
-//auto time_start = chrono::high_resolution_clock::now();
-//auto time_stop = chrono::high_resolution_clock::now();
-//auto time_duration = chrono::duration_cast<chrono::seconds>(time_stop - time_start);
-//cout<<endl<<" ---> check time duration "<<time_duration.count()<<endl<<endl;
-//microseconds, milliseconds, seconds, minutes
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////// MAIN //////////////////////////////////////////////////
@@ -68,9 +64,13 @@ using namespace std;
 //       cout<<endl<<" ---> chi2_test3v "<<chi2_testA<<endl;
 
 //       }
-    double calculate_prob_area(double pars, double ref_chi2);
-    double calculate_prob_delta_chi2(double pars_h0, double pars_h1, int num_toy);
+double calculate_prob_area(double pars, double ref_chi2);
+double calculate_prob_delta_chi2(double pars_h0, double pars_h1, int num_toy);
 
+double find_midpoint(double param_start, double param_end) {
+  double midpoint = (param_end - param_start) / 2;
+  return midpoint;
+}
 
 int main(int argc, char** argv)
 {
@@ -593,7 +593,7 @@ int main(int argc, char** argv)
         
   }
 
-  if ( 1 ) { 			// Complete CLs in one run using command line functions as input
+  if ( 0 ) { 			// Complete CLs in one run using command line functions as input
     auto total_cls_start = chrono::high_resolution_clock::now();
     //auto time_stop = chrono::high_resolution_clock::now();
     //auto time_duration = chrono::duration_cast<chrono::seconds>(time_stop - time_start);
@@ -822,7 +822,174 @@ int main(int argc, char** argv)
 
     }
   }
-   
+  if (1) {			// Binary Grid search algorithm
+    cout << "Start binary search algo\n";
+    auto time_start = chrono::high_resolution_clock::now();
+    double counter = 0;
+    double tolerance = 0.005;
+    double test_point = -1;
+    double val_CLs = -1;
+    double previous_CLs = 0;
+    double target = 0.05;
+    double param_start = it14;
+    double param_end = it24;
+    while (val_CLs < (target - tolerance) || val_CLs > (target + tolerance)) {
+      test_point = find_midpoint(param_start, param_end);
+      double dm2_41_grid = idm2;
+      double sin2_2theta_mue_grid = test_point;
+      cout << "CLs for parameters (" << test_point << "," << idm2 << ")\n";
+
+      double pars_4v_grid[4] ={dm2_41_grid, sin2_2theta_mue_grid, 0.0045, 0};
+      double pars_3v_small[4] = {0, 0.1, 0.1, 0};
+      const int NUM_TOYS = 500;
+  
+      double step_size = 0.0005; // profiling step size
+      int steps = 2000; // profiling steps
+   	  
+      // Profiling data structures
+      double profiled_sin2_theta24 = 0;
+      double test_sin2_theta24 = 0;
+      double chi2_min = pow(10,6);	// set very large to start
+
+      // Data Structures for Chi^2 arrays
+      // 4v stuctures
+      double array_4vhyp_deltachisquare_grid_toy[NUM_TOYS];
+      double array_4vhyp_4nu_chisquare_grid[NUM_TOYS];
+      double array_4vhyp_4nu_chisquare_3nu[NUM_TOYS];
+
+      double array_3vhyp_4nu_chisquare_grid[NUM_TOYS];
+      double array_3vhyp_4nu_chisquare_3nu[NUM_TOYS];
+      double array_3vhyp_deltachisquare_grid_toy[NUM_TOYS];
+
+      // Reference deltachisquare for CLs
+      double ref = 0;
+      if ( 1 ) {
+	cout << "Profile \n";
+	// auto profile_forloop_start = chrono::high_resolution_clock::now();
+	// Grid scan
+	for(int i = 0; i < steps; i++) {
+	  test_sin2_theta24 = i * step_size;
+	  if( sin2_2theta_mue_grid > test_sin2_theta24 ) {
+	    continue; 		// Need to because I am inputing mixing ange directly
+	  }	
+	  double pars_4nu[4] = {dm2_41_grid, sin2_2theta_mue_grid, test_sin2_theta24, 0};// dm2, t14, t24, t34
+	  double chi2 = osc_test->FCN( pars_4nu );
+	  if(chi2 < chi2_min) {
+	    chi2_min = chi2;
+	    profiled_sin2_theta24 = test_sin2_theta24;
+	  }
+	}
+	// auto profile_forloop_end = chrono::high_resolution_clock::now();
+	cout << "Profiled sin^2 theta24: " << profiled_sin2_theta24 << endl;
+	cout << "Chi Square: " << chi2_min << endl;
+	// auto total_profile_duration = chrono::duration_cast<chrono::seconds>(profile_forloop_end - profile_forloop_start);
+	pars_4v_grid[2] = profiled_sin2_theta24;
+	// cout << "Total Profile Loop duration: " << total_profile_duration.count() << " microseconds" << endl;
+      
+	if ( 1 ) {
+	  cout << "4nu \n";
+	  // Generating psuedo experiments
+	  osc_test->Set_oscillation_pars(pars_4v_grid[0], pars_4v_grid[1], pars_4v_grid[2], pars_4v_grid[3]);  
+	  osc_test->Apply_oscillation();
+	  osc_test->Set_apply_POT();// meas, CV, COV: all ready
+	  //osc_test->Set_meas2fitdata();// set the real measurement as the "data", which will be compared with the "pred"
+	  osc_test->Set_asimov2fitdata();// set the "asimov toy sample" as the "data", which will be compared with the "pred"
+	  osc_test->Set_toy_variations( NUM_TOYS );// produce NUM_TOYS pseudo experiments
+	  // auto delta_chi2_loop_start = chrono::high_resolution_clock::now();
+	  for (int i = 0; i < NUM_TOYS; i++) {
+	    osc_test->Set_toy2fitdata(i + 1);// use the 1st pseudo experiment as the "data", which will be compared with the "pred"
+	    array_4vhyp_4nu_chisquare_grid[i] = osc_test->FCN(pars_4v_grid );
+	    array_4vhyp_4nu_chisquare_3nu[i] = osc_test->FCN(pars_3v_small );
+	    array_4vhyp_deltachisquare_grid_toy[i] = array_4vhyp_4nu_chisquare_grid[i] - array_4vhyp_4nu_chisquare_3nu[i];
+	  }
+	}  
+	if ( 1 ) {
+	  cout << "3nu \n";
+	  osc_test->Set_oscillation_pars(pars_3v_small[0], pars_3v_small[1], pars_3v_small[2], pars_3v_small[3]);  
+	  osc_test->Apply_oscillation();
+	  osc_test->Set_apply_POT();// meas, CV, COV: all ready
+	  //osc_test->Set_meas2fitdata();// set the real measurement as the "data", which will be compared with the "pred"
+	  osc_test->Set_asimov2fitdata();// set the "asimov toy sample" as the "data", which will be compared with the "pred"
+	  osc_test->Set_toy_variations( NUM_TOYS );// produce NUM_TOYS pseudo experiments
+	  for (int i = 0; i < NUM_TOYS; i++) {
+	    osc_test->Set_toy2fitdata(i + 1);// use the 1st pseudo experiment as the "data", which will be compared with the "pred"
+	    array_3vhyp_4nu_chisquare_grid[i] = osc_test->FCN(pars_4v_grid );
+	    array_3vhyp_4nu_chisquare_3nu[i] = osc_test->FCN(pars_3v_small );
+	    array_3vhyp_deltachisquare_grid_toy[i] = array_3vhyp_4nu_chisquare_grid[i] - array_3vhyp_4nu_chisquare_3nu[i];
+	    if (isnan(array_3vhyp_4nu_chisquare_grid[i]) || isnan(array_3vhyp_4nu_chisquare_3nu[i] ) || isnan(array_3vhyp_deltachisquare_grid_toy[i])) {
+	      cout <<"NaaaaaaNNNNNNNNN\n";
+	    } 
+	  }
+	}
+	// auto total_cls_end = chrono::high_resolution_clock::now();
+	if( 1 ) {
+	  cout << "Delta Chisquare Obs\n";
+	  osc_test->Set_oscillation_pars(0, 0.1, 0.1, 0);  
+	  osc_test->Apply_oscillation();
+	  osc_test->Set_apply_POT();// meas, CV, COV: all ready
+	  osc_test->Set_meas2fitdata();// set the real measurement as the "data", which will be compared with the "pred"
+	  // osc_test->Set_asimov2fitdata();// set the "asimov toy sample" as the "data", which will be compared with the "pred"
+	  osc_test->Set_meas2fitdata();// set the real measurement as the "data", which will be compared with the "pred"
+	  double chi2_testA = osc_test->FCN( pars_3v_small );
+	  cout<<endl<<" ---> chi2_test3v "<<chi2_testA<<endl;
+	  osc_test->Set_meas2fitdata();// set the real measurement as the "data", which will be compared with the "pred"
+	  double chi2_testC = osc_test->FCN( pars_4v_grid );
+	  cout<<endl<<" ---> chi2_test4v "<<chi2_testC<<endl;
+	  ref = chi2_testC - chi2_testA;
+	  cout << "Delta Chi2: " << ref << endl;
+	}
+	// auto total_cls_duration = chrono::duration_cast<chrono::seconds>(total_cls_end - total_cls_start);
+	// cout << "CLs duration: "<< total_cls_duration.count() << " microseconds" << endl;
+	if (1) {
+	  // Create histograms for 3v/4v delta_chi2_grid_toy
+	  double min3 = 1e30, max3 = -1e30;
+	  double min4 = 1e30, max4 = -1e30;
+	  for (int j = 0; j < NUM_TOYS; ++j) {
+	    min4 = std::min(min4, array_4vhyp_deltachisquare_grid_toy[j]); max4 = std::max(max4, array_4vhyp_deltachisquare_grid_toy[j]);
+	    min3 = std::min(min3, array_3vhyp_deltachisquare_grid_toy[j]); max3 = std::max(max3, array_3vhyp_deltachisquare_grid_toy[j]);
+	  }
+	  TH1D *h1 = new TH1D("h1", "p3v;Delta chi2;Entries", 100, min3, max3);
+	  TH1D *h2 = new TH1D("h2", "p4v;Delta chi2;Entries", 100, min4, max4);
+	  for (int j = 0; j < NUM_TOYS; ++j) {
+	    // cout << array_3vhyp_deltachisquare_grid_toy[j] << ":" << array_4vhyp_deltachisquare_grid_toy[j] <<"\n";
+	    h1->Fill(array_3vhyp_deltachisquare_grid_toy[j]);
+	    h2->Fill(array_4vhyp_deltachisquare_grid_toy[j]);
+	  }
+	  h1->Scale(1.0 / h1->Integral());
+	  h2->Scale(1.0 / h2->Integral());
+	  // Calculate CLs from histogram bin
+	  int bin4v = h2->FindBin(ref);
+	  int bin3v = h1->FindBin(ref);
+	  cout << bin3v << "\n" << bin4v << "\n";
+	  double p3v = h1->Integral(bin3v, h1->GetNbinsX());
+	  double p4v = h2->Integral(bin4v, h2->GetNbinsX());
+	  cout <<"DEBUG\n" << p3v << "\n" << p4v <<"\n" << h1->FindBin(ref) << "\n" << h2->FindBin(ref) << "\n";
+	  val_CLs = p4v / p3v;
+	  cout << "CLs: " << val_CLs << "\n";
+	}
+      }
+      // delta = abs(previous_CLs - val_CLs);
+      if (val_CLs > target) {
+	param_end = test_point;
+      }
+      else if (val_CLs < target) {
+	param_start = test_point;
+      }
+      counter++;
+      cout << "Iteration  " << counter << "\n";
+      cout << "previous CLs: " << previous_CLs << "\n";
+      cout << "CLs: " << val_CLs << "\n";
+      previous_CLs = val_CLs;
+    }// while
+    double exclusion_curve_parameter = test_point;
+    double exclusion_CLs = val_CLs;
+    auto time_stop = chrono::high_resolution_clock::now();
+    auto time_duration = chrono::duration_cast<chrono::seconds>(time_stop - time_start);
+    cout << "Binary Search Algo Duration: " << time_duration.count() << " microseconds" << "\n";
+    cout << "exclusion_curve (sin2_2theta_mue,dm2) \n";
+    cout << exclusion_curve_parameter << "," << idm2 << "\n";
+    cout << "exclusion_CLs: " << exclusion_CLs << "\n" ;
+  }
 
 
   // if (0) { // Iterative CLs calculator

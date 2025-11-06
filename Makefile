@@ -7,9 +7,10 @@ DIR_BIN = ./bin
 SOURCES=read_oscillation_v01.cxx $(wildcard $(DIR_SRC)/*.cxx)
 OBJECTS=$(SOURCES:.cxx=.o)
 EXECUTABLE=$(DIR_BIN)/read_oscillation_v01
-
-ROOTSYS=/home/jpmendez/code/root_install
-
+# Remote
+# ROOTSYS=/home/jpmendez/code/root_install
+#Local
+ROOTSYS=/usr
 CFLAGS += $(shell $(ROOTSYS)/bin/root-config --cflags)
 LDFLAGS += $(shell $(ROOTSYS)/bin/root-config --libs) 
 
