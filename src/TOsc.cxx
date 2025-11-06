@@ -24,19 +24,19 @@ double TOsc::FCN(const double *par)
   Set_apply_POT();// meas, CV, COV: all ready
 
   ///////
-  
-  TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld;
-  TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred;        
-  TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total;
-  int rows = matrix_cov_syst_total.GetNrows();
+  // Both  BNB and NuMI
+  // TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld;
+  // TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred;        
+  // TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total;
+  // int rows = matrix_cov_syst_total.GetNrows();
   
   /////// modify
 
   /// BNB only
-  // TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld.GetSub(0,0, 0, 26*7-1);
-  // TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred.GetSub(0,0, 0, 26*7-1);
-  // TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total.GetSub(0, 26*7-1, 0, 26*7-1);
-  // int rows = matrix_cov_syst_total.GetNrows();
+  TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld.GetSub(0,0, 0, 26*7-1);
+  TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred.GetSub(0,0, 0, 26*7-1);
+  TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total.GetSub(0, 26*7-1, 0, 26*7-1);
+  int rows = matrix_cov_syst_total.GetNrows();
  
   /// NuMI only
   // TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld.GetSub(0,0, 26*7, 26*14-1);
@@ -45,7 +45,6 @@ double TOsc::FCN(const double *par)
   // int rows = matrix_cov_syst_total.GetNrows();  
 
   ///////  
-  
   TMatrixD matrix_cov_stat_total(rows, rows);
   TMatrixD matrix_cov_total(rows, rows);
 
@@ -53,7 +52,7 @@ double TOsc::FCN(const double *par)
     double val_stat_cov = 0;        
     // double val_data = matrix_data_total(0, idx);
     double val_pred = matrix_pred_total(0, idx);
-    
+    // CNP
     // if( val_data==0 ) { val_stat_cov = val_pred/2; }
     // else {
     //   if( val_pred!=0 ) val_stat_cov = 3./( 1./val_data + 2./val_pred );
@@ -375,12 +374,12 @@ void TOsc::Minimization_OscPars_FullCov(double init_dm2_41, double init_sin2_2th
 
   if( 1 ) {
     cout<<endl;
-    // cout<<TString::Format(" ---> minimization, status %2d, chi2 %6.4f, dm2 %4.2f +/- %4.2f, s22t14 %5.3f +/- %5.3f",
-    // 			  minimization_status, minimization_chi2,
-    // 			  minimization_dm2_41_val, minimization_dm2_41_err,
-    // 			  minimization_sin2_2theta_14_val, minimization_sin2_2theta_14_err
-    // 			  )<<endl;
-    cout<<TString::Format(" ---> best-fit, status %2d, chi2 %6.4f", minimization_status, minimization_chi2)<<endl;
+    cout<<TString::Format(" ---> minimization, status %2d, chi2 %6.4f, dm2 %4.2f +/- %4.2f, s22t14 %5.3f +/- %5.3f",
+			  minimization_status, minimization_chi2,
+			  minimization_dm2_41_val, minimization_dm2_41_err,
+			  minimization_sin2_2theta_14_val, minimization_sin2_2theta_14_err
+			  )<<endl;
+    // cout<<TString::Format(" ---> best-fit, status %2d, chi2 %6.4f", minimization_status, minimization_chi2)<<endl;
   }
    
 }
@@ -1290,20 +1289,20 @@ double TOsc::Prob_oscillaion(double Etrue, double baseline, int strflag_osc)// o
   ///////////////////////////////////////////////// dm2 vs. sin2_2Tue vs. t24
   ///////// sin2_2Tue <= sin2_T24
 
-  // double user_sin2_2Tue = tosc_sin2_2theta_14;
-  // double user_sin2_2T14 = user_sin2_2Tue/tosc_sin2_theta_24;
+  double user_sin2_2Tue = tosc_sin2_2theta_14;
+  double user_sin2_2T14 = user_sin2_2Tue/tosc_sin2_theta_24;
 
-  // double y = user_sin2_2T14;  
-  // double x = ( 1 + sqrt(1-y) )/2;// solution of >1/2
-  // //double x = ( 1 - sqrt(1-y) )/2;// solution of <1/2
-
-  // double effective_sin2_theta_14  = x;
-  // double effective_cos2_theta_14  = 1 - effective_sin2_theta_14;
-  // double effective_sin2_2theta_14 = y;
-
+  double y = user_sin2_2T14;  
+  double x = ( 1 + sqrt(1-y) )/2;// solution of >1/2
+  //double x = ( 1 - sqrt(1-y) )/2;// solution of <1/2
+ 
+  double effective_sin2_theta_14  = x;
+  double effective_cos2_theta_14  = 1 - effective_sin2_theta_14;
+  double effective_sin2_2theta_14 = y;
+ 
   ///////////////////////////////////////////////// dm2 vs. sin2_2Tee vs. t24
   ///////////////////////////////////////////////// dm2 vs. sin2_2Tee vs. t24
-  
+   
   // double user_sin2_2T14 = tosc_sin2_2theta_14;
 
   // double y = user_sin2_2T14;  
@@ -1314,12 +1313,12 @@ double TOsc::Prob_oscillaion(double Etrue, double baseline, int strflag_osc)// o
   // double effective_cos2_theta_14  = 1 - effective_sin2_theta_14;
   // double effective_sin2_2theta_14 = user_sin2_2T14;
 
-  ///////////////////////////////////////// dm2 vs. t14 vs. t24
+    ///////////////////////////////////////// dm2 vs. t14 vs. t24
   ///////////////////////////////////////// dm2 vs. t14 vs. t24
 
-  double effective_sin2_theta_14  = tosc_sin2_2theta_14;
-  double effective_cos2_theta_14  = 1 - effective_sin2_theta_14;
-  double effective_sin2_2theta_14 = 4 * effective_sin2_theta_14 * effective_cos2_theta_14;  
+  // double effective_sin2_theta_14  = tosc_sin2_2theta_14;
+  // double effective_cos2_theta_14  = 1 - effective_sin2_theta_14;
+  // double effective_sin2_2theta_14 = 4 * effective_sin2_theta_14 * effective_cos2_theta_14;  
   
   /////////////////////////////////////////nominal
 
@@ -3736,4 +3735,3 @@ void TOsc::Set_default_cv_cov(TString default_cv_file, TString default_dirtadd_f
 
   matrix_tosc_temp_total_in_POT.ResizeTo(unit_block*2, unit_block*2);
 }
-

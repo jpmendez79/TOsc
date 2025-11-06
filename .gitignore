@@ -51,3 +51,12 @@ compile_commands.json
 # binaries
 bin/*
 
+# root files
+*.root*
+
+# stuf
+*.itx
+*.nfs*
+*.cache/
+*.png
+*.pdf
