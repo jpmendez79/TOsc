@@ -593,7 +593,7 @@ int main(int argc, char** argv)
         
   }
 
-  if ( 0 ) { 			// Complete CLs in one run using command line functions as input
+  if ( 1 ) { 			// Complete CLs in one run using command line functions as input
     auto total_cls_start = chrono::high_resolution_clock::now();
     //auto time_stop = chrono::high_resolution_clock::now();
     //auto time_duration = chrono::duration_cast<chrono::seconds>(time_stop - time_start);
@@ -822,7 +822,7 @@ int main(int argc, char** argv)
 
     }
   }
-  if (1) {			// Binary Grid search algorithm
+  if (0) {			// Binary Grid search algorithm
     cout << "Start binary search algo\n";
     auto time_start = chrono::high_resolution_clock::now();
     double counter = 0;
