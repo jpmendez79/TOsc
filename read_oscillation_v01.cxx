@@ -83,12 +83,12 @@ int main(int argc, char** argv)
   double scaleF_POT_NuMI = 1;
   int display = 0;
 
-  // int it14 = 0;
-  // int idm2 = 0;
-  // int it24 = 0;
-  double it14 = 0;
-  double idm2 = 0;
-  double it24 = 0;  
+  int it14 = 0;
+  int idm2 = 0;
+  int it24 = 0;
+  // double it14 = 0;
+  // double idm2 = 0;
+  // double it24 = 0;  
   
   for(int i=1; i<argc; i++) {
     if( strcmp(argv[i],"-f")==0 ) {
@@ -593,7 +593,154 @@ int main(int argc, char** argv)
         
   }
 
-  if ( 1 ) { 			// Complete CLs in one run using command line functions as input
+  if ( 1 ) { // Heat map generation
+    int dimensions = 60;
+    TH1D* h1_dm2 = new TH1D("dm2", "dm2", dimensions, -2,2);
+    TH1D* h1_sin2_2tee = new TH1D("sin2_2tee", "sin2_2tee", dimensions, -4,0);
+
+    cout << "Heat Map Generation\n";
+    double dm2_41_grid = h1_dm2->GetBinCenter(idm2);
+    dm2_41_grid = pow(10.0, dm2_41_grid);
+    double theta_grid = h1_sin2_2tee->GetBinCenter(it14);
+    theta_grid = pow(10.0, theta_grid);
+    double pars_4v_grid[4] ={dm2_41_grid, theta_grid, 0.0045, 0};
+    double pars_3v_small[4] = {0, 0.1, 0.1, 0};
+    const int NUM_TOYS = 2500;
+  
+    double step_size = 0.0005; // profiling step size
+    int steps = 2000; // profiling steps
+
+    // Profiling data structures
+    double profiled_sin2_theta24 = 0;
+    double test_sin2_theta24 = 0;
+    double chi2_min = pow(10,6);	// set very large to start
+
+    // Data Structures for Chi^2 arrays
+    // 4v stuctures
+    double array_4vhyp_deltachisquare_grid_toy[NUM_TOYS];
+    double array_4vhyp_4nu_chisquare_grid[NUM_TOYS];
+    double array_4vhyp_4nu_chisquare_3nu[NUM_TOYS];
+
+    double array_3vhyp_4nu_chisquare_grid[NUM_TOYS];
+    double array_3vhyp_4nu_chisquare_3nu[NUM_TOYS];
+    double array_3vhyp_deltachisquare_grid_toy[NUM_TOYS];
+
+    // Reference deltachisquare for CLs
+    double ref = 0;
+
+    cout << "Profile \n";
+    // Grid scan
+    for(int i = 0; i < steps; i++) {
+      test_sin2_theta24 = i * step_size;
+      if( theta_grid > test_sin2_theta24 ) {
+	continue; 		// Need to because I am inputing mixing ange directly
+      }	
+      double pars_4nu[4] = {dm2_41_grid, theta_grid, test_sin2_theta24, 0};// dm2, t14, t24, t34
+      double chi2 = osc_test->FCN( pars_4nu );
+      if(chi2 < chi2_min) {
+	chi2_min = chi2;
+	profiled_sin2_theta24 = test_sin2_theta24;
+      }
+    }
+    pars_4v_grid[2] = profiled_sin2_theta24;
+    cout << "4nu \n";
+    // Generating psuedo experiments
+    osc_test->Set_oscillation_pars(pars_4v_grid[0], pars_4v_grid[1], pars_4v_grid[2], pars_4v_grid[3]);  
+    osc_test->Apply_oscillation();
+    osc_test->Set_apply_POT();// meas, CV, COV: all ready
+    //osc_test->Set_meas2fitdata();// set the real measurement as the "data", which will be compared with the "pred"
+    osc_test->Set_asimov2fitdata();// set the "asimov toy sample" as the "data", which will be compared with the "pred"
+    osc_test->Set_toy_variations( NUM_TOYS );// produce NUM_TOYS pseudo experiments
+    for (int i = 0; i < NUM_TOYS; i++) {
+      osc_test->Set_toy2fitdata(i + 1);// use the 1st pseudo experiment as the "data", which will be compared with the "pred"
+      array_4vhyp_4nu_chisquare_grid[i] = osc_test->FCN(pars_4v_grid );
+      array_4vhyp_4nu_chisquare_3nu[i] = osc_test->FCN(pars_3v_small );
+      array_4vhyp_deltachisquare_grid_toy[i] = array_4vhyp_4nu_chisquare_grid[i] - array_4vhyp_4nu_chisquare_3nu[i];
+    }
+    cout << "3nu \n";
+    // Generating psuedo experiments
+    osc_test->Set_oscillation_pars(pars_3v_small[0], pars_3v_small[1], pars_3v_small[2], pars_3v_small[3]);  
+    osc_test->Apply_oscillation();
+    osc_test->Set_apply_POT();// meas, CV, COV: all ready
+    //osc_test->Set_meas2fitdata();// set the real measurement as the "data", which will be compared with the "pred"
+    osc_test->Set_asimov2fitdata();// set the "asimov toy sample" as the "data", which will be compared with the "pred"
+    osc_test->Set_toy_variations( NUM_TOYS );// produce NUM_TOYS pseudo experiments
+    for (int i = 0; i < NUM_TOYS; i++) {
+      osc_test->Set_toy2fitdata(i + 1);// use the 1st pseudo experiment as the "data", which will be compared with the "pred"
+      array_3vhyp_4nu_chisquare_grid[i] = osc_test->FCN(pars_4v_grid );
+      array_3vhyp_4nu_chisquare_3nu[i] = osc_test->FCN(pars_3v_small );
+      array_3vhyp_deltachisquare_grid_toy[i] = array_3vhyp_4nu_chisquare_grid[i] - array_3vhyp_4nu_chisquare_3nu[i];
+      if (isnan(array_3vhyp_4nu_chisquare_grid[i]) || isnan(array_3vhyp_4nu_chisquare_3nu[i] ) || isnan(array_3vhyp_deltachisquare_grid_toy[i])) {
+	cout <<"NaaaaaaNNNNNNNNN\n";
+      } 
+    }
+    cout << "Delta Chisquare Obs\n";
+    osc_test->Set_oscillation_pars(0, 0.1, 0.1, 0);  
+    osc_test->Apply_oscillation();
+    osc_test->Set_apply_POT();// meas, CV, COV: all ready
+    osc_test->Set_meas2fitdata();// set the real measurement as the "data", which will be compared with the "pred"
+    osc_test->Set_meas2fitdata();// set the real measurement as the "data", which will be compared with the "pred"
+    double chi2_testA = osc_test->FCN( pars_3v_small );
+    osc_test->Set_meas2fitdata();// set the real measurement as the "data", which will be compared with the "pred"
+    double chi2_testC = osc_test->FCN( pars_4v_grid );
+    ref = chi2_testC - chi2_testA;
+    // Create histograms for 3v/4v delta_chi2_grid_toy
+    double min3 = 1e30, max3 = -1e30;
+    double min4 = 1e30, max4 = -1e30;
+    for (int j = 0; j < NUM_TOYS; ++j) {
+      min4 = std::min(min4, array_4vhyp_deltachisquare_grid_toy[j]); max4 = std::max(max4, array_4vhyp_deltachisquare_grid_toy[j]);
+      min3 = std::min(min3, array_3vhyp_deltachisquare_grid_toy[j]); max3 = std::max(max3, array_3vhyp_deltachisquare_grid_toy[j]);
+    }
+    TH1D *h1 = new TH1D("h1", "p3v;Delta chi2;Entries", 100, min3, max3);
+    TH1D *h2 = new TH1D("h2", "p4v;Delta chi2;Entries", 100, min4, max4);
+    for (int j = 0; j < NUM_TOYS; ++j) {
+      // cout << array_3vhyp_deltachisquare_grid_toy[j] << ":" << array_4vhyp_deltachisquare_grid_toy[j] <<"\n";
+      h1->Fill(array_3vhyp_deltachisquare_grid_toy[j]);
+      h2->Fill(array_4vhyp_deltachisquare_grid_toy[j]);
+    }
+      
+    h1->Scale(1.0 / h1->Integral());
+    h2->Scale(1.0 / h2->Integral());
+    // Calculate CLs from histogram bin
+    int bin4v = h2->FindBin(ref);
+    int bin3v = h1->FindBin(ref);
+    double p3v = h1->Integral(bin3v, h1->GetNbinsX());
+    double p4v = h2->Integral(bin4v, h2->GetNbinsX());
+    double val_CLs = p4v / p3v;
+    // Save Everything I need to files
+    TString fname = TString::Format("./validation_grid_%d_sin2_2tee_%d_dm2_%d.root", dimensions, it14, idm2);
+    TFile *rootfile = new TFile(fname, "recreate");
+    // Create objects for cpp variables
+    TParameter<double> deltachi2_ref("deltachi2_ref", ref);
+    TParameter<int> psuedos("num_toys", NUM_TOYS);
+    TParameter<double> theta("theta_grid", it14);
+    TParameter<double> dm2("dm2_grid", idm2);
+    TParameter<double> cls("CLs", val_CLs);
+    // Create TArray objects for all cpp arrays
+    // 4v stuctures
+    TVectorD arr4d(NUM_TOYS, array_4vhyp_deltachisquare_grid_toy);
+    // TArrayD arr4g(NUM_TOYS, array_4vhyp_4nu_chisquare_grid);
+    // TArrayD arr43(NUM_TOYS, array_4vhyp_4nu_chisquare_3nu);
+    TVectorD arr3d(NUM_TOYS, array_3vhyp_deltachisquare_grid_toy);
+    // TArrayD arr3g(NUM_TOYS, array_3vhyp_4nu_chisquare_grid);
+    // TArrayD arr33(NUM_TOYS, array_3vhyp_4nu_chisquare_3nu);
+    deltachi2_ref.Write();
+    psuedos.Write();
+    cls.Write();
+    theta.Write();
+    dm2.Write();
+    arr4d.Write("4v_deltachi2");
+    arr3d.Write("3v_deltachi2");
+    h1->Write();
+    h2->Write();
+    rootfile->Write();
+    rootfile->Close();
+    delete rootfile;
+  }// if
+
+
+
+  if ( 0 ) { 			// Complete CLs in one run using command line functions as input
     auto total_cls_start = chrono::high_resolution_clock::now();
     //auto time_stop = chrono::high_resolution_clock::now();
     //auto time_duration = chrono::duration_cast<chrono::seconds>(time_stop - time_start);
