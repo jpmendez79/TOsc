@@ -24,27 +24,45 @@ double TOsc::FCN(const double *par)
   Set_apply_POT();// meas, CV, COV: all ready
 
   ///////
-  // Both  BNB and NuMI
-  /* TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld; */
-  /* TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred; */
-  /* TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total; */
-  /* int rows = matrix_cov_syst_total.GetNrows(); */
+  
+  // TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld;
+  // TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred;        
+  // TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total;
+  // int rows = matrix_cov_syst_total.GetNrows();
   
   /////// modify
 
   /// BNB only
-  TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld.GetSub(0,0, 0, 26*7-1);
-  TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred.GetSub(0,0, 0, 26*7-1);
-  TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total.GetSub(0, 26*7-1, 0, 26*7-1);
-  int rows = matrix_cov_syst_total.GetNrows();
+  // TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld.GetSub(0,0, 0, 26*7-1);
+  // TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred.GetSub(0,0, 0, 26*7-1);
+  // TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total.GetSub(0, 26*7-1, 0, 26*7-1);
+  // int rows = matrix_cov_syst_total.GetNrows();
  
-  /* NuMI only */
-  /* TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld.GetSub(0,0, 26*7, 26*14-1); */
-  /* TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred.GetSub(0,0, 26*7, 26*14-1); */
-  /* TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total.GetSub(26*7, 26*14-1, 26*7, 26*14-1); */
-  /* int rows = matrix_cov_syst_total.GetNrows();   */
+  /// NuMI only
+  // TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld.GetSub(0,0, 26*7, 26*14-1);
+  // TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred.GetSub(0,0, 26*7, 26*14-1);
+  // TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total.GetSub(26*7, 26*14-1, 26*7, 26*14-1);
+  // int rows = matrix_cov_syst_total.GetNrows();  
 
+  /// BNB numuCC FC, xxx (1)
+  
+  int bins_eff = 26*7;    
+  TMatrixD matrix_gof_trans_eff( 26*14, bins_eff );// oldworld, newworld
+  for( int ibin=1; ibin<=bins_eff; ibin++) matrix_gof_trans_eff(ibin-1, ibin-1) = 1; 
+  
+  int rows = bins_eff;
+  
+  TMatrixD matrix_gof_trans_eff_T = matrix_gof_trans_eff.T(); matrix_gof_trans_eff.T(); 
+  TMatrixD matrix_gof_pred = matrix_tosc_eff_newworld_pred * matrix_gof_trans_eff;
+  TMatrixD matrix_gof_data = matrix_tosc_fitdata_newworld * matrix_gof_trans_eff;
+  TMatrixD matrix_gof_syst = matrix_gof_trans_eff_T * (matrix_tosc_eff_newworld_abs_syst_total) * matrix_gof_trans_eff;   
+  
+  TMatrixD matrix_data_total = matrix_gof_data;
+  TMatrixD matrix_pred_total = matrix_gof_pred;
+  TMatrixD matrix_cov_syst_total = matrix_gof_syst;
+  
   ///////  
+  
   TMatrixD matrix_cov_stat_total(rows, rows);
   TMatrixD matrix_cov_total(rows, rows);
 
@@ -52,7 +70,7 @@ double TOsc::FCN(const double *par)
     double val_stat_cov = 0;        
     // double val_data = matrix_data_total(0, idx);
     double val_pred = matrix_pred_total(0, idx);
-    // CNP
+    
     // if( val_data==0 ) { val_stat_cov = val_pred/2; }
     // else {
     //   if( val_pred!=0 ) val_stat_cov = 3./( 1./val_data + 2./val_pred );
@@ -84,229 +102,246 @@ double TOsc::FCN(const double *par)
 
 ///////
 
-// double TOsc::FCN_presave_only_PRED()
-// {
-//   double chi2_final = 0;
-//   // double fit_dm2_41         = par[0];
-//   // double fit_sin2_2theta_14 = par[1];
-//   // double fit_sin2_theta_24  = par[2];
+double TOsc::FCN_presave_only_PRED()
+{
+  double chi2_final = 0;
+  // double fit_dm2_41         = par[0];
+  // double fit_sin2_2theta_14 = par[1];
+  // double fit_sin2_theta_24  = par[2];
         
-//   /////// standard order
-//   // Set_oscillation_pars(fit_dm2_41, fit_sin2_2theta_14, fit_sin2_theta_24, 0);  
-//   // Apply_oscillation();
-//   Set_apply_POT();// meas, CV, COV: all ready
+  /////// standard order
+  // Set_oscillation_pars(fit_dm2_41, fit_sin2_2theta_14, fit_sin2_theta_24, 0);  
+  // Apply_oscillation();
+  Set_apply_POT();// meas, CV, COV: all ready
 
-//   ///////
+  ///////
   
-//   TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld;
-//   TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred;        
-//   TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total;
-//   int rows = matrix_cov_syst_total.GetNrows();
+  TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld;
+  TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred;        
+  TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total;
+  int rows = matrix_cov_syst_total.GetNrows();
   
-//   /////// modify
+  /////// modify
 
-//   /// BNB only
-//   // TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld.GetSub(0,0, 0, 26*7-1);
-//   // TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred.GetSub(0,0, 0, 26*7-1);
-//   // TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total.GetSub(0, 26*7-1, 0, 26*7-1);
-//   // int rows = matrix_cov_syst_total.GetNrows();
+  /// BNB only
+  // TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld.GetSub(0,0, 0, 26*7-1);
+  // TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred.GetSub(0,0, 0, 26*7-1);
+  // TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total.GetSub(0, 26*7-1, 0, 26*7-1);
+  // int rows = matrix_cov_syst_total.GetNrows();
  
-//   /// NuMI only
-//   // TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld.GetSub(0,0, 26*7, 26*14-1);
-//   // TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred.GetSub(0,0, 26*7, 26*14-1);
-//   // TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total.GetSub(26*7, 26*14-1, 26*7, 26*14-1);
-//   // int rows = matrix_cov_syst_total.GetNrows();  
+  /// NuMI only
+  // TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld.GetSub(0,0, 26*7, 26*14-1);
+  // TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred.GetSub(0,0, 26*7, 26*14-1);
+  // TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total.GetSub(26*7, 26*14-1, 26*7, 26*14-1);
+  // int rows = matrix_cov_syst_total.GetNrows();  
   
-//   ///////  
+  ///////  
   
-//   TMatrixD matrix_cov_stat_total(rows, rows);
-//   TMatrixD matrix_cov_total(rows, rows);
+  TMatrixD matrix_cov_stat_total(rows, rows);
+  TMatrixD matrix_cov_total(rows, rows);
 
-//   for(int idx=0; idx<rows; idx++) {
-//     double val_stat_cov = 0;        
-//     double val_data = matrix_data_total(0, idx);
-//     double val_pred = matrix_pred_total(0, idx);
+  for(int idx=0; idx<rows; idx++) {
+    double val_stat_cov = 0;        
+    double val_data = matrix_data_total(0, idx);
+    double val_pred = matrix_pred_total(0, idx);
     
-//     if( val_data==0 ) { val_stat_cov = val_pred/2; }
-//     else {
-//       if( val_pred!=0 ) val_stat_cov = 3./( 1./val_data + 2./val_pred );
-//       else val_stat_cov = val_data;
-//     }
+    if( val_data==0 ) { val_stat_cov = val_pred/2; }
+    else {
+      if( val_pred!=0 ) val_stat_cov = 3./( 1./val_data + 2./val_pred );
+      else val_stat_cov = val_data;
+    }
 
-//     if( val_stat_cov==0 ) val_stat_cov = 1e-6;
+    if( val_stat_cov==0 ) val_stat_cov = 1e-6;
     
-//     matrix_cov_stat_total(idx, idx) = val_stat_cov;
-//   }// for(int idx=0; idx<rows; idx++)
+    matrix_cov_stat_total(idx, idx) = val_stat_cov;
+  }// for(int idx=0; idx<rows; idx++)
   
-//   matrix_cov_total = matrix_cov_syst_total + matrix_cov_stat_total;
-//   TMatrixD matrix_delta = matrix_pred_total - matrix_data_total;
+  matrix_cov_total = matrix_cov_syst_total + matrix_cov_stat_total;
+  TMatrixD matrix_delta = matrix_pred_total - matrix_data_total;
 
-//   /////// default method: invert takes ~n^3 calcualtion  
-//   // TMatrixD matrix_delta_T = matrix_delta.T(); matrix_delta.T();   
-//   // TMatrixD matrix_cov_total_inv = matrix_cov_total; matrix_cov_total_inv.Invert();
-//   // TMatrixD matrix_chi2 = matrix_delta * matrix_cov_total_inv *matrix_delta_T;
-//   // chi2_final = matrix_chi2(0,0);      
+  /////// default method: invert takes ~n^3 calcualtion  
+  // TMatrixD matrix_delta_T = matrix_delta.T(); matrix_delta.T();   
+  // TMatrixD matrix_cov_total_inv = matrix_cov_total; matrix_cov_total_inv.Invert();
+  // TMatrixD matrix_chi2 = matrix_delta * matrix_cov_total_inv *matrix_delta_T;
+  // chi2_final = matrix_chi2(0,0);      
   
-//   /////// Cholesky method: decomptakes (~n^3)/6 calcualtion + (~n^2) extral cal
-//   chi2_final = Cal_chi2COV(matrix_delta, matrix_cov_total);
+  /////// Cholesky method: decomptakes (~n^3)/6 calcualtion + (~n^2) extral cal
+  chi2_final = Cal_chi2COV(matrix_delta, matrix_cov_total);
 
-//   ///////
+  ///////
 
-//   return chi2_final;
-// }
+  return chi2_final;
+}
 
 ///////
 
-// double TOsc::FCN_presave_both_PRED_COVsyst()
-// {
-//   double chi2_final = 0;
-//   // double fit_dm2_41         = par[0];
-//   // double fit_sin2_2theta_14 = par[1];
-//   // double fit_sin2_theta_24  = par[2];
+double TOsc::FCN_presave_both_PRED_COVsyst()
+{
+  double chi2_final = 0;
+  // double fit_dm2_41         = par[0];
+  // double fit_sin2_2theta_14 = par[1];
+  // double fit_sin2_theta_24  = par[2];
         
-//   /////// standard order
-//   // Set_oscillation_pars(fit_dm2_41, fit_sin2_2theta_14, fit_sin2_theta_24, 0);  
-//   // Apply_oscillation();
-//   // Set_apply_POT();// meas, CV, COV: all ready
+  /////// standard order
+  // Set_oscillation_pars(fit_dm2_41, fit_sin2_2theta_14, fit_sin2_theta_24, 0);  
+  // Apply_oscillation();
+  // Set_apply_POT();// meas, CV, COV: all ready
 
-//   ///////
+  ///////
   
-//   TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld;
-//   TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred;        
-//   TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total;
-//   int rows = matrix_cov_syst_total.GetNrows();
+  TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld;
+  TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred;        
+  TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total;
+  int rows = matrix_cov_syst_total.GetNrows();
   
-//   /////// modify
+  /////// modify
 
-//   /// BNB only
-//   // TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld.GetSub(0,0, 0, 26*7-1);
-//   // TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred.GetSub(0,0, 0, 26*7-1);
-//   // TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total.GetSub(0, 26*7-1, 0, 26*7-1);
-//   // int rows = matrix_cov_syst_total.GetNrows();
+  /// BNB only
+  // TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld.GetSub(0,0, 0, 26*7-1);
+  // TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred.GetSub(0,0, 0, 26*7-1);
+  // TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total.GetSub(0, 26*7-1, 0, 26*7-1);
+  // int rows = matrix_cov_syst_total.GetNrows();
  
-//   /// NuMI only
-//   // TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld.GetSub(0,0, 26*7, 26*14-1);
-//   // TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred.GetSub(0,0, 26*7, 26*14-1);
-//   // TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total.GetSub(26*7, 26*14-1, 26*7, 26*14-1);
-//   // int rows = matrix_cov_syst_total.GetNrows();  
+  /// NuMI only
+  // TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld.GetSub(0,0, 26*7, 26*14-1);
+  // TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred.GetSub(0,0, 26*7, 26*14-1);
+  // TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total.GetSub(26*7, 26*14-1, 26*7, 26*14-1);
+  // int rows = matrix_cov_syst_total.GetNrows();  
   
-//   ///////  
+  ///////  
   
-//   TMatrixD matrix_cov_stat_total(rows, rows);
-//   TMatrixD matrix_cov_total(rows, rows);
+  TMatrixD matrix_cov_stat_total(rows, rows);
+  TMatrixD matrix_cov_total(rows, rows);
 
-//   for(int idx=0; idx<rows; idx++) {
-//     double val_stat_cov = 0;        
-//     double val_data = matrix_data_total(0, idx);
-//     double val_pred = matrix_pred_total(0, idx);
+  for(int idx=0; idx<rows; idx++) {
+    double val_stat_cov = 0;        
+    double val_data = matrix_data_total(0, idx);
+    double val_pred = matrix_pred_total(0, idx);
     
-//     if( val_data==0 ) { val_stat_cov = val_pred/2; }
-//     else {
-//       if( val_pred!=0 ) val_stat_cov = 3./( 1./val_data + 2./val_pred );
-//       else val_stat_cov = val_data;
-//     }
+    if( val_data==0 ) { val_stat_cov = val_pred/2; }
+    else {
+      if( val_pred!=0 ) val_stat_cov = 3./( 1./val_data + 2./val_pred );
+      else val_stat_cov = val_data;
+    }
 
-//     if( val_stat_cov==0 ) val_stat_cov = 1e-6;
+    if( val_stat_cov==0 ) val_stat_cov = 1e-6;
     
-//     matrix_cov_stat_total(idx, idx) = val_stat_cov;
-//   }// for(int idx=0; idx<rows; idx++)
+    matrix_cov_stat_total(idx, idx) = val_stat_cov;
+  }// for(int idx=0; idx<rows; idx++)
   
-//   matrix_cov_total = matrix_cov_syst_total + matrix_cov_stat_total;
-//   TMatrixD matrix_delta = matrix_pred_total - matrix_data_total;
+  matrix_cov_total = matrix_cov_syst_total + matrix_cov_stat_total;
+  TMatrixD matrix_delta = matrix_pred_total - matrix_data_total;
 
-//   /////// default method: invert takes ~n^3 calcualtion  
-//   // TMatrixD matrix_delta_T = matrix_delta.T(); matrix_delta.T();   
-//   // TMatrixD matrix_cov_total_inv = matrix_cov_total; matrix_cov_total_inv.Invert();
-//   // TMatrixD matrix_chi2 = matrix_delta * matrix_cov_total_inv *matrix_delta_T;
-//   // chi2_final = matrix_chi2(0,0);      
+  /////// default method: invert takes ~n^3 calcualtion  
+  // TMatrixD matrix_delta_T = matrix_delta.T(); matrix_delta.T();   
+  // TMatrixD matrix_cov_total_inv = matrix_cov_total; matrix_cov_total_inv.Invert();
+  // TMatrixD matrix_chi2 = matrix_delta * matrix_cov_total_inv *matrix_delta_T;
+  // chi2_final = matrix_chi2(0,0);      
   
-//   /////// Cholesky method: decomptakes (~n^3)/6 calcualtion + (~n^2) extral cal
-//   chi2_final = Cal_chi2COV(matrix_delta, matrix_cov_total);
+  /////// Cholesky method: decomptakes (~n^3)/6 calcualtion + (~n^2) extral cal
+  chi2_final = Cal_chi2COV(matrix_delta, matrix_cov_total);
 
-//   ///////
+  ///////
 
-//   return chi2_final;
-// }
+  return chi2_final;
+}
 
 ///////
 
-// double TOsc::FCN_Pearson_FCnew(const double *par)
-// {
-//   double chi2_final = 0;
-//   double fit_dm2_41         = par[0];
-//   double fit_sin2_2theta_14 = par[1];
-//   double fit_sin2_theta_24  = par[2];
+double TOsc::FCN_Pearson_FCnew(const double *par)
+{
+  double chi2_final = 0;
+  double fit_dm2_41         = par[0];
+  double fit_sin2_2theta_14 = par[1];
+  double fit_sin2_theta_24  = par[2];
         
-//   /////// standard order
-//   Set_oscillation_pars(fit_dm2_41, fit_sin2_2theta_14, fit_sin2_theta_24, 0);  
-//   Apply_oscillation();
-//   Set_apply_POT();// meas, CV, COV: all ready
+  /////// standard order
+  Set_oscillation_pars(fit_dm2_41, fit_sin2_2theta_14, fit_sin2_theta_24, 0);  
+  Apply_oscillation();
+  Set_apply_POT();// meas, CV, COV: all ready
 
-//   ///////
+  ///////
   
-//   TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld;
-//   TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred;        
-//   TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total;
-//   int rows = matrix_cov_syst_total.GetNrows();
+  // TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld;
+  // TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred;        
+  // TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total;
+  // int rows = matrix_cov_syst_total.GetNrows();
   
-//   /////// modify
+  /////// modify
 
-//   /// BNB only
-//   // TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld.GetSub(0,0, 0, 26*7-1);
-//   // TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred.GetSub(0,0, 0, 26*7-1);
-//   // TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total.GetSub(0, 26*7-1, 0, 26*7-1);
-//   // int rows = matrix_cov_syst_total.GetNrows();
+  /// BNB only
+  // TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld.GetSub(0,0, 0, 26*7-1);
+  // TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred.GetSub(0,0, 0, 26*7-1);
+  // TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total.GetSub(0, 26*7-1, 0, 26*7-1);
+  // int rows = matrix_cov_syst_total.GetNrows();
  
-//   /// NuMI only
-//   // TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld.GetSub(0,0, 26*7, 26*14-1);
-//   // TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred.GetSub(0,0, 26*7, 26*14-1);
-//   // TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total.GetSub(26*7, 26*14-1, 26*7, 26*14-1);
-//   // int rows = matrix_cov_syst_total.GetNrows();  
+  /// NuMI only
+  // TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld.GetSub(0,0, 26*7, 26*14-1);
+  // TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred.GetSub(0,0, 26*7, 26*14-1);
+  // TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total.GetSub(26*7, 26*14-1, 26*7, 26*14-1);
+  // int rows = matrix_cov_syst_total.GetNrows();  
 
-//   ///////  
+  /// BNB numuCC FC, xxx (2)
+
+  int bins_eff = 26*7;    
+  TMatrixD matrix_gof_trans_eff( 26*14, bins_eff );// oldworld, newworld
+  for( int ibin=1; ibin<=bins_eff; ibin++) matrix_gof_trans_eff(ibin-1, ibin-1) = 1; 
   
-//   TMatrixD matrix_cov_stat_total(rows, rows);
-//   TMatrixD matrix_cov_total(rows, rows);
-
-//   for(int idx=0; idx<rows; idx++) {
-//     double val_stat_cov = 0;        
-//     // double val_data = matrix_data_total(0, idx);
-//     double val_pred = matrix_pred_total(0, idx);
+  int rows = bins_eff;
     
-//     // if( val_data==0 ) { val_stat_cov = val_pred/2; }
-//     // else {
-//     //   if( val_pred!=0 ) val_stat_cov = 3./( 1./val_data + 2./val_pred );
-//     //   else val_stat_cov = val_data;
-//     // }
-
-//     val_stat_cov = val_pred;// Pearson's format;
-
-//     if( val_stat_cov==0 ) val_stat_cov = 1e-6;    
-//     matrix_cov_stat_total(idx, idx) = val_stat_cov;
-
-//   }// for(int idx=0; idx<rows; idx++)
+  TMatrixD matrix_gof_trans_eff_T = matrix_gof_trans_eff.T(); matrix_gof_trans_eff.T(); 
+  TMatrixD matrix_gof_pred = matrix_tosc_eff_newworld_pred * matrix_gof_trans_eff;
+  TMatrixD matrix_gof_data = matrix_tosc_fitdata_newworld * matrix_gof_trans_eff;
+  TMatrixD matrix_gof_syst = matrix_gof_trans_eff_T * (matrix_tosc_eff_newworld_abs_syst_total) * matrix_gof_trans_eff;   
   
-//   matrix_cov_total = matrix_cov_syst_total + matrix_cov_stat_total;
-//   TMatrixD matrix_delta = matrix_pred_total - matrix_data_total;
-
-//   /////// default method: invert takes ~n^3 calcualtion
-//   TMatrixD matrix_delta_T = matrix_delta.T(); matrix_delta.T();   
-//   TMatrixD matrix_cov_total_inv = matrix_cov_total; matrix_cov_total_inv.Invert();    
-//   TMatrixD matrix_chi2 = matrix_delta * matrix_cov_total_inv *matrix_delta_T;
-//   chi2_final = matrix_chi2(0,0);            
+  TMatrixD matrix_data_total = matrix_gof_data;
+  TMatrixD matrix_pred_total = matrix_gof_pred;
+  TMatrixD matrix_cov_syst_total = matrix_gof_syst;
   
-//   /// for FC new procedure
-//   matrix_tosc_chi2_COV_both_syst_stat_inv.ResizeTo(rows, rows);
-//   matrix_tosc_chi2_COV_both_syst_stat_inv = matrix_cov_total_inv;
-//   matrix_tosc_chi2_pred.ResizeTo(1, rows);
-//   matrix_tosc_chi2_pred = matrix_pred_total;
+  ///////  
+  
+  TMatrixD matrix_cov_stat_total(rows, rows);
+  TMatrixD matrix_cov_total(rows, rows);
 
-//   /////// Cholesky method: decomptakes (~n^3)/6 calcualtion + (~n^2) extral cal
-//   // chi2_final = Cal_chi2COV(matrix_delta, matrix_cov_total);
+  for(int idx=0; idx<rows; idx++) {
+    double val_stat_cov = 0;        
+    // double val_data = matrix_data_total(0, idx);
+    double val_pred = matrix_pred_total(0, idx);
+    
+    // if( val_data==0 ) { val_stat_cov = val_pred/2; }
+    // else {
+    //   if( val_pred!=0 ) val_stat_cov = 3./( 1./val_data + 2./val_pred );
+    //   else val_stat_cov = val_data;
+    // }
+
+    val_stat_cov = val_pred;// Pearson's format;
+
+    if( val_stat_cov==0 ) val_stat_cov = 1e-6;    
+    matrix_cov_stat_total(idx, idx) = val_stat_cov;
+
+  }// for(int idx=0; idx<rows; idx++)
+  
+  matrix_cov_total = matrix_cov_syst_total + matrix_cov_stat_total;
+  TMatrixD matrix_delta = matrix_pred_total - matrix_data_total;
+
+  /////// default method: invert takes ~n^3 calcualtion
+  TMatrixD matrix_delta_T = matrix_delta.T(); matrix_delta.T();   
+  TMatrixD matrix_cov_total_inv = matrix_cov_total; matrix_cov_total_inv.Invert();    
+  TMatrixD matrix_chi2 = matrix_delta * matrix_cov_total_inv *matrix_delta_T;
+  chi2_final = matrix_chi2(0,0);            
+  
+  /// for FC new procedure
+  matrix_tosc_chi2_COV_both_syst_stat_inv.ResizeTo(rows, rows);
+  matrix_tosc_chi2_COV_both_syst_stat_inv = matrix_cov_total_inv;
+  matrix_tosc_chi2_pred.ResizeTo(1, rows);
+  matrix_tosc_chi2_pred = matrix_pred_total;
+
+  /////// Cholesky method: decomptakes (~n^3)/6 calcualtion + (~n^2) extral cal
+  // chi2_final = Cal_chi2COV(matrix_delta, matrix_cov_total);
 
 
-//   return chi2_final;
-// }
+  return chi2_final;
+}
 
 ///////
 
@@ -317,7 +352,7 @@ void TOsc::Minimization_OscPars_FullCov(double init_dm2_41, double init_sin2_2th
   min_osc.SetStrategy(1); //0- cursory, 1- default, 2- thorough yet no more successful
   min_osc.SetMaxFunctionCalls(50000);
   min_osc.SetMaxIterations(50000);
-  min_osc.SetTolerance(1e-5); // tolerance*2e-3 = edm precision
+  min_osc.SetTolerance(1e-4); // tolerance*2e-3 = edm precision
   min_osc.SetPrecision(1e-18); //precision in the target function
     
   /// set fitting parameters
@@ -374,12 +409,12 @@ void TOsc::Minimization_OscPars_FullCov(double init_dm2_41, double init_sin2_2th
 
   if( 1 ) {
     cout<<endl;
-    cout<<TString::Format(" ---> minimization, status %2d, chi2 %6.4f, dm2 %4.2f +/- %4.2f, s22t14 %5.3f +/- %5.3f",
-			  minimization_status, minimization_chi2,
-			  minimization_dm2_41_val, minimization_dm2_41_err,
-			  minimization_sin2_2theta_14_val, minimization_sin2_2theta_14_err
-			  )<<endl;
-    // cout<<TString::Format(" ---> best-fit, status %2d, chi2 %6.4f", minimization_status, minimization_chi2)<<endl;
+    // cout<<TString::Format(" ---> minimization, status %2d, chi2 %6.4f, dm2 %4.2f +/- %4.2f, s22t14 %5.3f +/- %5.3f",
+    // 			  minimization_status, minimization_chi2,
+    // 			  minimization_dm2_41_val, minimization_dm2_41_err,
+    // 			  minimization_sin2_2theta_14_val, minimization_sin2_2theta_14_err
+    // 			  )<<endl;
+    cout<<TString::Format(" ---> best-fit, status %2d, chi2 %6.4f", minimization_status, minimization_chi2)<<endl;
   }
    
 }
@@ -542,10 +577,19 @@ int TOsc::Exe_Goodness_of_fit(int num_Y, int num_X, TMatrixD matrix_pred, TMatri
   func_canv_margin(pad_top_no, 0.15, 0.1, 0.1, 0.06);
   pad_top_no->Draw(); pad_top_no->cd();
 
-  h1d_pred_Y_noConstraint_err->Draw("e2"); h1d_pred_Y_noConstraint_err->SetMinimum(0);
-  h1d_pred_Y_noConstraint_err->SetMaximum(ymax_eff);
+  pad_top_no->SetLogy();
+  
+
+  
+  //h1d_pred_Y_noConstraint_err->Draw("e2"); h1d_pred_Y_noConstraint_err->SetMinimum(0);
+  //h1d_pred_Y_noConstraint_err->SetMaximum(ymax_eff);
+  h1d_pred_Y_noConstraint_err->Draw("hist");
+  h1d_pred_Y_noConstraint_err->SetMaximum(1e6);
+  h1d_pred_Y_noConstraint_err->SetMinimum(0.9);
   h1d_pred_Y_noConstraint_err->SetMarkerSize(0.);
-  h1d_pred_Y_noConstraint_err->SetFillColor(color_no); h1d_pred_Y_noConstraint_err->SetFillStyle(3004);
+  h1d_pred_Y_noConstraint_err->SetFillColor(kRed-10);
+  //h1d_pred_Y_noConstraint_err->SetFillColor(color_no);
+  //h1d_pred_Y_noConstraint_err->SetFillStyle(3004);
   h1d_pred_Y_noConstraint_err->SetLineColor(color_no);
   func_title_size(h1d_pred_Y_noConstraint_err, 0.06, 0.06, 0.06, 0.06);
   func_xy_title(h1d_pred_Y_noConstraint_err, "", "Events", 1);
@@ -559,7 +603,8 @@ int TOsc::Exe_Goodness_of_fit(int num_Y, int num_X, TMatrixD matrix_pred, TMatri
   h1d_data_Y_noConstraint_err->SetLineColor(color_dd);
   h1d_data_Y_noConstraint_err->SetLineWidth(line_width);
   h1d_data_Y_noConstraint_err->SetMarkerSize(1.2);
-
+  
+  h1d_pred_Y_noConstraint_val->Draw("same hist");
   h1d_pred_Y_noConstraint_err->Draw("same axis");  
 
   TLegend *lg_top_no = new TLegend(0.5+0.05, 0.85-0.07*4, 0.85, 0.85);
@@ -599,7 +644,7 @@ int TOsc::Exe_Goodness_of_fit(int num_Y, int num_X, TMatrixD matrix_pred, TMatri
   ///////
     
   roostr = TString::Format("canv_spectra_GoF_%06d_no.png", index); canv_spectra_GoF_no->SaveAs(roostr);
-  cout<<roostr<<endl;
+  //cout<<roostr<<endl;
 
   ///////
   TMatrixD matrix_pred_Y_T = matrix_pred_Y.T(); matrix_pred_Y.T();
@@ -1036,7 +1081,55 @@ void TOsc::Set_toy_variations(int num_toys)
     TMatrixD matrix_gaus_rand(default_newworld_rows, 1);
     int eff_count = 0;
 
-  RANDOM_AGAIN:
+    TMatrixD matrix_variation(1, default_newworld_rows);
+
+    //////////////////////////////////////////////////// old
+    //////////////////////////////////////////////////// old
+    
+    // RANDOM_AGAIN:
+    //   eff_count++;
+    //   for(int idx=0; idx<default_newworld_rows; idx++) {
+    //     if( matrix_eigenvalue(idx)>=0 ) {
+    // 	matrix_gaus_rand(idx, 0) = tosc_rand->Gaus( 0, sqrt(matrix_eigenvalue(idx)) );// systematics
+    //     }
+    //     else {
+    // 	matrix_gaus_rand(idx, 0) = 0;
+    //     }
+    //   }// for(int idx=0; idx<default_newworld_rows; idx++)
+
+    //   TMatrixD matrix_variation = (matrix_eigenvector*matrix_gaus_rand).T();
+
+    //   bool flag_negative = 0;
+
+    //   for(int idx=0; idx<default_newworld_rows; idx++) {
+    //     double val_with_syst = matrix_variation(0, idx) + matrix_tosc_eff_newworld_pred(0, idx);// key point
+
+    //     if(val_with_syst<0) {
+    // 	if( matrix_tosc_eff_newworld_pred(0, idx)<2 ) {// hack for low statistics
+    // 	  matrix_variation(0, idx) *= (-1);
+    // 	}
+    // 	else {
+    // 	  flag_negative = 1;
+    // 	  break;
+    // 	}
+    //     }
+    //   }// for(int idx=0; idx<default_newworld_rows; idx++)
+
+    //   if( flag_negative ) goto RANDOM_AGAIN;
+
+    //   TMatrixD matrix_temp_pred(1, default_newworld_rows);
+    //   for(int idx=0; idx<default_newworld_rows; idx++) {
+    //     double val_with_syst = matrix_variation(0, idx) + matrix_tosc_eff_newworld_pred(0, idx);// key point
+    //     val_with_syst = tosc_rand->PoissonD(val_with_syst);// statistics
+    //     matrix_temp_pred(0, idx) = val_with_syst;
+    //   }// for(int idx=0; idx<default_newworld_rows; idx++)
+    //   map_matrix_tosc_toy_pred[itoy].Clear(); map_matrix_tosc_toy_pred[itoy].ResizeTo(1, default_newworld_rows);
+    //   map_matrix_tosc_toy_pred[itoy] = matrix_temp_pred;
+
+
+    ///////////////////////////////// (no re-throw) + Negative Universe becomes 0
+    ///////////////////////////////// (no re-throw) + Negative Universe becomes 0
+
     eff_count++;
     for(int idx=0; idx<default_newworld_rows; idx++) {
       if( matrix_eigenvalue(idx)>=0 ) {
@@ -1047,39 +1140,28 @@ void TOsc::Set_toy_variations(int num_toys)
       }
     }// for(int idx=0; idx<default_newworld_rows; idx++)
 
-    TMatrixD matrix_variation = (matrix_eigenvector*matrix_gaus_rand).T();
+    matrix_variation = (matrix_eigenvector*matrix_gaus_rand).T();
 
-    bool flag_negative = 0;
-
-    for(int idx=0; idx<default_newworld_rows; idx++) {
-      double val_with_syst = matrix_variation(0, idx) + matrix_tosc_eff_newworld_pred(0, idx);// key point
-
-      if(val_with_syst<0) {
-	if( matrix_tosc_eff_newworld_pred(0, idx)<2 ) {// hack for low statistics
-	  matrix_variation(0, idx) *= (-1);
-	}
-	else {
-	  flag_negative = 1;
-	  break;
-	}
-      }
-    }// for(int idx=0; idx<default_newworld_rows; idx++)
-
-    if( flag_negative ) goto RANDOM_AGAIN;
-
+    ///////
+    
     TMatrixD matrix_temp_pred(1, default_newworld_rows);
     for(int idx=0; idx<default_newworld_rows; idx++) {
       double val_with_syst = matrix_variation(0, idx) + matrix_tosc_eff_newworld_pred(0, idx);// key point
+
+      if( val_with_syst<0 ) val_with_syst = 0;      
       val_with_syst = tosc_rand->PoissonD(val_with_syst);// statistics
+      
       matrix_temp_pred(0, idx) = val_with_syst;
     }// for(int idx=0; idx<default_newworld_rows; idx++)
     map_matrix_tosc_toy_pred[itoy].Clear(); map_matrix_tosc_toy_pred[itoy].ResizeTo(1, default_newworld_rows);
     map_matrix_tosc_toy_pred[itoy] = matrix_temp_pred;
-    
-    // cout<<" ---> generating itoy: "<<itoy<<endl;
 
   }// for(int itoy=1; itoy<=num_toys; itoy++)
 
+
+
+
+  
   ///////
   
   // if( 0 ) {// validation
@@ -1289,58 +1371,43 @@ double TOsc::Prob_oscillaion(double Etrue, double baseline, int strflag_osc)// o
   ///////////////////////////////////////////////// dm2 vs. sin2_2Tue vs. t24
   ///////// sin2_2Tue <= sin2_T24
 
-  /* double user_sin2_2Tue = tosc_sin2_2theta_14; */
-  /* double user_sin2_2T14 = user_sin2_2Tue/tosc_sin2_theta_24; */
+  // double user_sin2_2Tue = tosc_sin2_2theta_14;
+  // double user_sin2_2T14 = user_sin2_2Tue/tosc_sin2_theta_24;
 
-  /* double y = user_sin2_2T14;   */
-  /* double x = ( 1 + sqrt(1-y) )/2;// solution of >1/2 */
-  //double x = ( 1 - sqrt(1-y) )/2;// solution of <1/2
- 
-  /* double effective_sin2_theta_14  = x; */
-  /* double effective_cos2_theta_14  = 1 - effective_sin2_theta_14; */
-  /* double effective_sin2_2theta_14 = y; */
- 
+  // double y = user_sin2_2T14;  
+  // double x = ( 1 + sqrt(1-y) )/2;// solution of >1/2
+  // //double x = ( 1 - sqrt(1-y) )/2;// solution of <1/2
+
+  // double effective_sin2_theta_14  = x;
+  // double effective_cos2_theta_14  = 1 - effective_sin2_theta_14;
+  // double effective_sin2_2theta_14 = y;
+
   ///////////////////////////////////////////////// dm2 vs. sin2_2Tee vs. t24
   ///////////////////////////////////////////////// dm2 vs. sin2_2Tee vs. t24
-   
-  double user_sin2_2T14 = tosc_sin2_2theta_14;
+  
+  // double user_sin2_2T14 = tosc_sin2_2theta_14;
 
-  double y = user_sin2_2T14;
-  double x = ( 1 + sqrt(1-y) )/2;// solution of >1/2
-  /* double x = ( 1 - sqrt(1-y) )/2;// solution of <1/2 */
+  // double y = user_sin2_2T14;  
+  // double x = ( 1 + sqrt(1-y) )/2;// solution of >1/2
+  // //double x = ( 1 - sqrt(1-y) )/2;// solution of <1/2
 
-  double effective_sin2_theta_14  = x;
-  double effective_cos2_theta_14  = 1 - effective_sin2_theta_14;
-  double effective_sin2_2theta_14 = user_sin2_2T14;
+  // double effective_sin2_theta_14  = x;
+  // double effective_cos2_theta_14  = 1 - effective_sin2_theta_14;
+  // double effective_sin2_2theta_14 = user_sin2_2T14;
 
-    ///////////////////////////////////////// dm2 vs. t14 vs. t24
+  ///////////////////////////////////////// dm2 vs. t14 vs. t24
   ///////////////////////////////////////// dm2 vs. t14 vs. t24
 
   // double effective_sin2_theta_14  = tosc_sin2_2theta_14;
   // double effective_cos2_theta_14  = 1 - effective_sin2_theta_14;
   // double effective_sin2_2theta_14 = 4 * effective_sin2_theta_14 * effective_cos2_theta_14;  
-
-
-  ///////////////////////////////////////////////// dm2 vs. 2|Ue4|^2
-  ///////////////////////////////////////////////// dm2 vs. 
-   
-/*   double user_sin2_2T14 = tosc_sin2_2theta_14; */
-
-/*   /\* double t = 2*user_sin2_2T14;   *\/ */
-/*   /\* double t2 = t*t; *\/ */
-/* double u = user_sin2_2T14; */
-/* double u2 = u*u;   */
+  
   /////////////////////////////////////////nominal
 
   double sin_Delta = sin( 1.267 * tosc_dm2_41 * baseline/Etrue );
 
   ///////
   double sin2_Delta = sin_Delta * sin_Delta;
-  // Invisible Decay
-  double g2 = 2.5 * M_PI;
-  /* double g2 = 0; */
-  double Delta = 1.267 * tosc_dm2_41 * baseline / Etrue;
-  double cos_2Delta = cos(2 * Delta);
   
   const int nue2nue   = 1;
   const int numu2numu = 2;
@@ -1353,21 +1420,17 @@ double TOsc::Prob_oscillaion(double Etrue, double baseline, int strflag_osc)// o
     
   switch( flag_osc ) {
   case nue2nue:
-    /* prob = 1 - effective_sin2_2theta_14 * sin2_Delta; */
+    //prob = 1 - effective_sin2_2theta_14 * sin2_Delta;
     prob = 1;
     //prob = 1 - tosc_sin2_2theta_14 * sin2_Delta;
     break;
   case numu2numu:
-    /* prob = 1 - 4*effective_cos2_theta_14*tosc_sin2_theta_24 * (1 - effective_cos2_theta_14*tosc_sin2_theta_24) * sin2_Delta; */
+    //prob = 1 - 4*effective_cos2_theta_14*tosc_sin2_theta_24 * (1 - effective_cos2_theta_14*tosc_sin2_theta_24) * sin2_Delta;
     //prob = 1;
     prob = 1 - tosc_sin2_2theta_14 * sin2_Delta;
-    /* prob = 1 - 2*x*(1 - exp(-1 * g2 * Delta / (8 * M_PI)) * cos_2Delta) + x*x*(1 - 2*exp(-1 * g2 * Delta / (8 * M_PI)) * cos_2Delta +exp(-1 * g2 * Delta / (4 * M_PI))); */
-    /* prob = 1 - t*(1 - exp(-1 * g2 * Delta / (8 * M_PI)) * cos_2Delta) + (t2/4)*(1 - 2*exp(-1 * g2 * Delta / (8 * M_PI)) * cos_2Delta +exp(-1 * g2 * Delta / (4 * M_PI))); */
-    /* prob = 1 - (u/2)*(1 - exp(-1 * g2 * Delta / (8 * M_PI)) * cos_2Delta) + (u2/16)*(1 - 2*exp(-1 * g2 * Delta / (8 * M_PI)) * cos_2Delta +exp(-1 * g2 * Delta / (4 * M_PI))); */
-
     break;
   case numu2nue:
-    /* prob = effective_sin2_2theta_14 * tosc_sin2_theta_24 * sin2_Delta; */
+    //prob = effective_sin2_2theta_14 * tosc_sin2_theta_24 * sin2_Delta;
     prob = 0;
     //prob = 1;
     //prob = tosc_sin2_2theta_14 * sin2_Delta;
@@ -1375,11 +1438,11 @@ double TOsc::Prob_oscillaion(double Etrue, double baseline, int strflag_osc)// o
   case nue2numu:
     break;
   case nueNC:
-    /* prob = 1 - effective_sin2_2theta_14 * ( 1-tosc_sin2_theta_24 ) * sin2_Delta;// theta_34 = 0 */
+    //prob = 1 - effective_sin2_2theta_14 * ( 1-tosc_sin2_theta_24 ) * sin2_Delta;// theta_34 = 0
     prob = 1;
     break;
   case numuNC:
-    /* prob = 1 - (effective_cos2_theta_14*effective_cos2_theta_14) * (4*tosc_sin2_theta_24*(1-tosc_sin2_theta_24)) * sin2_Delta;// theta_34 = 0 */
+    //prob = 1 - (effective_cos2_theta_14*effective_cos2_theta_14) * (4*tosc_sin2_theta_24*(1-tosc_sin2_theta_24)) * sin2_Delta;// theta_34 = 0
     prob = 1;
     //prob = 1 - tosc_sin2_2theta_14 * sin2_Delta;
     break;
@@ -1448,7 +1511,7 @@ void TOsc::Set_oscillation_base_added(vector<double> *vec_ratioPOT, vector< vect
   // }// for(int isize=0; isize<(int)vec_vec_eventinfo->size(); isize++ )
 
 
-  /////// xxx
+  ///////
 
   int flag_osc = -1;
   if( str_osc_mode=="nue2nue" )        flag_osc = 1;
@@ -1657,15 +1720,13 @@ void TOsc::Apply_oscillation()
   /////////
 
   for(int idx=0; idx<default_oldworld_rows; idx++) {
+    if( matrix_tosc_oscillation_oldworld_pred(0, idx)<1e-4 ) matrix_tosc_oscillation_oldworld_pred(0, idx) = 0;// protect
 
     if( matrix_tosc_oscillation_oldworld_pred(0, idx)<-1 ) {
       cout<<endl;
       cout<<"Warning: matrix_tosc_oscillation_oldworld_pred(0, idx)<-1 at index "<<idx<<endl;
-      cout<<endl;      
+      cout<<endl;
     }
-
-    if( matrix_tosc_oscillation_oldworld_pred(0, idx)<1e-4 ) matrix_tosc_oscillation_oldworld_pred(0, idx) = 0;// protect
-
   }
 
   ///////// winxp check with results from framework
@@ -3754,3 +3815,4 @@ void TOsc::Set_default_cv_cov(TString default_cv_file, TString default_dirtadd_f
 
   matrix_tosc_temp_total_in_POT.ResizeTo(unit_block*2, unit_block*2);
 }
+
