@@ -33,10 +33,10 @@ double TOsc::FCN(const double *par)
   /////// modify
 
   /// BNB only
-  // TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld.GetSub(0,0, 0, 26*7-1);
-  // TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred.GetSub(0,0, 0, 26*7-1);
-  // TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total.GetSub(0, 26*7-1, 0, 26*7-1);
-  // int rows = matrix_cov_syst_total.GetNrows();
+  TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld.GetSub(0,0, 0, 26*7-1);
+  TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred.GetSub(0,0, 0, 26*7-1);
+  TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total.GetSub(0, 26*7-1, 0, 26*7-1);
+  int rows = matrix_cov_syst_total.GetNrows();
  
   /// NuMI only
   // TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld.GetSub(0,0, 26*7, 26*14-1);
@@ -46,20 +46,20 @@ double TOsc::FCN(const double *par)
 
   /// BNB numuCC FC, xxx (1)
   
-  int bins_eff = 26*7;    
-  TMatrixD matrix_gof_trans_eff( 26*14, bins_eff );// oldworld, newworld
-  for( int ibin=1; ibin<=bins_eff; ibin++) matrix_gof_trans_eff(ibin-1, ibin-1) = 1; 
+  // int bins_eff = 26*7;    
+  // TMatrixD matrix_gof_trans_eff( 26*14, bins_eff );// oldworld, newworld
+  // for( int ibin=1; ibin<=bins_eff; ibin++) matrix_gof_trans_eff(ibin-1, ibin-1) = 1; 
   
-  int rows = bins_eff;
+  // int rows = bins_eff;
   
-  TMatrixD matrix_gof_trans_eff_T = matrix_gof_trans_eff.T(); matrix_gof_trans_eff.T(); 
-  TMatrixD matrix_gof_pred = matrix_tosc_eff_newworld_pred * matrix_gof_trans_eff;
-  TMatrixD matrix_gof_data = matrix_tosc_fitdata_newworld * matrix_gof_trans_eff;
-  TMatrixD matrix_gof_syst = matrix_gof_trans_eff_T * (matrix_tosc_eff_newworld_abs_syst_total) * matrix_gof_trans_eff;   
+  // TMatrixD matrix_gof_trans_eff_T = matrix_gof_trans_eff.T(); matrix_gof_trans_eff.T(); 
+  // TMatrixD matrix_gof_pred = matrix_tosc_eff_newworld_pred * matrix_gof_trans_eff;
+  // TMatrixD matrix_gof_data = matrix_tosc_fitdata_newworld * matrix_gof_trans_eff;
+  // TMatrixD matrix_gof_syst = matrix_gof_trans_eff_T * (matrix_tosc_eff_newworld_abs_syst_total) * matrix_gof_trans_eff;   
   
-  TMatrixD matrix_data_total = matrix_gof_data;
-  TMatrixD matrix_pred_total = matrix_gof_pred;
-  TMatrixD matrix_cov_syst_total = matrix_gof_syst;
+  // TMatrixD matrix_data_total = matrix_gof_data;
+  // TMatrixD matrix_pred_total = matrix_gof_pred;
+  // TMatrixD matrix_cov_syst_total = matrix_gof_syst;
   
   ///////  
   
@@ -1385,15 +1385,15 @@ double TOsc::Prob_oscillaion(double Etrue, double baseline, int strflag_osc)// o
   ///////////////////////////////////////////////// dm2 vs. sin2_2Tee vs. t24
   ///////////////////////////////////////////////// dm2 vs. sin2_2Tee vs. t24
   
-  // double user_sin2_2T14 = tosc_sin2_2theta_14;
+  double user_sin2_2T14 = tosc_sin2_2theta_14;
 
-  // double y = user_sin2_2T14;  
-  // double x = ( 1 + sqrt(1-y) )/2;// solution of >1/2
-  // //double x = ( 1 - sqrt(1-y) )/2;// solution of <1/2
+  double y = user_sin2_2T14;  
+  double x = ( 1 + sqrt(1-y) )/2;// solution of >1/2
+  //double x = ( 1 - sqrt(1-y) )/2;// solution of <1/2
 
-  // double effective_sin2_theta_14  = x;
-  // double effective_cos2_theta_14  = 1 - effective_sin2_theta_14;
-  // double effective_sin2_2theta_14 = user_sin2_2T14;
+  double effective_sin2_theta_14  = x;
+  double effective_cos2_theta_14  = 1 - effective_sin2_theta_14;
+  double effective_sin2_2theta_14 = user_sin2_2T14;
 
   ///////////////////////////////////////// dm2 vs. t14 vs. t24
   ///////////////////////////////////////// dm2 vs. t14 vs. t24
@@ -1408,6 +1408,11 @@ double TOsc::Prob_oscillaion(double Etrue, double baseline, int strflag_osc)// o
 
   ///////
   double sin2_Delta = sin_Delta * sin_Delta;
+  // Invisible Decay
+  double g2 = 2.5 * M_PI;
+  /* double g2 = 0; */
+  double Delta = 1.267 * tosc_dm2_41 * baseline / Etrue;
+  double cos_2Delta = cos(2 * Delta);
   
   const int nue2nue   = 1;
   const int numu2numu = 2;
@@ -1420,17 +1425,21 @@ double TOsc::Prob_oscillaion(double Etrue, double baseline, int strflag_osc)// o
     
   switch( flag_osc ) {
   case nue2nue:
-    //prob = 1 - effective_sin2_2theta_14 * sin2_Delta;
+    /* prob = 1 - effective_sin2_2theta_14 * sin2_Delta; */
     prob = 1;
     //prob = 1 - tosc_sin2_2theta_14 * sin2_Delta;
     break;
   case numu2numu:
-    //prob = 1 - 4*effective_cos2_theta_14*tosc_sin2_theta_24 * (1 - effective_cos2_theta_14*tosc_sin2_theta_24) * sin2_Delta;
+    /* prob = 1 - 4*effective_cos2_theta_14*tosc_sin2_theta_24 * (1 - effective_cos2_theta_14*tosc_sin2_theta_24) * sin2_Delta; */
     //prob = 1;
     prob = 1 - tosc_sin2_2theta_14 * sin2_Delta;
+    /* prob = 1 - 2*x*(1 - exp(-1 * g2 * Delta / (8 * M_PI)) * cos_2Delta) + x*x*(1 - 2*exp(-1 * g2 * Delta / (8 * M_PI)) * cos_2Delta +exp(-1 * g2 * Delta / (4 * M_PI))); */
+    /* prob = 1 - t*(1 - exp(-1 * g2 * Delta / (8 * M_PI)) * cos_2Delta) + (t2/4)*(1 - 2*exp(-1 * g2 * Delta / (8 * M_PI)) * cos_2Delta +exp(-1 * g2 * Delta / (4 * M_PI))); */
+    /* prob = 1 - (u/2)*(1 - exp(-1 * g2 * Delta / (8 * M_PI)) * cos_2Delta) + (u2/16)*(1 - 2*exp(-1 * g2 * Delta / (8 * M_PI)) * cos_2Delta +exp(-1 * g2 * Delta / (4 * M_PI))); */
+
     break;
   case numu2nue:
-    //prob = effective_sin2_2theta_14 * tosc_sin2_theta_24 * sin2_Delta;
+    /* prob = effective_sin2_2theta_14 * tosc_sin2_theta_24 * sin2_Delta; */
     prob = 0;
     //prob = 1;
     //prob = tosc_sin2_2theta_14 * sin2_Delta;
@@ -1438,11 +1447,11 @@ double TOsc::Prob_oscillaion(double Etrue, double baseline, int strflag_osc)// o
   case nue2numu:
     break;
   case nueNC:
-    //prob = 1 - effective_sin2_2theta_14 * ( 1-tosc_sin2_theta_24 ) * sin2_Delta;// theta_34 = 0
+    /* prob = 1 - effective_sin2_2theta_14 * ( 1-tosc_sin2_theta_24 ) * sin2_Delta;// theta_34 = 0 */
     prob = 1;
     break;
   case numuNC:
-    //prob = 1 - (effective_cos2_theta_14*effective_cos2_theta_14) * (4*tosc_sin2_theta_24*(1-tosc_sin2_theta_24)) * sin2_Delta;// theta_34 = 0
+    /* prob = 1 - (effective_cos2_theta_14*effective_cos2_theta_14) * (4*tosc_sin2_theta_24*(1-tosc_sin2_theta_24)) * sin2_Delta;// theta_34 = 0 */
     prob = 1;
     //prob = 1 - tosc_sin2_2theta_14 * sin2_Delta;
     break;
@@ -1452,6 +1461,7 @@ double TOsc::Prob_oscillaion(double Etrue, double baseline, int strflag_osc)// o
   
   return prob;
 }
+
 
 ///////////////////
 
