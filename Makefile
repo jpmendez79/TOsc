@@ -6,11 +6,10 @@ DIR_SRC = ./src
 DIR_BIN = ./bin
 SOURCES=read_oscillation_v01.cxx $(wildcard $(DIR_SRC)/*.cxx)
 OBJECTS=$(SOURCES:.cxx=.o)
-EXECUTABLE=$(DIR_BIN)/read_oscillation_v01
-# Remote
-# ROOTSYS=/home/jpmendez/code/root_install
-#Local
-ROOTSYS=/usr
+EXECUTABLE=$(DIR_BIN)/numu_study
+
+ROOTSYS=/home/jpmendez/code/root_install
+
 CFLAGS += $(shell $(ROOTSYS)/bin/root-config --cflags)
 LDFLAGS += $(shell $(ROOTSYS)/bin/root-config --libs) 
 
