@@ -30,7 +30,7 @@ int main(int argc, char** argv)
   int ifile = -1;
   int obs_throw = 0;
   int fcls = 0;
-  int xthrow = 1;
+  int xthrow = 0;
   int draw_confidence_map = 0;
   double scaleF_POT_BNB  = 1;
   double scaleF_POT_NuMI = 1;
