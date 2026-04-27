@@ -315,7 +315,7 @@ class TOsc {
 
   int tosc_NUM_TOYS;
   map<int, TMatrixD>map_matrix_tosc_toy_pred;
-  
+  map<int, TMatrixD>save_map_matrix_tosc_toy_pred;
   ///////////////////////////
 
   vector<double>vector_NuMI_nueCC_from_intnue_scaleFPOT;        vector< vector<EventInfo> >vector_vector_NuMI_nueCC_from_intnue_FC_eventinfo;        vector< vector<EventInfo> >vector_vector_NuMI_nueCC_from_intnue_PC_eventinfo;
@@ -430,13 +430,33 @@ class TOsc {
   void Set_apply_POT();
 
   void Set_toy_variations(int num_toys);
+// void Load_toy_variations();  
   void Set_toy2fitdata(int itoy) {
     if( itoy > tosc_NUM_TOYS ) { cerr<<" ERROR: itoy > tosc_NUM_TOYS"<<endl; exit(1); }
     matrix_tosc_fitdata_newworld = map_matrix_tosc_toy_pred[itoy];
+  // TString fname = TString::Format("./DEBUG_TOY%i.root", itoy);
+  // cout << "DEBUG SAVE " << fname << "\n";
+  // TFile *rootfile = new TFile(fname, "recreate");
+  // matrix_tosc_fitdata_newworld.Write("fit_data");
+  // rootfile->Write();
+  // rootfile->Close();
   }
+void Load_toy_variations(int itoy) {
+  TString default_toy_file = "toy_file_output.root";
+  map<int, TMatrixD> *input_map_matrix_tosc_toy_pred = nullptr;
+
+
+  TFile toyfile(default_toy_file, "READ");
+  toyfile.GetObject("toy_pred", input_map_matrix_tosc_toy_pred);
+
+
+  map_matrix_tosc_toy_pred = input_map_matrix_tosc_toy_pred[itoy];
+  // map_matrix_tosc_toy_pred.clear();
+}  
+  
   
   void Set_meas2fitdata()   { matrix_tosc_fitdata_newworld   = matrix_tosc_eff_newworld_meas; }
-  void Set_asimov2fitdata() { matrix_tosc_fitdata_newworld   = matrix_tosc_eff_newworld_pred; }
+  void Set_asimov2fitdata() {matrix_tosc_fitdata_newworld = matrix_tosc_eff_newworld_pred; }
   void Set_noosc2fitdata()  { matrix_tosc_fitdata_newworld   = matrix_tosc_eff_newworld_noosc;}
   void Set_asimov2noosc()   { matrix_tosc_eff_newworld_noosc = matrix_tosc_eff_newworld_pred; }
 
