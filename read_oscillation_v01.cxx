@@ -31,7 +31,7 @@ int main(int argc, char** argv)
   int obs_throw = 0;
   int fcls = 0;
   int xthrow = 0;
-  int draw_confidence_map = 0;
+  int draw_confidence_map = 1;
   double scaleF_POT_BNB  = 1;
   double scaleF_POT_NuMI = 1;
   int display = 0;
@@ -751,22 +751,65 @@ int main(int argc, char** argv)
   if (draw_confidence_map) {
     const int NUM_dm2 = 60;
     const int NUM_ttt = 60;
-    int start_universe_index = 1;
-    int end_universe_index = 200;
-
-    for (int i = start_universe_index; i <= end_universe_index; i++) {
-      // Load deltachi2_3v, deltachi2_4v, deltachi2_obs
-
-      // Calculate pvalue4v
-
-      // Calculate pvalue3v
-
-      // Calculate cls w/ error protection for 0/0, inf, NaN values
-
-      // Caclulate confidence value
-
-      // Write to location in confidence map
+    int num_universe = 200;
+    int toys = 10000;
+    std::vector<TH2D*> clsHeat;
+    for (int n=0; n<num_universe; n++) {
+      TH2D* h = new TH2D(Form("clsHeat%i",n+1), Form("Universe %i Confidence Map;sin^{2}(2#theta_{#mu#mu});#Deltam^{2}_{41}",n+1),60, 0, 60, 60,0,60);
+      clsHeat.push_back(h);
     }
+    for (int xindex = 0; xindex < 60; xindex++) {
+      for (int yindex = 0; yindex < 60; yindex++) {
+        // Load deltachi2_3v, deltachi2_4v
+        roostr = TString::Format("60x60_dm2_ttt_%03d_%03d.root", idm2, it14);
+        TFile *rootfile = new TFile(roostr, "read");
+        TTree *tree = (TTree *)rootfile->Get("tree");
+        vector<double> *vec_toydata_spectrum = nullptr;
+        tree->SetBranchAddress("vec_dchi2_with_3vToy", &vec_toydata_spectrum);
+        tree->GetEntry(0);
+        for (int i = 1; i <= num_universe; i++) {
+          // Load deltachi2_obs
+	      TString deltapath = TString::Format("/home/jpmendez/analysis/TOsc/60x60-deltachi2_obs-xtoyuniverse-%i.root", i);
+	      TFile deltafile(deltapath, "READ");
+	      TMatrixD* obsmat = nullptr;
+	      deltafile.GetObject("obs_map", obsmat);
+	      deltafile.Close();
+	      double ref = (*obsmat)(yindex,xindex);
+          double count3v = 0;
+          double count4v = 0;
+          for (int j = 0; j < toys; j++) {
+            double dchi4v = vec_toydata_spectrum->at(i);
+            double dchi3v = vec_toydata_spectrum->at(i+toys);
+
+            if(dchi3v >= ref) {
+	          count3v++;
+	        }
+	        if(dchi4v>= ref) {
+	          count4v++;
+	        }
+	      }
+	      double z = 0;
+	      if( count3v == 0 ) {
+	        if( count4v == 0 ) z = 0;
+	        else z = 1;
+	      }
+	      else z = count4v / count3v;
+	      if( count4v>=count3v ) z = 1;
+          double confidence = 1-z;
+	      clsHeat[i-1]->SetBinContent(xindex,yindex,confidence);
+        } // toy loop
+        rootfile->Close();
+      } // universe loop
+
+      } // yindex
+    } // xindex
+
+  TFile outfile("202604-200vals-cls_map.root", "RECREATE");
+  for(auto h : clsHeat){
+    h->Write();
+    delete h;
+  }
+  outfile.Close();
   }
 //   if (0) { // Debug Output
 //
