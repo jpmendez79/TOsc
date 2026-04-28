@@ -26,7 +26,7 @@ int main(int argc, char** argv)
   TString roostr = "";
 
   cout<<endl<<" ---> A Hello story ..."<<endl<<endl;
-
+  int analysis = 0;
   int ifile = -1;
   int obs_throw = 0;
   int fcls = 0;
@@ -57,9 +57,11 @@ int main(int argc, char** argv)
       stringstream convert( argv[i+1] );
       if(  !( convert>>fcls ) ) { cerr<<" ---> Error ifile !"<<endl; exit(1); }
     }
-    if( strcmp(argv[i],"-o")==0 ) {
-      stringstream convert( argv[i+1] );
-      if(  !( convert>>option ) ) { cerr<<" ---> Error ifile !"<<endl; exit(1); }
+    if (strcmp(argv[i], "-option") == 0) {
+      if (strcmp(argv[i+1], "analysis") == 0) {
+        analysis = 1;
+        // cout << "ANALYSIS MODE \n";
+                }
     }
     if( strcmp(argv[i],"-pbnb")==0 ) {
       stringstream convert( argv[i+1] );
@@ -748,68 +750,83 @@ int main(int argc, char** argv)
 
   }// xthrow
 
-  if (draw_confidence_map) {
+  if (analysis) {
     const int NUM_dm2 = 60;
     const int NUM_ttt = 60;
     int num_universe = 200;
-    int toys = 10000;
-    std::vector<TH2D*> clsHeat;
-    for (int n=0; n<num_universe; n++) {
-      TH2D* h = new TH2D(Form("clsHeat%i",n+1), Form("Universe %i Confidence Map;sin^{2}(2#theta_{#mu#mu});#Deltam^{2}_{41}",n+1),60, 0, 60, 60,0,60);
-      clsHeat.push_back(h);
+    int probdist_size = 10000;
+
+    std::vector<TMatrixD> universe_mat_obs;
+    std::vector<TMatrixD> confidence_map;
+    for (int i = 1; i <= num_universe; i++) {
+      // TString universestring = TString::Format("xj-recreate_confidence-map-universe-%i.root", i);
+      TString universestring = TString::Format("60x60-deltachi2_obs-xtoyuniverse-%i.root", i);
+      TFile deltafile(universestring, "READ");
+      TMatrixD* matrix = nullptr;
+      // Load universe reference for map
+      deltafile.GetObject("obs_map", matrix);
+      universe_mat_obs.push_back(*matrix);
+      deltafile.Close();
+      TMatrixD confidence(NUM_dm2, NUM_ttt);
+      confidence_map.push_back(confidence);
     }
-    for (int xindex = 0; xindex < 60; xindex++) {
-      for (int yindex = 0; yindex < 60; yindex++) {
-        // Load deltachi2_3v, deltachi2_4v
-        roostr = TString::Format("60x60_dm2_ttt_%03d_%03d.root", idm2, it14);
-        TFile *rootfile = new TFile(roostr, "read");
-        TTree *tree = (TTree *)rootfile->Get("tree");
-        vector<double> *vec_toydata_spectrum = nullptr;
-        tree->SetBranchAddress("vec_dchi2_with_3vToy", &vec_toydata_spectrum);
-        tree->GetEntry(0);
-        for (int i = 1; i <= num_universe; i++) {
-          // Load deltachi2_obs
-	      TString deltapath = TString::Format("/home/jpmendez/analysis/TOsc/60x60-deltachi2_obs-xtoyuniverse-%i.root", i);
-	      TFile deltafile(deltapath, "READ");
-	      TMatrixD* obsmat = nullptr;
-	      deltafile.GetObject("obs_map", obsmat);
-	      deltafile.Close();
-	      double ref = (*obsmat)(yindex,xindex);
-          double count3v = 0;
-          double count4v = 0;
-          for (int j = 0; j < toys; j++) {
-            double dchi4v = vec_toydata_spectrum->at(i);
-            double dchi3v = vec_toydata_spectrum->at(i+toys);
+    cout << "Finished loading universe\n";//
 
-            if(dchi3v >= ref) {
-	          count3v++;
-	        }
-	        if(dchi4v>= ref) {
-	          count4v++;
-	        }
-	      }
-	      double z = 0;
-	      if( count3v == 0 ) {
-	        if( count4v == 0 ) z = 0;
-	        else z = 1;
-	      }
-	      else z = count4v / count3v;
-	      if( count4v>=count3v ) z = 1;
-          double confidence = 1-z;
-	      clsHeat[i-1]->SetBinContent(xindex,yindex,confidence);
-        } // toy loop
-        rootfile->Close();
-      } // universe loop
+    // Create pointers once then change the pointer for each file
+    TTree *tree = nullptr;
+    vector<double> *vec_dchi2_with_3vToy = nullptr;
+      for (int xindex = 0; xindex < 60; xindex++) {
+        for (int yindex = 0; yindex < 60; yindex++) {
+          // Load deltachi2_3v, deltachi2_4v
+          roostr = TString::Format("60x60_dm2_ttt_%03d_%03d.root", yindex + 1, xindex + 1);
+          TFile *rootfile = new TFile(roostr, "read");
+          rootfile->GetObject("tree", tree);
+          tree->SetBranchStatus("*", 0);
+          tree->SetBranchStatus("vec_dchi2_with_3vToy", 1);
+          tree->SetBranchAddress("vec_dchi2_with_3vToy",&vec_dchi2_with_3vToy);
+          tree->GetEntry(0);
+          rootfile->Close();
+          for (int obs = 0; obs < num_universe; obs++) {
+              double count3v = 0;
+              double count4v = 0;
+              for (int j = 0; j < probdist_size; j++) {
+                    double dchi3v = vec_dchi2_with_3vToy->at(j);
+                    double dchi4v = vec_dchi2_with_3vToy->at(j+probdist_size);
 
-      } // yindex
-    } // xindex
+                    if(dchi3v >= universe_mat_obs[obs](yindex,xindex)) {
+                      count3v++;
+                    }
+                    if(dchi4v >= universe_mat_obs[obs](yindex,xindex)) {
+                      count4v++;
+                    }
+              }
+              double cls = 0;
+              if( count3v == 0 ) {
+                if( count4v == 0 ) cls = 0;
+                else cls = 1;
+              }
+              else cls = count4v / count3v;
+              if( count4v>=count3v ) cls = 1;
+              double confidence = 1 - cls;
+              confidence_map[obs](yindex,xindex) = confidence;
+          }
+          vec_dchi2_with_3vToy->clear();
 
-  TFile outfile("202604-200vals-cls_map.root", "RECREATE");
-  for(auto h : clsHeat){
-    h->Write();
-    delete h;
-  }
-  outfile.Close();
+        } // yindex
+        cout << "Finished x index: " << xindex+1 << "\n";
+      } // xindex
+      TFile outfile("confidence_maps_grid.root", "RECREATE");
+      int i = 1;
+      for (const auto& m : confidence_map) {
+        outfile.WriteObject(&m, Form("universe_%d", i++));
+      }
+      // i = 1;
+      // for (const auto& m : universe_mat_obs) {
+      //   outfile.WriteObject(&m, Form("uobs_%d", i++));
+      // }
+
+      outfile.Close();//
+      cout << "HIIIIIIIII\n";
   }
 //   if (0) { // Debug Output
 //
