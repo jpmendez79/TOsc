@@ -17,7 +17,9 @@ using namespace std;
 #include "TParameter.h"
 #include <chrono> // timer
 
+////////////////////////////////// SUB /////////////////////////////////////////////
 
+std::vector<TGraph*> GetContourGraphs(TH2* h2, double level);
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////// MAIN //////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -36,16 +38,25 @@ int main(int argc, char** argv)
   double scaleF_POT_NuMI = 1;
   int display = 0;
 
+
+  int sensitivity_study = 0;
   int it14 = 0;
   int idm2 = 0;
   int it24 = 0;
-  int option = 0;
+
+  const int NUM_dm2 = 60;
+  const int NUM_ttt = 60;
+  TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, -2, 1);
+  TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, -2, 0);
+
+
+
   // double it14 = 0;
   // double idm2 = 0;
   // double it24 = 0;
 
   for(int i=1; i<argc; i++) {
-    if( strcmp(argv[i],"-file")==0 ) {
+    if( strcmp(argv[i],"-ifile")==0 ) {
       stringstream convert( argv[i+1] );
       if(  !( convert>>ifile ) ) { cerr<<" ---> Error ifile !"<<endl; exit(1); }
     }
@@ -62,6 +73,16 @@ int main(int argc, char** argv)
         analysis = 1;
         // cout << "ANALYSIS MODE \n";
                 }
+    }
+    if (strcmp(argv[i], "-flag") == 0) {
+      if (strcmp(argv[i+1], "sens") == 0) {
+        sensitivity_study = 1;
+        // cout << "ANALYSIS MODE \n";
+      }
+      if (strcmp(argv[i+1], "xfile") == 0) {
+        xthrow = 1;
+        // cout << "ANALYSIS MODE \n";
+      }
     }
     if( strcmp(argv[i],"-pbnb")==0 ) {
       stringstream convert( argv[i+1] );
@@ -246,318 +267,7 @@ int main(int argc, char** argv)
   // osc_test->Set_meas2fitdata();// set the real measurement as the "data", which will be compared with the "pred"
 
 
-//   if (option == 0) {
-//     cout << "Enter an option flag with -o N where N is a flag from 1->N\n";
-//     cout << "Creating a set of universes using xiangpan\n";
-//     map<int, TMatrixD>map_toydata_spectrum;
-//     map<int, double>map_prof_t24_val;
-//     int rows = -1;
-//
-//     TString xpath = "presave_3v_hypothesis_toydata_01_cv.root";
-//     TFile *inputfile_toydata_cv = new TFile(xpath, "read");
-//     TTree *tree_toydata = (TTree*)inputfile_toydata_cv->Get("tree_toydata");
-//
-//     // Declaration of leaf types
-//     Int_t           i_toydata;
-//     vector<double>  *vec_toydata_spectrum;
-//
-//     // List of branches
-//     TBranch        *b_i_toydata;   //!
-//     TBranch        *b_vec_toydata_spectrum;   //!
-//
-//     // Set object pointer
-//     vec_toydata_spectrum = 0;
-//
-//     // Set branch addresses and branch pointers
-//     tree_toydata->SetBranchAddress("i_toydata", &i_toydata, &b_i_toydata);
-//     tree_toydata->SetBranchAddress("vec_toydata_spectrum", &vec_toydata_spectrum, &b_vec_toydata_spectrum);
-//
-//
-//     int entries = tree_toydata->GetEntries();
-//     cout<<endl<<" ---> reading tree_toydata, entries "<<entries<<endl<<endl;
-//     tree_toydata->GetEntry(ifile);
-//     rows = vec_toydata_spectrum->size();
-//
-//     cout << "Creating universe " << ifile<< " \n";
-// //     const int xdims = 60;
-// //     const int ydims = 60;
-// //     TH1D* h1_dm2 = new TH1D("dm2", "dm2", ydims, -2,2);
-// //     TH1D *h1_sin2_2tuu = new TH1D("sin2_2tuu", "sin2_2tuu", xdims, -3, 0);
-// //     double obs_map[xdims+1][ydims+1];
-// //     double pars_3v_small[4] = {0, 0.1, 0.1, 0};
-// //     osc_test->Set_oscillation_pars(0, 0.1, 0.1, 0);
-// //     osc_test->Apply_oscillation();
-// //     osc_test->Set_apply_POT(); // meas, CV, COV: all ready
-// //     // osc_test->Set_toy_variations(10);
-// //     // cout << "DEBUG 3v" << endl;
-// //     // double chi2_3v = osc_test->FCN(pars_3v_small); //
-// //     for (int indexdm2 = 0; indexdm2 <= ydims; indexdm2++) {
-// //       for (int indextheta = 0; indextheta <= xdims; indextheta++) {
-// //     	double dm2_41_grid = h1_dm2->GetBinCenter(indexdm2);
-// //     	dm2_41_grid = pow(10.0, dm2_41_grid);
-// //     	double theta_grid = h1_sin2_2tuu->GetBinCenter(indextheta);
-// //     	theta_grid = pow(10.0, theta_grid);
-// //         double pars_4v_grid[4] = {dm2_41_grid, theta_grid, 0.0045, 0};
-// //         tree_toydata->GetEntry( ifile );
-// //         for(int idx=0; idx<rows; idx++) {
-// //           double content = vec_toydata_spectrum->at(idx);
-// //           osc_test->matrix_tosc_fitdata_newworld(0,idx) = content;
-// // }
-//         // cout << "Loading " << ifile << " from Xiangpan" << "/n";
-//     	// osc_test->Set_toy2fitdata(1);
-//     	// osc_test->Set_asimov2fitdata();// set the real measurement as the "data", which will be compared with the "pred"
-//         double chi2_3v = osc_test->FCN(pars_3v_small); //
-//         // tree_toydata->GetEntry( ifile );
-//         // for(int idx=0; idx<rows; idx++)
-//         // cout << "Loading " << ifile << " from Xiangpan" << "/n";
-//         // osc_test->Set_toy2fitdata(1);
-//     	// osc_test->Set_asimov2fitdata();// set the real measurement as the "data", which will be compared with the "pred"
-//     	double chi2_4v = osc_test->FCN( pars_4v_grid );
-//     	double ref = chi2_4v - chi2_3v;
-//         obs_map[indextheta][indexdm2] = ref;
-//       }
-//     }
-// //     TMatrixD matrix(xdims+1, ydims+1);
-// //     for (int j = 0; j <= ydims; j++)
-// //       for (int i = 0; i <= xdims; i++)
-// //         matrix(i,j) = obs_map[i][j];
-// //     // obs_tree.Branch("obs_map", &obs_map[xdims][ydims]);
-// //     // obs_tree.Fill();
-// //     TString fname = TString::Format("xiangpan-test-60x60/vanilla-numu_grid_60x60_xiangpan-toyuniverse_%i.root", ifile);
-// //     TFile *rootfile = new TFile(fname, "recreate");
-// //     matrix.Write("obs_map");
-// //     rootfile->Close();
-//   }
-//
-//   if (option == 1) {
-//     cout << "Option " << option << "\n";
-//
-//
-//   }
 
-  //osc_test->Set_asimov2fitdata();// set the "asimov toy sample" as the "data", which will be compared with the "pred"
-
-  /// one example: calculate a chi2
-  /// one example: calcualte a chi2
-
-
-//   if (0) { // Heat map generation Jesse Mendez Current Study
-//     int dimensions = 60;
-//     TH1D* h1_dm2 = new TH1D("dm2", "dm2", 60, -2,2);
-//     TH1D* h1_sin2_2tuu = new TH1D("sin2_2tuu", "sin2_2tuu", dimensions, -3,0);
-//
-//     cout << "Heat Map Generation\n";
-//     double dm2_41_grid = h1_dm2->GetBinCenter(idm2);
-//     dm2_41_grid = pow(10.0, dm2_41_grid);
-//     double theta_grid = h1_sin2_2tuu->GetBinCenter(it14);
-//     theta_grid = pow(10.0, theta_grid);
-//     double pars_4v_grid[4] ={dm2_41_grid, theta_grid, 0.0045, 0};
-//     double pars_3v_small[4] = {0, 0.1, 0.1, 0};
-//     const int NUM_TOYS = 10000;
-//
-//     double step_size = 0.0005; // profiling step size
-//     int steps = 2000; // profiling steps
-//
-//     // Profiling data structures
-//     double profiled_sin2_theta24 = 0;
-//     double test_sin2_theta24 = 0;
-//     double chi2_min = pow(10,6);	// set very large to start
-//
-//     // Data Structures for Chi^2 arrays
-//     // 4v stuctures
-//     double array_4vhyp_deltachisquare_grid_toy[NUM_TOYS];
-//     double array_4vhyp_4nu_chisquare_grid[NUM_TOYS];
-//     double array_4vhyp_4nu_chisquare_3nu[NUM_TOYS];
-//
-//     double array_3vhyp_4nu_chisquare_grid[NUM_TOYS];
-//     double array_3vhyp_4nu_chisquare_3nu[NUM_TOYS];
-//     double array_3vhyp_deltachisquare_grid_toy[NUM_TOYS];
-//
-//     // Reference deltachisquare for CLs
-//     // double ref = 0;
-//
-//     // cout << "Profile \n";
-//     // // Grid scan
-//     // for(int i = 0; i < steps; i++) {
-//     //   test_sin2_theta24 = i * step_size;
-//     //   if( theta_grid > test_sin2_theta24 ) {
-//     // 	continue; 		// Need to because I am inputing mixing ange directly
-//     //   }
-//     //   double pars_4nu[4] = {dm2_41_grid, theta_grid, test_sin2_theta24, 0};// dm2, t14, t24, t34
-//     //   double chi2 = osc_test->FCN( pars_4nu );
-//     //   if(chi2 < chi2_min) {
-//     // 	chi2_min = chi2;
-//     // 	profiled_sin2_theta24 = test_sin2_theta24;
-//     //   }
-//     // }
-//     // pars_4v_grid[2] = profiled_sin2_theta24;
-//     cout << "4nu \n";
-//     // Generating psuedo experiments
-//     osc_test->Set_oscillation_pars(pars_4v_grid[0], pars_4v_grid[1], pars_4v_grid[2], pars_4v_grid[3]);
-//     osc_test->Apply_oscillation();
-//     osc_test->Set_apply_POT();// meas, CV, COV: all ready
-//     // osc_test->Set_meas2fitdata();// set the real measurement as the "data", which will be compared with the "pred"
-//     osc_test->Set_asimov2fitdata();// set the "asimov toy sample" as the "data", which will be compared with the "pred"
-//     osc_test->Set_toy_variations( NUM_TOYS );// produce NUM_TOYS pseudo experiments
-//     for (int i = 0; i < NUM_TOYS; i++) {
-//       osc_test->Set_toy2fitdata(i + 1);// use the 1st pseudo experiment as the "data", which will be compared with the "pred"
-//       array_4vhyp_4nu_chisquare_grid[i] = osc_test->FCN(pars_4v_grid );
-//       array_4vhyp_4nu_chisquare_3nu[i] = osc_test->FCN(pars_3v_small );
-//       array_4vhyp_deltachisquare_grid_toy[i] = array_4vhyp_4nu_chisquare_grid[i] - array_4vhyp_4nu_chisquare_3nu[i];
-//     }
-//     cout << "3nu \n";
-//     // Generating psuedo experiments
-//     osc_test->Set_oscillation_pars(pars_3v_small[0], pars_3v_small[1], pars_3v_small[2], pars_3v_small[3]);
-//     osc_test->Apply_oscillation();
-//     osc_test->Set_apply_POT();// meas, CV, COV: all ready
-//     //osc_test->Set_meas2fitdata();// set the real measurement as the "data", which will be compared with the "pred"
-//     osc_test->Set_asimov2fitdata();// set the "asimov toy sample" as the "data", which will be compared with the "pred"
-//     osc_test->Set_toy_variations( NUM_TOYS );// produce NUM_TOYS pseudo experiments
-//     for (int i = 0; i < NUM_TOYS; i++) {
-//       osc_test->Set_toy2fitdata(i + 1);// use the 1st pseudo experiment as the "data", which will be compared with the "pred"
-//       array_3vhyp_4nu_chisquare_grid[i] = osc_test->FCN(pars_4v_grid );
-//       array_3vhyp_4nu_chisquare_3nu[i] = osc_test->FCN(pars_3v_small );
-//       array_3vhyp_deltachisquare_grid_toy[i] = array_3vhyp_4nu_chisquare_grid[i] - array_3vhyp_4nu_chisquare_3nu[i];
-//       if (isnan(array_3vhyp_4nu_chisquare_grid[i]) || isnan(array_3vhyp_4nu_chisquare_3nu[i] ) || isnan(array_3vhyp_deltachisquare_grid_toy[i])) {
-// 	    cout <<"NaaaaaaNNNNNNNNN\n";
-//       }
-//     }
-//     // cout << "Delta Chisquare Obs\n";
-//     // osc_test->Set_oscillation_pars(0, 0.1, 0.1, 0);
-//     // osc_test->Apply_oscillation();
-//     // osc_test->Set_apply_POT();// meas, CV, COV: all ready
-//     // osc_test->Set_meas2fitdata();// set the real measurement as the "data", which will be compared with the "pred"
-//     // // osc_test->Set_asimov2fitdata();// set the real measurement as the "data", which will be compared with the "pred"
-//     // double chi2_testA = osc_test->FCN( pars_3v_small );
-//     // osc_test->Set_meas2fitdata();// set the real measurement as the "data", which will be compared with the "pred"
-//     // // osc_test->Set_asimov2fitdata();// set the real measurement as the "data", which will be compared with the "pred"
-//     // double chi2_testC = osc_test->FCN( pars_4v_grid );
-//     // ref = chi2_testC - chi2_testA;
-//     // Save Everything I need to files
-//     TString fname = TString::Format("./202604-vanilla-numu-disappear-60x60-grid-sinsquare-twothetauu_%i-deltamsquare41_%i.root.probdist", it14, idm2);
-//     TFile *rootfile = new TFile(fname, "recreate");
-//     // Create objects for cpp variables
-//     // TParameter<double> deltachi2_ref("deltachi2_ref", ref);
-//     TParameter<int> psuedos("pdf_size", NUM_TOYS);
-//     TParameter<double> theta("theta_grid", it14);
-//     TParameter<double> dm2("dm2_grid", idm2);
-//     // TParameter<double> cls("CLs", val_CLs);
-//     // Create TArray objects for all cpp arrays
-//     // 4v stuctures
-//     TVectorD arr4d(NUM_TOYS, array_4vhyp_deltachisquare_grid_toy);
-//     TVectorD arr3d(NUM_TOYS, array_3vhyp_deltachisquare_grid_toy);
-//     // deltachi2_ref.Write();
-//     psuedos.Write();
-//     // cls.Write();
-//     theta.Write();
-//     dm2.Write();
-//     arr4d.Write("4v_deltachi2");
-//     arr3d.Write("3v_deltachi2");
-//     rootfile->Write();
-//     rootfile->Close();
-//     delete rootfile;
-//   }// if
-//
-//   ///////////////////////////////////////////////////////////
-//   /// Brazil Band Code                               ///
-//   ///////////////////////////////////////////////////////////
-//
-//   if (0) {
-//     // Read in the parameters
-//     int xdims = 60;
-//     int ydims = 80;
-//     TH1D* h1_dm2 = new TH1D("dm2", "dm2", ydims, -2,2);
-//     TH1D* h1_sin2_2tuu = new TH1D("sin2_2tuu", "sin2_2tuu", xdims, -2,0);
-//
-//     cout << "Deltachi2 Vector\n";
-//     double dm2_41_grid = h1_dm2->GetBinCenter(idm2);
-//     dm2_41_grid = pow(10.0, dm2_41_grid);
-//     double theta_grid = h1_sin2_2tuu->GetBinCenter(it14);
-//     theta_grid = pow(10.0, theta_grid);
-//     double pars_4v_grid[4] ={dm2_41_grid, theta_grid, 0.0045, 0};
-//     double pars_3v_small[4] = {0, 0.1, 0.1, 0};
-//     const int NUM_TOYS = 5;
-//     double deltachi2_obs[NUM_TOYS];
-//     // Generate 3v psuedo
-//     osc_test->Set_oscillation_pars(pars_3v_small[0], pars_3v_small[1], pars_3v_small[2], pars_3v_small[3]);
-//     osc_test->Apply_oscillation();
-//     osc_test->Set_apply_POT();// meas, CV, COV: all ready
-//     osc_test->Set_asimov2fitdata(); // set the "asimov toy sample" as the
-//     osc_test->Set_toy_variations( NUM_TOYS ); // produce NUM_TOYS pseudo experiments
-//     // Calculate the deltachisquare and save
-//     for (int i = 0; i < NUM_TOYS; i++) {
-//       osc_test->Set_toy2fitdata(i + 1);
-//       double chi2_3v = osc_test->FCN(pars_3v_small);
-//       double chi2_4v = osc_test->FCN( pars_4v_grid );
-//       deltachi2_obs[i] = chi2_4v - chi2_3v;
-//     }
-//     // Write out everything to file
-//     TString fname = TString::Format("./vanilla-numu_grid_60x80_sinsquare_theta_uu_%d_dm2_%d.root.deltachi2", it14, idm2);
-//     TFile *rootfile = new TFile(fname, "recreate");
-//     // Create objects for cpp variables
-//     TParameter<int> psuedos("num_toys", NUM_TOYS);
-//     TParameter<double> theta("theta_grid", it14);
-//     TParameter<double> dm2("dm2_grid", idm2);
-//     TVectorD arrdeltachi2(NUM_TOYS, deltachi2_obs);
-//     psuedos.Write();
-//     theta.Write();
-//     dm2.Write();
-//     arrdeltachi2.Write("deltachi2_obs");
-//     // h1->Write();
-//     // h2->Write();
-//     rootfile->Write();
-//     rootfile->Close();
-//     delete rootfile;
-//
-//   } // End Brazil band code
-//
-  // if (0) { // Creating a series of reference deltachi2
-
-
-    // cout << "Creating tree of deltachi2_obs \n";
-  //   TFile outfile("deltachi2_universe.root", "RECREATE");
-  //   TTree obs_tree("obs_tree", "Tree of deltachi2 obs values");
-  //     const int xdims = 60;
-  //     const int ydims = 80;
-  //     TH1D* h1_dm2 = new TH1D("dm2", "dm2", ydims, -2,2);
-  //     TH1D *h1_sin2_2tuu = new TH1D("sin2_2tuu", "sin2_2tuu", xdims, -3, 0);
-  //
-  //     double pars_3v_small[4] = {0, 0.1, 0.1, 0};
-  //     const int NUM_TOYS = 1000;
-  //     double deltachi2_obs[NUM_TOYS];
-  //     // Generate 3v psuedo
-  //     osc_test->Set_oscillation_pars(pars_3v_small[0], pars_3v_small[1],
-  //     pars_3v_small[2], pars_3v_small[3]); osc_test->Apply_oscillation();
-  //     osc_test->Set_apply_POT();// meas, CV, COV: all ready
-  //     osc_test->Set_asimov2fitdata(); // set the "asimov toy sample" as the
-  //     osc_test->Set_toy_variations(NUM_TOYS); // produce NUM_TOYS pseudo
-  //
-  //     for (int universe = 0; universe < NUM_TOYS; universe++) {
-  //       cout << "Starting toy " << universe << "\n";
-  //       double obs_map[xdims][ydims];
-  //       for (int indexdm2 = 0; indexdm2 < ydims; indexdm2++) {
-  // 	    for (int indextheta = 0; indextheta < xdims; indextheta++) {
-  // 	      double dm2_41_grid = h1_dm2->GetBinCenter(indexdm2);
-  // 	      dm2_41_grid = pow(10.0, dm2_41_grid);
-  // 	      double theta_grid = h1_sin2_2tuu->GetBinCenter(indextheta);
-  // 	      theta_grid = pow(10.0, theta_grid);
-  //           double pars_4v_grid[4] = {dm2_41_grid, theta_grid, 0.0045, 0};
-  //
-  //           osc_test->Set_toy2fitdata(universe + 1);
-  // 	      double chi2_3v = osc_test->FCN(pars_3v_small);
-  // 	      double chi2_4v = osc_test->FCN( pars_4v_grid );
-  //           obs_map[indextheta][indexdm2] = chi2_4v - chi2_3v;
-  //         }
-  //       }
-  //       obs_tree.Branch("obs_map", &obs_map[xdims][ydims]);
-  //       obs_tree.Fill();
-  //       cout << "Finishing toy " << universe << "\n";
-  //     }
-  //     obs_tree.Write();
-  //     outfile.Close();
-  //   }    //
-  //   ///////////////////////////////////////////////////////////
-  //   ///////////////////////////////////////////////////////////
   if (fcls == 1) { // Creating the pdf distribution for each point individually
     // Create the data structures
     vector<double> vec_chi2_4v_with_3vToy;
@@ -567,8 +277,7 @@ int main(int argc, char** argv)
     vector<double> vec_chi2_3v_with_4vToy;
     vector<double> vec_dchi2_with_4vToy;
 
-    const int NUM_dm2 = 60;
-    const int NUM_ttt = 60;
+
     const int NUM_TOYS = 10000;
 
     TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, -2, 1);
@@ -636,7 +345,44 @@ int main(int argc, char** argv)
 	  output_file->Close();
 
 
-  }///
+  } ///
+  // int obsdebug = 1;
+  ///
+  // if (obsdebug) {
+  //   cout << "XTHROW DEBUG\n";
+  //   double pars_3v_small[4] = {0, 0.10, 0.11, 0};
+  //   osc_test->Set_oscillation_pars(0, 0.1, 0.11, 0);
+  //   osc_test->Apply_oscillation();
+  //   osc_test->Set_apply_POT(); // meas, CV, COV: all ready
+  //   osc_test->Set_toy_variations(1);
+  //   osc_test->Set_toy2fitdata(1);
+  //   for (int universe = 1; universe <= 200; universe++) {
+  //     TString fname = TString::Format("output/60x60-deltachi2_obs-xtoyuniverse-%i.root", universe);
+  //     // Load 3v toy as fit data
+  //     TString xpath = "input/presave_3v_hypothesis_toydata_01_cv.root";
+  //     TFile *inputfile_toydata_cv = new TFile(xpath, "read");
+  //     TTree *tree_toydata = (TTree*)inputfile_toydata_cv->Get("tree_toydata");
+  //     // Declaration of leaf types
+  //     Int_t i_toydata;
+  //     vector<double> *vec_toydata_spectrum = nullptr;
+  //     // List of branches
+  //     TBranch        *b_i_toydata;   //!
+  //     TBranch        *b_vec_toydata_spectrum;   //!
+  //     // Set branch addresses and branch pointers
+  //     tree_toydata->SetBranchAddress("i_toydata", &i_toydata, &b_i_toydata);
+  //     tree_toydata->SetBranchAddress("vec_toydata_spectrum", &vec_toydata_spectrum, &b_vec_toydata_spectrum);
+  //     tree_toydata->GetEntry(ifile+1);
+  //     cout << "Loading " << i_toydata << " from Xiangpan (first pseudo=3)"  << "\n";
+  //     for (int i = 0; i <= 181; i++) {
+  //       double content = vec_toydata_spectrum->at(i);
+  //       osc_test->matrix_tosc_fitdata_newworld(0, i) = content;
+  //     }
+  //     double chi2_3v = osc_test->FCN(pars_3v_small); //
+  //     cout << universe << " " chi2_3v << endl;
+  //   }
+  // }
+
+
   if (obs_throw) { // Creating a series of reference deltachi2 parallel
     // Create 3v measurement
     double pars_3v_small[4] = {0, 0.10, 0.11, 0};
@@ -645,19 +391,41 @@ int main(int argc, char** argv)
     osc_test->Set_apply_POT(); // meas, CV, COV: all ready
     osc_test->Set_toy_variations(1);
     osc_test->Set_toy2fitdata(1);
+    TString fname = TString::Format("output/60x60-deltachi2_obs-toyuniverse-%i.root", ifile);
+    if (xthrow) {
+      cout << "XTHROW\n";
+      fname = TString::Format("output/60x60-deltachi2_obs-xtoyuniverse-%i.root", ifile);
+      // Load 3v toy as fit data
+      TString xpath = "input/presave_3v_hypothesis_toydata_01_cv.root";
+      TFile *inputfile_toydata_cv = new TFile(xpath, "read");
+      TTree *tree_toydata = (TTree*)inputfile_toydata_cv->Get("tree_toydata");
+      // Declaration of leaf types
+      Int_t i_toydata;
+      vector<double> *vec_toydata_spectrum = nullptr;
+      // List of branches
+      TBranch        *b_i_toydata;   //!
+      TBranch        *b_vec_toydata_spectrum;   //!
+      // Set branch addresses and branch pointers
+      tree_toydata->SetBranchAddress("i_toydata", &i_toydata, &b_i_toydata);
+      tree_toydata->SetBranchAddress("vec_toydata_spectrum", &vec_toydata_spectrum, &b_vec_toydata_spectrum);
+      tree_toydata->GetEntry(ifile+1);
+      cout << "Loading " << i_toydata << " from Xiangpan (first pseudo=3)"  << "\n";
+      for (int i = 0; i <= 181; i++) {
+        double content = vec_toydata_spectrum->at(i);
+        osc_test->matrix_tosc_fitdata_newworld(0, i) = content;
+      }
+      cout << "Finished loading fit data " << endl;
+    }
+
     // Caclulate chi2_3v
     double chi2_3v = osc_test->FCN(pars_3v_small); //
 
     // Create the data structures needed
-    // TTree obs_tree("obs_tree", "Tree of deltachi2 obs values");
-    const int NUM_dm2 = 60;
-    const int NUM_ttt = 60;
-    // double obs_map[NUM_ttt][NUM_dm2];
     TMatrixD obs_map(NUM_ttt,NUM_dm2);
     // Convert the grid into actual values
 
-    TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, -2, 1);
-    TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, -2, 0);
+    // TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, -2, 1);
+    // TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, -2, 0);
     cout << "Creating universe " << ifile << " \n";
     for (int indexdm2 = 0; indexdm2 < NUM_dm2; indexdm2++) {
       double val_obj_dm2 = h1d_dm2->GetBinCenter(indexdm2);
@@ -674,93 +442,28 @@ int main(int argc, char** argv)
         obs_map(indexdm2,indextheta) = deltachi2_obs;
       }
     }
-    TString fname = TString::Format("60x60-deltachi2_obs-toyuniverse-%i.root", ifile);
+
     TFile *rootfile = new TFile(fname, "recreate");
     obs_map.Write("obs_map");
     rootfile->Close();
   }
 
-  if (xthrow) {
-    // Create 3v measurement
-    double pars_3v_small[4] = {0, 0.10, 0.11, 0};
-    osc_test->Set_oscillation_pars(0, 0.1, 0.11, 0);
-    osc_test->Apply_oscillation();
-    osc_test->Set_apply_POT(); // meas, CV, COV: all ready
-    osc_test->Set_toy_variations(1);
-    osc_test->Set_toy2fitdata(1);
-      // Load 3v toy as fit data
-  TString xpath = "presave_3v_hypothesis_toydata_01_cv.root";
-  TFile *inputfile_toydata_cv = new TFile(xpath, "read");
-  TTree *tree_toydata = (TTree*)inputfile_toydata_cv->Get("tree_toydata");
-  // Declaration of leaf types
-  Int_t i_toydata;
-  vector<double> *vec_toydata_spectrum = nullptr;
-  // vector<double>  *vec_toydata_spectrum;
-  // List of branches
-  TBranch        *b_i_toydata;   //!
-  TBranch        *b_vec_toydata_spectrum;   //!
-  // Set branch addresses and branch pointers
-  tree_toydata->SetBranchAddress("i_toydata", &i_toydata, &b_i_toydata);
-  tree_toydata->SetBranchAddress("vec_toydata_spectrum", &vec_toydata_spectrum, &b_vec_toydata_spectrum);
-  // int entries = tree_toydata->GetEntries();
-  // cout << endl<< " ---> reading tree_toydata, entries " << entries << endl << endl;c
-  cout << "Loading " << ifile << " from Xiangpan"  << "\n";
-  tree_toydata->GetEntry(ifile);
-
-    // int rows = vec_toydata_spectrum->size();
-    for (int i = 0; i <= 181; i++) {
-      double content = vec_toydata_spectrum->at(i);
-      osc_test->matrix_tosc_fitdata_newworld(0, i) = content;
-      // cout << osc_test->matrix_tosc_fitdata_newworld(0, i) << " " << content <<"\n";
+  if (analysis == 1) {
+    if (ifile < 0) {
+      cerr << "Specify number of universe input files with -file\n";
+      exit(1);
     }
-    cout << "Finished loading fit data " << endl;
-    // Caclulate chi2_3v
-    double chi2_3v = osc_test->FCN(pars_3v_small); //
-
-    // Create the data structures needed
-    // TTree obs_tree("obs_tree", "Tree of deltachi2 obs values");
-    const int NUM_dm2 = 60;
-    const int NUM_ttt = 60;
-    // double obs_map[NUM_ttt][NUM_dm2];
-    TMatrixD obs_map(NUM_ttt,NUM_dm2);
-    // Convert the grid into actual values
-
-    TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, -2, 1);
-    TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, -2, 0);
-    cout << "Creating universe " << ifile << " \n";
-    for (int indexdm2 = 0; indexdm2 < NUM_dm2; indexdm2++) {
-      double val_obj_dm2 = h1d_dm2->GetBinCenter(indexdm2);
-      val_obj_dm2 = pow(10, val_obj_dm2);
-      for (int indextheta = 0; indextheta < NUM_ttt; indextheta++) {
-        // Convert the index into real values
-        double val_obj_ttt = h1d_ttt->GetBinCenter(indextheta);
-        val_obj_ttt = pow(10, val_obj_ttt);
-        double grid_4v[4] = {val_obj_dm2, val_obj_ttt, 0, 0};
-        // Caluclate chi2_4v
-        double chi2_4v = osc_test->FCN(grid_4v);
-        // Calculate deltachi2
-        double deltachi2_obs = chi2_4v - chi2_3v;
-        obs_map(indexdm2,indextheta) = deltachi2_obs;
-      }
-    }
-    TString fname = TString::Format("60x60-deltachi2_obs-xtoyuniverse-%i.root", ifile);
-    TFile *rootfile = new TFile(fname, "recreate");
-    obs_map.Write("obs_map");
-    rootfile->Close();
-
-  }// xthrow
-
-  if (analysis) {
-    const int NUM_dm2 = 60;
-    const int NUM_ttt = 60;
-    int num_universe = 200;
+    int num_universe = ifile;
     int probdist_size = 10000;
 
     std::vector<TMatrixD> universe_mat_obs;
     std::vector<TMatrixD> confidence_map;
     for (int i = 1; i <= num_universe; i++) {
       // TString universestring = TString::Format("xj-recreate_confidence-map-universe-%i.root", i);
-      TString universestring = TString::Format("60x60-deltachi2_obs-xtoyuniverse-%i.root", i);
+      TString universestring = TString::Format("input/60x60-deltachi2_obs-toyuniverse-%i.root", i);
+      if (xthrow) {
+        universestring = TString::Format("input/60x60-deltachi2_obs-xtoyuniverse-%i.root", i);
+      }
       TFile deltafile(universestring, "READ");
       TMatrixD* matrix = nullptr;
       // Load universe reference for map
@@ -778,7 +481,7 @@ int main(int argc, char** argv)
       for (int xindex = 0; xindex < 60; xindex++) {
         for (int yindex = 0; yindex < 60; yindex++) {
           // Load deltachi2_3v, deltachi2_4v
-          roostr = TString::Format("60x60_dm2_ttt_%03d_%03d.root", yindex + 1, xindex + 1);
+          roostr = TString::Format("input/60x60_dm2_ttt_%03d_%03d.root", yindex + 1, xindex + 1);
           TFile *rootfile = new TFile(roostr, "read");
           rootfile->GetObject("tree", tree);
           tree->SetBranchStatus("*", 0);
@@ -815,7 +518,8 @@ int main(int argc, char** argv)
         } // yindex
         cout << "Finished x index: " << xindex+1 << "\n";
       } // xindex
-      TFile outfile("confidence_maps_grid.root", "RECREATE");
+      TString outname = "output/confidence_maps_grid.root";
+      TFile outfile(outname, "RECREATE");
       int i = 1;
       for (const auto& m : confidence_map) {
         outfile.WriteObject(&m, Form("universe_%d", i++));
@@ -824,9 +528,60 @@ int main(int argc, char** argv)
       // for (const auto& m : universe_mat_obs) {
       //   outfile.WriteObject(&m, Form("uobs_%d", i++));
       // }
+      outfile.Close(); //
+      cout << "Wrote " << outname << "\n";
+  }
 
-      outfile.Close();//
-      cout << "HIIIIIIIII\n";
+  if (sensitivity_study == 0 && idm2 != 0) {
+
+    // #include "MendezStyle.h"
+    // void test() {
+    //   int dm2_val = 40;
+    //   vector<double> xvals;
+    //   cout << "Sensitivity across constant dm2\n";
+    //   double cls_target = 0.95;
+    //   TString confidencein = "input/confidence_maps_grid.root";
+    //   TFile confidence_maps(confidencein, "READ");
+    //   int num_universe = confidence_maps.GetNkeys();
+    //   TMatrixD* matrix = nullptr;
+    //   confidence_maps.GetObject("universe_1", matrix);
+    //   int ncols = (*matrix).GetNcols();
+    //   int nrows = (*matrix).GetNrows();
+    //   TH1D hsens("h1d_ttt", "h1d_ttt", 60, -2, 0);
+    //   for (int i=1; i<=num_universe; i++) {
+    //     TString matname = TString::Format("universe_%i", i);
+    //     // Load universe reference for map
+    //     confidence_maps.GetObject(matname, matrix);
+    //     // Create a histogram from the matrix
+    //     TH2D htemp("htemp", "Parameter Map;X;Y", ncols, -2, 0, nrows, -2, 1);
+    //     for (int xindex=0; xindex<ncols; xindex++) {
+    //       for (int yindex=0; yindex<nrows; yindex++) {
+    //         htemp.SetBinContent(xindex+1,yindex+1,(*matrix)(yindex,xindex));
+    //       }
+    //     }
+    //     std::vector<TGraph*> contour = mendezstyle::GetContourGraphs(&htemp,
+    //     cls_target); int graph_index = 0; int index_biggest = 0; int
+    //     largest_size = 0; for (const auto& graph : contour ) {
+    //       if (graph->GetN()  > largest_size) {
+    //         index_biggest = graph_index;
+    //         largest_size = graph->GetN();
+    //       }
+    //       graph_index++;
+    //     }
+    //     // Pull Out graph and invert
+    //     TGraph temp(contour[index_biggest]->GetN(),
+    //     contour[index_biggest]->GetY(), contour[index_biggest]->GetX());
+    //     double x = temp.Eval(dm2_val);
+    //     hsens.Fill(x);
+    //     xvals.push_back(x);
+    //   }
+    //   std::sort(xvals.begin(),xvals.end());//Sorting the vector
+    //   double p[5] = {0.023, 0.159, 0.5, .841, .977};
+    //   double qv[5];
+    //   for (int i=0; i<5; i++) {
+    //     qv[i] = p[i]*xvals.size();
+    //     cout << qv[i] << "\n";
+    //   }
   }
 //   if (0) { // Debug Output
 //
@@ -892,3 +647,135 @@ int main(int argc, char** argv)
 
   return 0;
 }
+
+
+void get_CL_curve(TH2 *h2_CL_input, TGraph *gh_CL_curve, int flag_index)
+{
+  gROOT->SetBatch( 1 );
+
+  TString roostr = "";
+
+  roostr = TString::Format("canv_list_95_%04d", flag_index);
+  TCanvas *canv_list_95 = new TCanvas(roostr, roostr, 800, 600);
+  cout<<endl<<" ---> "<<roostr<<endl;
+
+  double user_contours_95[1] = {0.95};
+  //double user_contours_95[1] = {0.683};
+  h2_CL_input->SetContour(1, user_contours_95);
+
+  // Draw contours as filled regions, and Save points
+  h2_CL_input->Draw("CONT Z LIST");
+  canv_list_95->Update();
+
+  // Get Contours
+  TObjArray *conts = (TObjArray*)gROOT->GetListOfSpecials()->FindObject("contours");
+
+  if (!conts){
+    printf("*** No Contours Were Extracted!\n");
+  }
+
+  TList* contLevel = nullptr;
+  TGraph* curv     = nullptr;
+
+  Int_t TotalConts = conts->GetSize();
+
+  printf("TotalConts = %d\n", TotalConts);
+
+  for(int i = 0; i < TotalConts; i++){
+    contLevel = (TList*)conts->At(i);
+    printf("Contour %d has %d Graphs\n", i, contLevel->GetSize());
+  }
+
+  ///////
+
+  for(int i = 0; i < TotalConts; i++) {
+    contLevel = (TList*)conts->At(i);
+
+    if(i!=0) continue;// only use the one having the most points
+
+    for(int j = 0; j < contLevel->GetSize(); j++) {
+      curv = (TGraph*)contLevel->At(j);
+      int Npoints = curv->GetN();
+      printf(" ---> graph %2d, size %3d\n", j+1, Npoints);
+
+      if(i==0) {
+	for(int ip=0; ip<Npoints; ip++) {
+	  double dm2_val, ttt_val;
+	  curv->GetPoint(ip, ttt_val, dm2_val);
+
+	  //gh_CL_curve->SetPoint( gh_CL_curve->GetN(), pow(10, ttt_val), pow(10, dm2_val) );
+
+	  gh_CL_curve->SetPoint( gh_CL_curve->GetN(), ttt_val, dm2_val );
+
+	}// for(int ip=0; ip<Npoints; ip++)
+      }
+
+    }// for(int j = 0; j < contLevel->GetSize(); j++)
+  }// for(int i = 0; i < TotalConts; i++)
+
+  cout<<endl;
+
+  gROOT->SetBatch( 0 );
+}
+
+
+
+
+
+  /// Obtain the TGraph(s) corresponding to a particular contour level for a TH2
+  ///
+  /// \param h2     The TH2 to examine
+  /// \param level  Fractional level in [0, 1]
+  /// \return       Vector of TGraphs that represent the whole contour (multiple if contour has disjoint pieces)
+  std::vector<TGraph*> GetContourGraphs(TH2* h2, double level)
+  {
+    std::vector<TGraph*> ret;
+
+    std::unique_ptr<TH2> surf(dynamic_cast<TH2*>(h2->Clone("tmp_h2_for_drawing_graphs")));
+
+    TVirtualPad* bak = gPad;
+
+    const bool wasbatch = gROOT->IsBatch();
+    gROOT->SetBatch(); // User doesn't want to see our temporary canvas
+    TCanvas tmp;
+
+    gStyle->SetOptStat(0);
+
+    surf->SetContour(1, &level);
+    surf->Draw("cont list");
+
+    tmp.Update();
+    tmp.Paint();
+
+    gROOT->SetBatch(wasbatch);
+    gPad = bak;
+
+    // The graphs we need (contained inside TLists, contained inside
+    // TObjArrays) are in the list of specials. But we need to be careful about
+    // types, because other stuff can get in here too (TDatabasePDG for
+    // example).
+    TCollection* specs = gROOT->GetListOfSpecials();
+
+    TIter nextSpec(specs);
+    while(TObject* spec = nextSpec()){
+      if(!spec->InheritsFrom(TObjArray::Class())) continue;
+      auto conts = dynamic_cast<TObjArray*>(spec);
+
+      if(conts->IsEmpty()) continue;
+
+      if(!conts->At(0)->InheritsFrom(TList::Class())) continue;
+      auto cont = dynamic_cast<TList*>(conts->At(0));
+
+      TIter nextObj(cont);
+      // Contour could be split into multiple pieces
+      std::size_t piece = 0;
+      while(TObject* obj = nextObj()){
+        if(!obj->InheritsFrom(TGraph::Class())) continue;
+
+        ret.push_back(dynamic_cast<TGraph*>(obj->Clone(Form("%s_contour%f_piece%zu", obj->GetName(), level, piece))));
+        piece++;
+      } // end for obj
+    } // end for spec
+
+    return ret;
+  }
