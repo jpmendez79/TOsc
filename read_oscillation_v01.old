@@ -382,83 +382,8 @@ int main(int argc, char** argv)
   //   }
   // }
 
-  if (obs_throw) {
-    // Create the needed structures
-    vector<double> vec_chi2_4v_with_data;
-	vector<double> vec_chi2_3v_with_data;
-    vector<double> vec_dchi2_with_data;
-    TString roostr = TString::Format("output/60x60-deltachi2_obs-test-%i.root", ifile);
-	TFile *output_file = new TFile(roostr, "recreate");
-	TTree *tree = new TTree("tree", "tree");
-	tree->Branch("vec_chi2_4v_with_data",    &vec_chi2_4v_with_data);
-	tree->Branch("vec_chi2_3v_with_data",    &vec_chi2_3v_with_data);
-	tree->Branch("vec_dchi2_with_data",      &vec_dchi2_with_data);
-    // Generate the 4v
-    TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, -2, 1);
-    TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, -3, 0);
 
-    // TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, -1, 2);
-    // TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, -2, 0);
-
-    int ittt = 30;
-    idm2 = 41;
-
-    double val_obj_dm2 = h1d_dm2->GetBinCenter(idm2);
-    val_obj_dm2 = pow(10, val_obj_dm2);
-    double val_obj_ttt = h1d_ttt->GetBinCenter(ittt);
-    val_obj_ttt = pow(10, val_obj_ttt);
-    double grid_4v[4] = {val_obj_dm2, val_obj_ttt, 0, 0};
-//
-    // Create the 3v measurement
-    double pars_3v_small[4] = {0, 0.10, 0.11, 0};
-    // osc_test->Set_oscillation_pars(0, 0.1, 0.11, 0);
-    // osc_test->Apply_oscillation();
-    // osc_test->Set_apply_POT(); // meas, CV, COV: all ready
-    // osc_test->Set_toy_variations(ifile);
-    // osc_test->Set_toy2fitdata(1);
-    // Load 3v toy as fit data
-    TString xpath = "input/presave_3v_hypothesis_toydata_01_cv.root";
-    TFile *inputfile_toydata_cv = new TFile(xpath, "read");
-    TTree *tree_toydata = (TTree*)inputfile_toydata_cv->Get("tree_toydata");
-    // Declaration of leaf types
-    Int_t i_toydata;
-    vector<double> *vec_toydata_spectrum = nullptr;
-    // List of branches
-    TBranch        *b_i_toydata;   //!
-    TBranch        *b_vec_toydata_spectrum;   //!
-    // Set branch addresses and branch pointers
-    tree_toydata->SetBranchAddress("i_toydata", &i_toydata, &b_i_toydata);
-    tree_toydata->SetBranchAddress("vec_toydata_spectrum", &vec_toydata_spectrum, &b_vec_toydata_spectrum);
-    cout << "Finished loading 3v fit data " << endl;
-    // osc_test->Set_toy2fitdata(1);
-
-
-    for (int j = 0; j < ifile; j++) {
-      // Load the pseduo needed
-      tree_toydata->GetEntry(j);
-      cout << "Loading " << i_toydata << " from Xiangpan (first pseudo=3)"  << "\n";
-      for (int i = 0; i <= 181; i++) {
-        double content = vec_toydata_spectrum->at(i);
-        osc_test->matrix_tosc_fitdata_newworld(0, i) = content;
-      }
-      // Perform the comparison
-      double chi2_3v = osc_test->FCN(pars_3v_small);
-      double chi2_4v = osc_test->FCN(grid_4v);
-      double deltachi2 = chi2_4v - chi2_3v;
-      vec_chi2_4v_with_data.push_back(chi2_3v);
-      vec_chi2_3v_with_data.push_back(chi2_4v);
-      vec_dchi2_with_data.push_back(deltachi2);
-    }
-
-	tree->Fill();
-	output_file->cd();
-	tree->Write();
-	output_file->Close();
-
-  }
-
-
-  if (0) { // Creating a series of reference deltachi2 parallel
+  if (obs_throw) { // Creating a series of reference deltachi2 parallel
     // Create 3v measurement
     double pars_3v_small[4] = {0, 0.10, 0.11, 0};
     osc_test->Set_oscillation_pars(0, 0.1, 0.11, 0);
@@ -607,7 +532,6 @@ int main(int argc, char** argv)
       cout << "Wrote " << outname << "\n";
   }
 
-
   if (sensitivity_study == 0 && idm2 != 0) {
 
     // #include "MendezStyle.h"
@@ -658,8 +582,7 @@ int main(int argc, char** argv)
     //     qv[i] = p[i]*xvals.size();
     //     cout << qv[i] << "\n";
     //   }
-
-  // }
+  }
 //   if (0) { // Debug Output
 //
 //     const int xdims = 61;
@@ -723,137 +646,136 @@ int main(int argc, char** argv)
   }
 
   return 0;
-  }
 }
 
 
-// void get_CL_curve(TH2 *h2_CL_input, TGraph *gh_CL_curve, int flag_index)
-// {
-//   gROOT->SetBatch( 1 );
-//
-//   TString roostr = "";
-//
-//   roostr = TString::Format("canv_list_95_%04d", flag_index);
-//   TCanvas *canv_list_95 = new TCanvas(roostr, roostr, 800, 600);
-//   cout<<endl<<" ---> "<<roostr<<endl;
-//
-//   double user_contours_95[1] = {0.95};
-//   //double user_contours_95[1] = {0.683};
-//   h2_CL_input->SetContour(1, user_contours_95);
-//
-//   // Draw contours as filled regions, and Save points
-//   h2_CL_input->Draw("CONT Z LIST");
-//   canv_list_95->Update();
-//
-//   // Get Contours
-//   TObjArray *conts = (TObjArray*)gROOT->GetListOfSpecials()->FindObject("contours");
-//
-//   if (!conts){
-//     printf("*** No Contours Were Extracted!\n");
-//   }
-//
-//   TList* contLevel = nullptr;
-//   TGraph* curv     = nullptr;
-//
-//   Int_t TotalConts = conts->GetSize();
-//
-//   printf("TotalConts = %d\n", TotalConts);
-//
-//   for(int i = 0; i < TotalConts; i++){
-//     contLevel = (TList*)conts->At(i);
-//     printf("Contour %d has %d Graphs\n", i, contLevel->GetSize());
-//   }
-//
-//   ///////
-//
-//   for(int i = 0; i < TotalConts; i++) {
-//     contLevel = (TList*)conts->At(i);
-//
-//     if(i!=0) continue;// only use the one having the most points
-//
-//     for(int j = 0; j < contLevel->GetSize(); j++) {
-//       curv = (TGraph*)contLevel->At(j);
-//       int Npoints = curv->GetN();
-//       printf(" ---> graph %2d, size %3d\n", j+1, Npoints);
-//
-//       if(i==0) {
-// 	for(int ip=0; ip<Npoints; ip++) {
-// 	  double dm2_val, ttt_val;
-// 	  curv->GetPoint(ip, ttt_val, dm2_val);
-//
-// 	  //gh_CL_curve->SetPoint( gh_CL_curve->GetN(), pow(10, ttt_val), pow(10, dm2_val) );
-//
-// 	  gh_CL_curve->SetPoint( gh_CL_curve->GetN(), ttt_val, dm2_val );
-//
-// 	}// for(int ip=0; ip<Npoints; ip++)
-//       }
-//
-//     }// for(int j = 0; j < contLevel->GetSize(); j++)
-//   }// for(int i = 0; i < TotalConts; i++)
-//
-//   cout<<endl;
-//
-//   gROOT->SetBatch( 0 );
-// }
-//
-//
-//
-//
-//
-//   /// Obtain the TGraph(s) corresponding to a particular contour level for a TH2
-//   ///
-//   /// \param h2     The TH2 to examine
-//   /// \param level  Fractional level in [0, 1]
-//   /// \return       Vector of TGraphs that represent the whole contour (multiple if contour has disjoint pieces)
-//   std::vector<TGraph*> GetContourGraphs(TH2* h2, double level)
-//   {
-//     std::vector<TGraph*> ret;
-//
-//     std::unique_ptr<TH2> surf(dynamic_cast<TH2*>(h2->Clone("tmp_h2_for_drawing_graphs")));
-//
-//     TVirtualPad* bak = gPad;
-//
-//     const bool wasbatch = gROOT->IsBatch();
-//     gROOT->SetBatch(); // User doesn't want to see our temporary canvas
-//     TCanvas tmp;
-//
-//     gStyle->SetOptStat(0);
-//
-//     surf->SetContour(1, &level);
-//     surf->Draw("cont list");
-//
-//     tmp.Update();
-//     tmp.Paint();
-//
-//     gROOT->SetBatch(wasbatch);
-//     gPad = bak;
-//
-//     // The graphs we need (contained inside TLists, contained inside
-//     // TObjArrays) are in the list of specials. But we need to be careful about
-//     // types, because other stuff can get in here too (TDatabasePDG for
-//     // example).
-//     TCollection* specs = gROOT->GetListOfSpecials();
-//
-//     TIter nextSpec(specs);
-//     while(TObject* spec = nextSpec()){
-//       if(!spec->InheritsFrom(TObjArray::Class())) continue;
-//       auto conts = dynamic_cast<TObjArray*>(spec);
-//
-//       if(conts->IsEmpty()) continue;
-//
-//       if(!conts->At(0)->InheritsFrom(TList::Class())) continue;
-//       auto cont = dynamic_cast<TList*>(conts->At(0));
-//
-//       TIter nextObj(cont);
-//       // Contour could be split into multiple pieces
-//       std::size_t piece = 0;
-//       while(TObject* obj = nextObj()){
-//         if(!obj->InheritsFrom(TGraph::Class())) continue;
-//
-//         ret.push_back(dynamic_cast<TGraph*>(obj->Clone(Form("%s_contour%f_piece%zu", obj->GetName(), level, piece))));
-//         piece++;
-//       } // end for obj
-//     } // end for spec
-//
-//     return ret;
-//   }
+void get_CL_curve(TH2 *h2_CL_input, TGraph *gh_CL_curve, int flag_index)
+{
+  gROOT->SetBatch( 1 );
+
+  TString roostr = "";
+
+  roostr = TString::Format("canv_list_95_%04d", flag_index);
+  TCanvas *canv_list_95 = new TCanvas(roostr, roostr, 800, 600);
+  cout<<endl<<" ---> "<<roostr<<endl;
+
+  double user_contours_95[1] = {0.95};
+  //double user_contours_95[1] = {0.683};
+  h2_CL_input->SetContour(1, user_contours_95);
+
+  // Draw contours as filled regions, and Save points
+  h2_CL_input->Draw("CONT Z LIST");
+  canv_list_95->Update();
+
+  // Get Contours
+  TObjArray *conts = (TObjArray*)gROOT->GetListOfSpecials()->FindObject("contours");
+
+  if (!conts){
+    printf("*** No Contours Were Extracted!\n");
+  }
+
+  TList* contLevel = nullptr;
+  TGraph* curv     = nullptr;
+
+  Int_t TotalConts = conts->GetSize();
+
+  printf("TotalConts = %d\n", TotalConts);
+
+  for(int i = 0; i < TotalConts; i++){
+    contLevel = (TList*)conts->At(i);
+    printf("Contour %d has %d Graphs\n", i, contLevel->GetSize());
+  }
+
+  ///////
+
+  for(int i = 0; i < TotalConts; i++) {
+    contLevel = (TList*)conts->At(i);
+
+    if(i!=0) continue;// only use the one having the most points
+
+    for(int j = 0; j < contLevel->GetSize(); j++) {
+      curv = (TGraph*)contLevel->At(j);
+      int Npoints = curv->GetN();
+      printf(" ---> graph %2d, size %3d\n", j+1, Npoints);
+
+      if(i==0) {
+	for(int ip=0; ip<Npoints; ip++) {
+	  double dm2_val, ttt_val;
+	  curv->GetPoint(ip, ttt_val, dm2_val);
+
+	  //gh_CL_curve->SetPoint( gh_CL_curve->GetN(), pow(10, ttt_val), pow(10, dm2_val) );
+
+	  gh_CL_curve->SetPoint( gh_CL_curve->GetN(), ttt_val, dm2_val );
+
+	}// for(int ip=0; ip<Npoints; ip++)
+      }
+
+    }// for(int j = 0; j < contLevel->GetSize(); j++)
+  }// for(int i = 0; i < TotalConts; i++)
+
+  cout<<endl;
+
+  gROOT->SetBatch( 0 );
+}
+
+
+
+
+
+  /// Obtain the TGraph(s) corresponding to a particular contour level for a TH2
+  ///
+  /// \param h2     The TH2 to examine
+  /// \param level  Fractional level in [0, 1]
+  /// \return       Vector of TGraphs that represent the whole contour (multiple if contour has disjoint pieces)
+  std::vector<TGraph*> GetContourGraphs(TH2* h2, double level)
+  {
+    std::vector<TGraph*> ret;
+
+    std::unique_ptr<TH2> surf(dynamic_cast<TH2*>(h2->Clone("tmp_h2_for_drawing_graphs")));
+
+    TVirtualPad* bak = gPad;
+
+    const bool wasbatch = gROOT->IsBatch();
+    gROOT->SetBatch(); // User doesn't want to see our temporary canvas
+    TCanvas tmp;
+
+    gStyle->SetOptStat(0);
+
+    surf->SetContour(1, &level);
+    surf->Draw("cont list");
+
+    tmp.Update();
+    tmp.Paint();
+
+    gROOT->SetBatch(wasbatch);
+    gPad = bak;
+
+    // The graphs we need (contained inside TLists, contained inside
+    // TObjArrays) are in the list of specials. But we need to be careful about
+    // types, because other stuff can get in here too (TDatabasePDG for
+    // example).
+    TCollection* specs = gROOT->GetListOfSpecials();
+
+    TIter nextSpec(specs);
+    while(TObject* spec = nextSpec()){
+      if(!spec->InheritsFrom(TObjArray::Class())) continue;
+      auto conts = dynamic_cast<TObjArray*>(spec);
+
+      if(conts->IsEmpty()) continue;
+
+      if(!conts->At(0)->InheritsFrom(TList::Class())) continue;
+      auto cont = dynamic_cast<TList*>(conts->At(0));
+
+      TIter nextObj(cont);
+      // Contour could be split into multiple pieces
+      std::size_t piece = 0;
+      while(TObject* obj = nextObj()){
+        if(!obj->InheritsFrom(TGraph::Class())) continue;
+
+        ret.push_back(dynamic_cast<TGraph*>(obj->Clone(Form("%s_contour%f_piece%zu", obj->GetName(), level, piece))));
+        piece++;
+      } // end for obj
+    } // end for spec
+
+    return ret;
+  }
