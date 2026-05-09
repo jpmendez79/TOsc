@@ -46,6 +46,7 @@ int main(int argc, char** argv)
 
   const int NUM_dm2 = 60;
   const int NUM_ttt = 60;
+
   TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, -2, 1);
   TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, -2, 0);
 
@@ -276,12 +277,13 @@ int main(int argc, char** argv)
     vector<double> vec_chi2_4v_with_4vToy;
     vector<double> vec_chi2_3v_with_4vToy;
     vector<double> vec_dchi2_with_4vToy;
+    vector<double> vec_chi2_4v_with_data;
+    vector<double> vec_chi2_3v_with_data;
+    vector<double> vec_dchi2_with_data;
 
 
-    const int NUM_TOYS = 10000;
+    const int NUM_TOYS = 6000;
 
-    TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, -2, 1);
-    TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, -2, 0);
 
     // convert command line flags to osc parameters
     double val_obj_dm2 = h1d_dm2->GetBinCenter(idm2);
@@ -320,9 +322,40 @@ int main(int argc, char** argv)
       vec_chi2_3v_with_4vToy.push_back(chi2_3v);
       vec_dchi2_with_4vToy.push_back(deltachi);
       }
-
+      cout << "Generating obs \n";
+      TString xpath = "input/presave_3v_hypothesis_toydata_01_cv.root";
+    TFile *inputfile_toydata_cv = new TFile(xpath, "read");
+    TTree *tree_toydata = (TTree*)inputfile_toydata_cv->Get("tree_toydata");
+    // Declaration of leaf types
+    Int_t i_toydata;
+    vector<double> *vec_toydata_spectrum = nullptr;
+    // List of branches
+    // TBranch        *b_i_toydata;   //!
+    // TBranch        *b_vec_toydata_spectrum;   //!
+    // Set branch addresses and branch pointers
+    tree_toydata->SetBranchAddress("i_toydata", &i_toydata);
+    tree_toydata->SetBranchAddress("vec_toydata_spectrum", &vec_toydata_spectrum);
+    cout << "Finished loading 3v fit data " << endl;
+    for (int j = 0; j < 200; j++) {
+      osc_test->Set_toy2fitdata(1);
+    // osc_test->Set_toy2fitdata(j+1);
+    //   // Load the pseduo needed
+      tree_toydata->GetEntry(j+2);
+    //   cout << "Loading " << i_toydata << " from Xiangpan (first pseudo=3)"  << "\n";
+      for (int i = 0; i <= 181; i++) {
+        double content = vec_toydata_spectrum->at(i);
+        osc_test->matrix_tosc_fitdata_newworld(0, i) = content;
+      }
+      // Perform the comparison
+      double chi2_3v = osc_test->FCN(pars_3v_small);
+      double chi2_4v = osc_test->FCN(grid_4v);
+      double deltachi2 = chi2_4v - chi2_3v;
+      vec_chi2_4v_with_data.push_back(chi2_4v);
+      vec_chi2_3v_with_data.push_back(chi2_3v);
+      vec_dchi2_with_data.push_back(deltachi2);
+    }
       // Create the tree Structure
-      roostr = TString::Format("60x60_dm2_ttt_%03d_%03d.root", idm2, it14);
+      roostr = TString::Format("60x60_minitest_dm2_ttt_%03d_%03d.root", idm2, it14);
 	  TFile *output_file = new TFile(roostr, "recreate");
 	  TTree *tree = new TTree("tree", "tree");
       int grid_idx_dm2 = idm2;
@@ -337,7 +370,12 @@ int main(int argc, char** argv)
 
 	  tree->Branch("vec_chi2_4v_with_3vToy",   &vec_chi2_4v_with_3vToy);
 	  tree->Branch("vec_chi2_3v_with_3vToy",   &vec_chi2_3v_with_3vToy);
-	  tree->Branch("vec_dchi2_with_3vToy",     &vec_dchi2_with_3vToy);
+      tree->Branch("vec_dchi2_with_3vToy", &vec_dchi2_with_3vToy);
+
+      tree->Branch("vec_chi2_4v_with_data",   &vec_chi2_4v_with_data);
+	  tree->Branch("vec_chi2_3v_with_data",   &vec_chi2_3v_with_data);
+	  tree->Branch("vec_dchi2_with_data",     &vec_dchi2_with_data);
+
       tree->Fill();
 
 	  output_file->cd();
@@ -382,26 +420,101 @@ int main(int argc, char** argv)
   //   }
   // }
 
+  // if (1) { // Creating a series of reference deltachi2 parallel
+  //   // Creating a set of universes using xiangpan
+  //   // map<int, TMatrixD>map_toydata_spectrum;
+  //   // map<int, double>map_prof_t24_val;
+  //   idm2 = 41;
+  //   it14 = 30;
+  //   int rows = -1;
+  //   // const int xdims = 60;
+  //   // const int ydims = 60;
+  //   // TH1D* h1_dm2 = new TH1D("dm2", "dm2", ydims, -1,2);
+  //   // TH1D *h1_sin2_2tuu = new TH1D("sin2_2tuu", "sin2_2tuu", xdims, -3, 0);
+  //   // double dm2_41_grid = h1_dm2->GetBinCenter(idm2);
+  //   const int NUM_dm2 = 60;
+  //   const int NUM_ttt = 60;
+  //   TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, -2, 1);
+  //   TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, -2, 0);
+  //   int ittt = it14;
+  //   double val_obj_dm2 = h1d_dm2->GetBinCenter(idm2); val_obj_dm2 = pow(10, val_obj_dm2);
+  //   double val_obj_ttt = h1d_ttt->GetBinCenter(ittt); val_obj_ttt = pow(10, val_obj_ttt);
+  //   double pars_4v_grid[4] = {val_obj_dm2, val_obj_ttt, 0, 0};
+  //   cout << "DEBUG it14 \n";
+  //   cout << "ittt=it14: " << ittt << "=" << it14 << endl;
+  //   cout << "DEBUG Hist Bin --> Parameter \n";
+  //   cout << "dm2: index " << idm2 << " bin-center " << h1d_dm2->GetBinCenter(idm2) << "\n";
+  //   cout << "dm2: index " << idm2 << " val_obj_dm2 " << val_obj_dm2 << "\n";
+  //   cout << "theta: index " << ittt << " bin-center " << h1d_ttt->GetBinCenter(ittt) << "\n";
+  //   cout << "theta: index " << it14 << " val_obj_ttt " << val_obj_ttt << "\n";
+  //   // cout << "DEBUG Convert\n";
+  //   cout << "DEBUG Save to Array\n";
+  //   cout << "theta: index " << it14 << " value " << pars_4v_grid[0] << "\n";
+  //   cout << "dm2: index " << idm2 << " value " << pars_4v_grid[1] << "\n";
+  //   // dm2_41_grid = pow(10.0, dm2_41_grid);
+  //   // double theta_grid = h1_sin2_2tuu->GetBinCenter(it14);
+  //   // theta_grid = pow(10.0, theta_grid);
+  //   TString xpath = "input/presave_3v_hypothesis_toydata_01_cv.root";
+  //   TFile *inputfile_toydata_cv = new TFile(xpath, "read");
+  //   TTree *tree_toydata = (TTree*)inputfile_toydata_cv->Get("tree_toydata");
+  //   // Declaration of leaf types
+  //   Int_t           i_toydata;
+  //   vector<double>  *vec_toydata_spectrum;
+  //   // List of branches
+  //   TBranch        *b_i_toydata;   //!
+  //   TBranch        *b_vec_toydata_spectrum;   //!
+  //   //
+  //   // Set object pointer
+  //   vec_toydata_spectrum = 0;
+  //   // Set branch addresses and branch pointers
+  //   tree_toydata->SetBranchAddress("i_toydata", &i_toydata, &b_i_toydata);
+  //   tree_toydata->SetBranchAddress("vec_toydata_spectrum", &vec_toydata_spectrum, &b_vec_toydata_spectrum);
+  //   int entries = tree_toydata->GetEntries();
+  //   cout<<endl<<" ---> reading tree_toydata, entries "<<entries<<endl<<endl;
+  //   tree_toydata->GetEntry(ifile);
+  //   rows = vec_toydata_spectrum->size();
+  //   // double obs_map[xdims+1][ydims+1];
+  //   double pars_3v_small[4] = {0, 0.10, 0.11, 0};
+  //   cout << "Creating universe" << ifile << " \n";
+  //   TH1D *histspec = new TH1D("histspec", "Raw 3v Spectrum", 181, 0, 181);
+  //   cout << "Loading " << ifile << " from Xiangpan" << "\n";
+  //    cout << "Debug matrix_tosc_fitdata_newworld\n";
+  //   for (int i = 0; i <= 181; i++) {
+  //     double content = vec_toydata_spectrum->at(i);
+  //     histspec->SetBinContent(i + 1, content);
+  //     osc_test->matrix_tosc_fitdata_newworld(0, i) = content;
+  //     // cout << osc_test->matrix_tosc_fitdata_newworld(0, i) << " " << content <<"\n";
+  //   }
+  //   // histspec->SaveAs("3vspec-testload.root");
+  //   // osc_test->Set_oscillation_pars(0, 0.10, 0.11, 0);
+  //   // osc_test->Apply_oscillation();
+  //   osc_test->Set_apply_POT(); // meas, CV, COV: all ready
+  //   double chi2_3v = osc_test->FCN(pars_3v_small); //
+  //   double chi2_4v = osc_test->FCN(pars_4v_grid);//
+  //   double ref = chi2_4v - chi2_3v;
+  //   cout << "chi2_3v " << chi2_3v << "\n";
+  //   cout << "chi2_4v " << chi2_4v << "\n";
+  //   cout << "delta chi2 " << ref << "\n";
+  // }
+
   if (obs_throw) {
     // Create the needed structures
     vector<double> vec_chi2_4v_with_data;
 	vector<double> vec_chi2_3v_with_data;
     vector<double> vec_dchi2_with_data;
-    TString roostr = TString::Format("output/60x60-deltachi2_obs-test-%i.root", ifile);
+    TString roostr = TString::Format("output/60x60-deltachi2_mini200obs-test-%i.root", ifile);
 	TFile *output_file = new TFile(roostr, "recreate");
 	TTree *tree = new TTree("tree", "tree");
 	tree->Branch("vec_chi2_4v_with_data",    &vec_chi2_4v_with_data);
 	tree->Branch("vec_chi2_3v_with_data",    &vec_chi2_3v_with_data);
 	tree->Branch("vec_dchi2_with_data",      &vec_dchi2_with_data);
     // Generate the 4v
-    TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, -2, 1);
-    TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, -3, 0);
 
     // TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, -1, 2);
     // TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, -2, 0);
-
-    int ittt = 30;
-    idm2 = 41;
+    int ittt = it14;
+    // int ittt = 30;
+    // idm2 = 41;
 
     double val_obj_dm2 = h1d_dm2->GetBinCenter(idm2);
     val_obj_dm2 = pow(10, val_obj_dm2);
@@ -411,11 +524,10 @@ int main(int argc, char** argv)
 //
     // Create the 3v measurement
     double pars_3v_small[4] = {0, 0.10, 0.11, 0};
-    // osc_test->Set_oscillation_pars(0, 0.1, 0.11, 0);
-    // osc_test->Apply_oscillation();
-    // osc_test->Set_apply_POT(); // meas, CV, COV: all ready
-    // osc_test->Set_toy_variations(ifile);
-    // osc_test->Set_toy2fitdata(1);
+    osc_test->Set_oscillation_pars(0, 0.1, 0.11, 0);
+    osc_test->Apply_oscillation();
+    osc_test->Set_apply_POT(); // meas, CV, COV: all ready
+    osc_test->Set_toy_variations(ifile);
     // Load 3v toy as fit data
     TString xpath = "input/presave_3v_hypothesis_toydata_01_cv.root";
     TFile *inputfile_toydata_cv = new TFile(xpath, "read");
@@ -427,16 +539,15 @@ int main(int argc, char** argv)
     TBranch        *b_i_toydata;   //!
     TBranch        *b_vec_toydata_spectrum;   //!
     // Set branch addresses and branch pointers
-    tree_toydata->SetBranchAddress("i_toydata", &i_toydata, &b_i_toydata);
-    tree_toydata->SetBranchAddress("vec_toydata_spectrum", &vec_toydata_spectrum, &b_vec_toydata_spectrum);
+    tree_toydata->SetBranchAddress("i_toydata", &i_toydata);
+    tree_toydata->SetBranchAddress("vec_toydata_spectrum", &vec_toydata_spectrum);
     cout << "Finished loading 3v fit data " << endl;
-    // osc_test->Set_toy2fitdata(1);
-
-
     for (int j = 0; j < ifile; j++) {
-      // Load the pseduo needed
+      osc_test->Set_toy2fitdata(1);
+    // osc_test->Set_toy2fitdata(j+1);
+    //   // Load the pseduo needed
       tree_toydata->GetEntry(j);
-      cout << "Loading " << i_toydata << " from Xiangpan (first pseudo=3)"  << "\n";
+    //   cout << "Loading " << i_toydata << " from Xiangpan (first pseudo=3)"  << "\n";
       for (int i = 0; i <= 181; i++) {
         double content = vec_toydata_spectrum->at(i);
         osc_test->matrix_tosc_fitdata_newworld(0, i) = content;
@@ -448,80 +559,77 @@ int main(int argc, char** argv)
       vec_chi2_4v_with_data.push_back(chi2_3v);
       vec_chi2_3v_with_data.push_back(chi2_4v);
       vec_dchi2_with_data.push_back(deltachi2);
+      cout << chi2_3v << endl;
     }
 
-	tree->Fill();
-	output_file->cd();
-	tree->Write();
-	output_file->Close();
 
   }
 
 
-  if (0) { // Creating a series of reference deltachi2 parallel
-    // Create 3v measurement
-    double pars_3v_small[4] = {0, 0.10, 0.11, 0};
-    osc_test->Set_oscillation_pars(0, 0.1, 0.11, 0);
-    osc_test->Apply_oscillation();
-    osc_test->Set_apply_POT(); // meas, CV, COV: all ready
-    osc_test->Set_toy_variations(1);
-    osc_test->Set_toy2fitdata(1);
-    TString fname = TString::Format("output/60x60-deltachi2_obs-toyuniverse-%i.root", ifile);
-    if (xthrow) {
-      cout << "XTHROW\n";
-      fname = TString::Format("output/60x60-deltachi2_obs-xtoyuniverse-%i.root", ifile);
-      // Load 3v toy as fit data
-      TString xpath = "input/presave_3v_hypothesis_toydata_01_cv.root";
-      TFile *inputfile_toydata_cv = new TFile(xpath, "read");
-      TTree *tree_toydata = (TTree*)inputfile_toydata_cv->Get("tree_toydata");
-      // Declaration of leaf types
-      Int_t i_toydata;
-      vector<double> *vec_toydata_spectrum = nullptr;
-      // List of branches
-      TBranch        *b_i_toydata;   //!
-      TBranch        *b_vec_toydata_spectrum;   //!
-      // Set branch addresses and branch pointers
-      tree_toydata->SetBranchAddress("i_toydata", &i_toydata, &b_i_toydata);
-      tree_toydata->SetBranchAddress("vec_toydata_spectrum", &vec_toydata_spectrum, &b_vec_toydata_spectrum);
-      tree_toydata->GetEntry(ifile+1);
-      cout << "Loading " << i_toydata << " from Xiangpan (first pseudo=3)"  << "\n";
-      for (int i = 0; i <= 181; i++) {
-        double content = vec_toydata_spectrum->at(i);
-        osc_test->matrix_tosc_fitdata_newworld(0, i) = content;
-      }
-      cout << "Finished loading fit data " << endl;
-    }
-
-    // Caclulate chi2_3v
-    double chi2_3v = osc_test->FCN(pars_3v_small); //
-
-    // Create the data structures needed
-    TMatrixD obs_map(NUM_ttt,NUM_dm2);
-    // Convert the grid into actual values
-
-    // TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, -2, 1);
-    // TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, -2, 0);
-    cout << "Creating universe " << ifile << " \n";
-    for (int indexdm2 = 0; indexdm2 < NUM_dm2; indexdm2++) {
-      double val_obj_dm2 = h1d_dm2->GetBinCenter(indexdm2);
-      val_obj_dm2 = pow(10, val_obj_dm2);
-      for (int indextheta = 0; indextheta < NUM_ttt; indextheta++) {
-        // Convert the index into real values
-        double val_obj_ttt = h1d_ttt->GetBinCenter(indextheta);
-        val_obj_ttt = pow(10, val_obj_ttt);
-        double grid_4v[4] = {val_obj_dm2, val_obj_ttt, 0, 0};
-        // Caluclate chi2_4v
-        double chi2_4v = osc_test->FCN(grid_4v);
-        // Calculate deltachi2
-        double deltachi2_obs = chi2_4v - chi2_3v;
-        obs_map(indexdm2,indextheta) = deltachi2_obs;
-      }
-    }
-
-    TFile *rootfile = new TFile(fname, "recreate");
-    obs_map.Write("obs_map");
-    rootfile->Close();
-  }
+  // if (0) { // Creating a series of reference deltachi2 parallel
+  //   // Create 3v measurement
+  //   double pars_3v_small[4] = {0, 0.10, 0.11, 0};
+  //   osc_test->Set_oscillation_pars(0, 0.1, 0.11, 0);
+  //   osc_test->Apply_oscillation();
+  //   osc_test->Set_apply_POT(); // meas, CV, COV: all ready
+  //   osc_test->Set_toy_variations(1);
+  //   osc_test->Set_toy2fitdata(1);
+  //   TString fname = TString::Format("output/60x60-deltachi2_obs-toyuniverse-%i.root", ifile);
+  //   if (xthrow) {
+  //     cout << "XTHROW\n";
+  //     fname = TString::Format("output/60x60-deltachi2_obs-xtoyuniverse-%i.root", ifile);
+  //     // Load 3v toy as fit data
+  //     TString xpath = "input/presave_3v_hypothesis_toydata_01_cv.root";
+  //     TFile *inputfile_toydata_cv = new TFile(xpath, "read");
+  //     TTree *tree_toydata = (TTree*)inputfile_toydata_cv->Get("tree_toydata");
+  //     // Declaration of leaf types
+  //     Int_t i_toydata;
+  //     vector<double> *vec_toydata_spectrum = nullptr;
+  //     // List of branches
+  //     TBranch        *b_i_toydata;   //!
+  //     TBranch        *b_vec_toydata_spectrum;   //!
+  //     // Set branch addresses and branch pointers
+  //     tree_toydata->SetBranchAddress("i_toydata", &i_toydata, &b_i_toydata);
+  //     tree_toydata->SetBranchAddress("vec_toydata_spectrum", &vec_toydata_spectrum, &b_vec_toydata_spectrum);
+  //     tree_toydata->GetEntry(ifile+1);
+  //     cout << "Loading " << i_toydata << " from Xiangpan (first pseudo=3)"  << "\n";
+  //     for (int i = 0; i <= 181; i++) {
+  //       double content = vec_toydata_spectrum->at(i);
+  //       osc_test->matrix_tosc_fitdata_newworld(0, i) = content;
+  //     }
+  //     cout << "Finished loading fit data " << endl;
+  //   }
+  //
+  //   // Caclulate chi2_3v
+  //   double chi2_3v = osc_test->FCN(pars_3v_small); //
+  //
+  //   // Create the data structures needed
+  //   TMatrixD obs_map(NUM_ttt,NUM_dm2);
+  //   // Convert the grid into actual values
+  //
+  //   // TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, -2, 1);
+  //   // TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, -2, 0);
+  //   cout << "Creating universe " << ifile << " \n";
+  //   for (int indexdm2 = 0; indexdm2 < NUM_dm2; indexdm2++) {
+  //     double val_obj_dm2 = h1d_dm2->GetBinCenter(indexdm2);
+  //     val_obj_dm2 = pow(10, val_obj_dm2);
+  //     for (int indextheta = 0; indextheta < NUM_ttt; indextheta++) {
+  //       // Convert the index into real values
+  //       double val_obj_ttt = h1d_ttt->GetBinCenter(indextheta);
+  //       val_obj_ttt = pow(10, val_obj_ttt);
+  //       double grid_4v[4] = {val_obj_dm2, val_obj_ttt, 0, 0};
+  //       // Caluclate chi2_4v
+  //       double chi2_4v = osc_test->FCN(grid_4v);
+  //       // Calculate deltachi2
+  //       double deltachi2_obs = chi2_4v - chi2_3v;
+  //       obs_map(indexdm2,indextheta) = deltachi2_obs;
+  //     }
+  //   }
+  //
+  //   TFile *rootfile = new TFile(fname, "recreate");
+  //   obs_map.Write("obs_map");
+  //   rootfile->Close();
+  // }
 
   if (analysis == 1) {
     if (ifile < 0) {
@@ -529,52 +637,48 @@ int main(int argc, char** argv)
       exit(1);
     }
     int num_universe = ifile;
-    int probdist_size = 10000;
-
-    std::vector<TMatrixD> universe_mat_obs;
+    int probdist_size = 6000;
     std::vector<TMatrixD> confidence_map;
     for (int i = 1; i <= num_universe; i++) {
-      // TString universestring = TString::Format("xj-recreate_confidence-map-universe-%i.root", i);
-      TString universestring = TString::Format("input/60x60-deltachi2_obs-toyuniverse-%i.root", i);
-      if (xthrow) {
-        universestring = TString::Format("input/60x60-deltachi2_obs-xtoyuniverse-%i.root", i);
-      }
-      TFile deltafile(universestring, "READ");
-      TMatrixD* matrix = nullptr;
-      // Load universe reference for map
-      deltafile.GetObject("obs_map", matrix);
-      universe_mat_obs.push_back(*matrix);
-      deltafile.Close();
       TMatrixD confidence(NUM_dm2, NUM_ttt);
       confidence_map.push_back(confidence);
     }
-    cout << "Finished loading universe\n";//
+
 
     // Create pointers once then change the pointer for each file
     TTree *tree = nullptr;
+    vector<double> *vec_dchi2_with_4vToy = nullptr;
     vector<double> *vec_dchi2_with_3vToy = nullptr;
-      for (int xindex = 0; xindex < 60; xindex++) {
+    vector<double> *vec_dchi2_with_data  = nullptr;
+	// tree->Branch("vec_chi2_4v_with_data",    &vec_chi2_4v_with_data);
+	// tree->Branch("vec_chi2_3v_with_data",    &vec_chi2_3v_with_data);
+	// tree->Branch("vec_dchi2_with_data",      &vec_dchi2_with_data);
+    for (int xindex = 0; xindex < 60; xindex++) {
         for (int yindex = 0; yindex < 60; yindex++) {
           // Load deltachi2_3v, deltachi2_4v
-          roostr = TString::Format("input/60x60_dm2_ttt_%03d_%03d.root", yindex + 1, xindex + 1);
+          roostr = TString::Format("60x60_minitest_dm2_ttt_041_%03d.root", xindex + 1);
           TFile *rootfile = new TFile(roostr, "read");
           rootfile->GetObject("tree", tree);
           tree->SetBranchStatus("*", 0);
           tree->SetBranchStatus("vec_dchi2_with_3vToy", 1);
-          tree->SetBranchAddress("vec_dchi2_with_3vToy",&vec_dchi2_with_3vToy);
+          tree->SetBranchAddress("vec_dchi2_with_3vToy", &vec_dchi2_with_3vToy);
+          tree->SetBranchStatus("vec_dchi2_with_4vToy", 1);
+          tree->SetBranchAddress("vec_dchi2_with_4vToy",&vec_dchi2_with_4vToy);
+          tree->SetBranchStatus("vec_dchi2_with_data", 1);
+          tree->SetBranchAddress("vec_dchi2_with_data",&vec_dchi2_with_data);
           tree->GetEntry(0);
           rootfile->Close();
           for (int obs = 0; obs < num_universe; obs++) {
-              double count3v = 0;
+            double count3v = 0;
               double count4v = 0;
               for (int j = 0; j < probdist_size; j++) {
                     double dchi3v = vec_dchi2_with_3vToy->at(j);
-                    double dchi4v = vec_dchi2_with_3vToy->at(j+probdist_size);
+                    double dchi4v = vec_dchi2_with_4vToy->at(j);
 
-                    if(dchi3v >= universe_mat_obs[obs](yindex,xindex)) {
+                    if(dchi3v >= vec_dchi2_with_data->at(obs)) {
                       count3v++;
                     }
-                    if(dchi4v >= universe_mat_obs[obs](yindex,xindex)) {
+                    if(dchi4v >= vec_dchi2_with_data->at(obs)) {
                       count4v++;
                     }
               }
@@ -589,11 +693,13 @@ int main(int argc, char** argv)
               confidence_map[obs](yindex,xindex) = confidence;
           }
           vec_dchi2_with_3vToy->clear();
+          vec_dchi2_with_4vToy->clear();
+          vec_dchi2_with_data->clear();
 
         } // yindex
         cout << "Finished x index: " << xindex+1 << "\n";
       } // xindex
-      TString outname = "output/confidence_maps_grid.root";
+      TString outname = "mini_confidence_maps_grid.root";
       TFile outfile(outname, "RECREATE");
       int i = 1;
       for (const auto& m : confidence_map) {
@@ -606,6 +712,90 @@ int main(int argc, char** argv)
       outfile.Close(); //
       cout << "Wrote " << outname << "\n";
   }
+
+  // if (analysis == 1) {
+  //   if (ifile < 0) {
+  //     cerr << "Specify number of universe input files with -file\n";
+  //     exit(1);
+  //   }
+  //   int num_universe = ifile;
+  //   int probdist_size = 10000;
+  //
+  //   std::vector<TMatrixD> universe_mat_obs;
+  //   std::vector<TMatrixD> confidence_map;
+  //   for (int i = 1; i <= num_universe; i++) {
+  //     // TString universestring = TString::Format("xj-recreate_confidence-map-universe-%i.root", i);
+  //     TString universestring = TString::Format("input/60x60-deltachi2_obs-toyuniverse-%i.root", i);
+  //     if (xthrow) {
+  //       universestring = TString::Format("input/60x60-deltachi2_obs-xtoyuniverse-%i.root", i);
+  //     }
+  //     TFile deltafile(universestring, "READ");
+  //     TMatrixD* matrix = nullptr;
+  //     // Load universe reference for map
+  //     deltafile.GetObject("obs_map", matrix);
+  //     universe_mat_obs.push_back(*matrix);
+  //     deltafile.Close();
+  //     TMatrixD confidence(NUM_dm2, NUM_ttt);
+  //     confidence_map.push_back(confidence);
+  //   }
+  //   cout << "Finished loading universe\n";//
+  //
+  //   // Create pointers once then change the pointer for each file
+  //   TTree *tree = nullptr;
+  //   vector<double> *vec_dchi2_with_3vToy = nullptr;
+  //     for (int xindex = 0; xindex < 60; xindex++) {
+  //       for (int yindex = 0; yindex < 60; yindex++) {
+  //         // Load deltachi2_3v, deltachi2_4v
+  //         roostr = TString::Format("input/60x60_dm2_ttt_%03d_%03d.root", yindex + 1, xindex + 1);
+  //         TFile *rootfile = new TFile(roostr, "read");
+  //         rootfile->GetObject("tree", tree);
+  //         tree->SetBranchStatus("*", 0);
+  //         tree->SetBranchStatus("vec_dchi2_with_3vToy", 1);
+  //         tree->SetBranchAddress("vec_dchi2_with_3vToy",&vec_dchi2_with_3vToy);
+  //         tree->GetEntry(0);
+  //         rootfile->Close();
+  //         for (int obs = 0; obs < num_universe; obs++) {
+  //             double count3v = 0;
+  //             double count4v = 0;
+  //             for (int j = 0; j < probdist_size; j++) {
+  //                   double dchi3v = vec_dchi2_with_3vToy->at(j);
+  //                   double dchi4v = vec_dchi2_with_3vToy->at(j+probdist_size);
+  //
+  //                   if(dchi3v >= universe_mat_obs[obs](yindex,xindex)) {
+  //                     count3v++;
+  //                   }
+  //                   if(dchi4v >= universe_mat_obs[obs](yindex,xindex)) {
+  //                     count4v++;
+  //                   }
+  //             }
+  //             double cls = 0;
+  //             if( count3v == 0 ) {
+  //               if( count4v == 0 ) cls = 0;
+  //               else cls = 1;
+  //             }
+  //             else cls = count4v / count3v;
+  //             if( count4v>=count3v ) cls = 1;
+  //             double confidence = 1 - cls;
+  //             confidence_map[obs](yindex,xindex) = confidence;
+  //         }
+  //         vec_dchi2_with_3vToy->clear();
+  //
+  //       } // yindex
+  //       cout << "Finished x index: " << xindex+1 << "\n";
+  //     } // xindex
+  //     TString outname = "output/confidence_maps_grid.root";
+  //     TFile outfile(outname, "RECREATE");
+  //     int i = 1;
+  //     for (const auto& m : confidence_map) {
+  //       outfile.WriteObject(&m, Form("universe_%d", i++));
+  //     }
+  //     // i = 1;
+  //     // for (const auto& m : universe_mat_obs) {
+  //     //   outfile.WriteObject(&m, Form("uobs_%d", i++));
+  //     // }
+  //     outfile.Close(); //
+  //     cout << "Wrote " << outname << "\n";
+  // }
 
 
   if (sensitivity_study == 0 && idm2 != 0) {
