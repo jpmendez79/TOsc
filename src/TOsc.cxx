@@ -26,6 +26,7 @@ double TOsc::FCN(const double *par)
 
   ///////
 
+TFile outfile("matrices.root", "RECREATE");
   // TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld;
   // TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred;
   // TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total;
@@ -98,9 +99,12 @@ double TOsc::FCN(const double *par)
   }// for(int idx=0; idx<rows; idx++)
 
   matrix_cov_total = matrix_cov_syst_total + matrix_cov_stat_total;
-  TMatrixD matrix_delta = matrix_pred_total - matrix_data_total;
+  // TMatrixD matrix_delta = matrix_pred_total - matrix_data_total;
   // Save Pred
-
+  cout << "DEBUG WRITE\n";
+  matrix_cov_syst_total.Write("matrix_cov_sys_total");
+  matrix_cov_stat_total.Write("matrix_cov_stat_total");
+  // matrix_delta.Write("matrix_delta");
   // for (int idx = 0; idx < rows; idx++) {
   //     for(int idy=0; idy<rows; idy++) {
   //       hcov->SetBinContent(idx + 1, idy + 1, matrix_cov_total(idx, idy));
@@ -108,11 +112,14 @@ double TOsc::FCN(const double *par)
   // }
   // hcov->SaveAs("hcov.root");
   /////// default method: invert takes ~n^3 calcualtion
-  TMatrixD matrix_delta_T = matrix_delta.T();
-  matrix_delta.T();
-  TMatrixD matrix_cov_total_inv = matrix_cov_total; matrix_cov_total_inv.Invert();
-  TMatrixD matrix_chi2 = matrix_delta * matrix_cov_total_inv *matrix_delta_T;
-  chi2_final = matrix_chi2(0, 0);
+  // TMatrixD matrix_delta_T = matrix_delta.T();
+  // matrix_delta.T();
+  // TMatrixD matrix_cov_total_inv = matrix_cov_total;
+  // matrix_cov_total_inv.Invert();
+  // matrix_cov_total_inv.Write("matrix_cov_total_inv");
+
+  // TMatrixD matrix_chi2 = matrix_delta * matrix_cov_total_inv *matrix_delta_T;
+  // chi2_final = matrix_chi2(0, 0);
   // TString matfile = TString::Format("jesse_matrix_delta_dm2_%.3f.root", fit_dm2_41);
   // TFile outFile(matfile, "RECREATE");
   // matrix_delta.Write("matrix_delta");
@@ -132,18 +139,25 @@ double TOsc::FCN(const double *par)
 /////////////// Jesse Xiangpan Hack ///////////////////////
 
 	  // /////// calculate chi2_4v_with_3vToy and chi2_3v_with_3vToy
-      // TMatrixD matrix_delta = matrix_data_total - matrix_pred_total;
-      // TMatrixD matrix_delta_T = matrix_delta.T(); matrix_delta.T();
-      // TMatrixD matrix_cov_total_inv = matrix_cov_total; matrix_cov_total_inv.Invert();
-      // TMatrixD matrix_chi2 = matrix_delta * matrix_cov_total_inv *matrix_delta_T;
-      // chi2_final = matrix_chi2(0,0);
+      TMatrixD matrix_delta = matrix_data_total - matrix_pred_total;
+      TMatrixD matrix_delta_T = matrix_delta.T(); matrix_delta.T();
+      TMatrixD matrix_cov_total_inv = matrix_cov_total; matrix_cov_total_inv.Invert();
+      TMatrixD matrix_chi2 = matrix_delta * matrix_cov_total_inv *matrix_delta_T;
+      chi2_final = matrix_chi2(0,0);
 
 
+
+
+
+// outfile.Close();
 
   return chi2_final;
 }
 
 ///////
+
+
+
 
 double TOsc::FCN_presave_only_PRED()
 {
