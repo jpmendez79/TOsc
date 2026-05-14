@@ -1,33 +1,50 @@
-CC=g++
-CC+=-DDEBUG -g  
-CFLAGS=-c -Wall -m64
-LDFLAGS=-fPIC
+CC = g++
+CC += -DDEBUG -g
+
+CFLAGS = -c -Wall -m64
+LDFLAGS = -fPIC
+
 DIR_SRC = ./src
 DIR_BIN = ./bin
-SOURCES=read_oscillation_v01.cxx $(wildcard $(DIR_SRC)/*.cxx)
-OBJECTS=$(SOURCES:.cxx=.o)
-EXECUTABLE=$(DIR_BIN)/numu_study
 
-ROOTSYS=/home/jpmendez/code/root_install
+ROOTSYS = /home/jpmendez/code/root_install
 
+# ROOT flags
 CFLAGS += $(shell $(ROOTSYS)/bin/root-config --cflags)
-LDFLAGS += $(shell $(ROOTSYS)/bin/root-config --libs) 
+LDFLAGS += $(shell $(ROOTSYS)/bin/root-config --libs)
 
-#CFLAGS += -std=c++11 -I./inc/ -I$(ROOTSYS)/include/
+# Include directories
 CFLAGS += -I./inc/ -I$(ROOTSYS)/include/
 
-all: $(SOURCES) $(EXECUTABLE)
+# All source files
+SOURCES = $(wildcard *.cxx) $(wildcard $(DIR_SRC)/*.cxx)
 
-$(EXECUTABLE):$(OBJECTS)
-	$(CC) -o $@ $(OBJECTS) $(LDFLAGS) -lMinuit2
+# All object files
+OBJECTS = $(SOURCES:.cxx=.o)
 
-#.C.o:
-%.o:%.cxx
+# Source files in src/
+SRC_SOURCES = $(wildcard $(DIR_SRC)/*.cxx)
+SRC_OBJECTS = $(SRC_SOURCES:.cxx=.o)
+
+# Top-level source files only
+TOPLEVEL_SOURCES = $(filter-out $(DIR_SRC)/%.cxx,$(SOURCES))
+
+# Executables generated from top-level .cxx files
+EXECUTABLES = $(patsubst %.cxx,$(DIR_BIN)/%,$(TOPLEVEL_SOURCES))
+
+# Default target
+all: $(EXECUTABLES)
+
+# Compile .cxx -> .o
+%.o: %.cxx
 	$(CC) $(CFLAGS) $< -o $@
 
+# Link each executable with its object file plus shared src objects
+$(DIR_BIN)/%: %.o $(SRC_OBJECTS)
+	$(CC) -o $@ $^ $(LDFLAGS) -lMinuit2
+
+# Cleanup
 clean:
-	rm -f *.o $(DIR_SRC)/*.o; rm $(EXECUTABLE); rm -f *.pcm *.d *.so
-canv:
-	rm -f canv*
-rroot:
-	rm -f *.root
+	rm -f *.o $(DIR_SRC)/*.o
+	rm -f $(EXECUTABLES)
+	rm -f *.pcm *.d *.so

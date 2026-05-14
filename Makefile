@@ -23,7 +23,7 @@ CFLAGS += -I./inc/ -I$(ROOTSYS)/include/
 
 # -------- Remote Config --------
 REMOTE = pg8
-REMOTE_DIR = ~/analysis/TOsc
+REMOTE_DIR = ~/analysis/test-remote-analysis
 
 # -------- Remote Build --------
 
