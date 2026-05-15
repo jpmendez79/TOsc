@@ -17,7 +17,7 @@ double TOsc::FCN(const double *par)
   double chi2_final = 0;
   double fit_dm2_41         = par[0];
   double fit_sin2_2theta_14 = par[1];
-  double fit_sin2_theta_24  = par[2];
+  double fit_sin2_theta_24 = par[2];
 
   /////// standard order
   Set_oscillation_pars(fit_dm2_41, fit_sin2_2theta_14, fit_sin2_theta_24, 0);
@@ -26,7 +26,7 @@ double TOsc::FCN(const double *par)
 
   ///////
 
-TFile outfile("matrices.root", "RECREATE");
+
   // TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld;
   // TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred;
   // TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total;
@@ -100,10 +100,7 @@ TFile outfile("matrices.root", "RECREATE");
 
   matrix_cov_total = matrix_cov_syst_total + matrix_cov_stat_total;
   // TMatrixD matrix_delta = matrix_pred_total - matrix_data_total;
-  // Save Pred
-  cout << "DEBUG WRITE\n";
-  matrix_cov_syst_total.Write("matrix_cov_sys_total");
-  matrix_cov_stat_total.Write("matrix_cov_stat_total");
+  // save Pred
   // matrix_delta.Write("matrix_delta");
   // for (int idx = 0; idx < rows; idx++) {
   //     for(int idy=0; idy<rows; idy++) {
@@ -116,8 +113,7 @@ TFile outfile("matrices.root", "RECREATE");
   // matrix_delta.T();
   // TMatrixD matrix_cov_total_inv = matrix_cov_total;
   // matrix_cov_total_inv.Invert();
-  // matrix_cov_total_inv.Write("matrix_cov_total_inv");
-
+  //
   // TMatrixD matrix_chi2 = matrix_delta * matrix_cov_total_inv *matrix_delta_T;
   // chi2_final = matrix_chi2(0, 0);
   // TString matfile = TString::Format("jesse_matrix_delta_dm2_%.3f.root", fit_dm2_41);
@@ -128,10 +124,10 @@ TFile outfile("matrices.root", "RECREATE");
 
   /////// Cholesky method: decomptakes (~n^3)/6 calcualtion + (~n^2) extral cal
   // chi2_final = Cal_chi2COV(matrix_delta, matrix_cov_total);
-    /* map<int, TMatrixD> map_matrix_toy_spectrum; */
-    /* map_matrix_toy_spectrum[1].ResizeTo(1,bins_eff); */
-    /* TString fname = "toy_file_output"; */
-    /* TMatrixD matrix_out_pred; */
+    // map<int, TMatrixD> map_matrix_toy_spectrum;
+    // map_matrix_toy_spectrum[1].ResizeTo(1,bins_eff);
+    // TString fname = "toy_file_output";
+    // TMatrixD matrix_out_pred;
 
 //   cout << "\n Debug FCN\n";
 // cout << "chi2_final " << chi2_final << "\n";
@@ -139,14 +135,25 @@ TFile outfile("matrices.root", "RECREATE");
 /////////////// Jesse Xiangpan Hack ///////////////////////
 
 	  // /////// calculate chi2_4v_with_3vToy and chi2_3v_with_3vToy
-      TMatrixD matrix_delta = matrix_data_total - matrix_pred_total;
-      TMatrixD matrix_delta_T = matrix_delta.T(); matrix_delta.T();
-      TMatrixD matrix_cov_total_inv = matrix_cov_total; matrix_cov_total_inv.Invert();
-      TMatrixD matrix_chi2 = matrix_delta * matrix_cov_total_inv *matrix_delta_T;
-      chi2_final = matrix_chi2(0,0);
+      // TMatrixD matrix_delta =  matrix_pred_total - matrix_data_total;
+      // TMatrixD matrix_delta_T = matrix_delta.T(); matrix_delta.T();
+      // TMatrixD matrix_cov_total_inv = matrix_cov_total; matrix_cov_total_inv.Invert();
+      // TMatrixD matrix_chi2 = matrix_delta * matrix_cov_total_inv *matrix_delta_T;
+      // chi2_final = matrix_chi2(0,0);
 
 
+TMatrixD delta = matrix_pred_total - matrix_data_total;
 
+TMatrixD covInv = matrix_cov_total;
+covInv.Invert();
+
+TMatrixD deltaT(delta);
+deltaT.T();
+
+TMatrixD tmp = covInv * deltaT;
+TMatrixD chi = delta * tmp;
+
+chi2_final = chi(0,0);
 
 
 // outfile.Close();
@@ -200,13 +207,13 @@ double TOsc::FCN_presave_only_PRED()
   for(int idx=0; idx<rows; idx++) {
     double val_stat_cov = 0;
     double val_data = matrix_data_total(0, idx);
-    double val_pred = matrix_pred_total(0, idx);
+    // double val_pred = matrix_pred_total(0, idx);
 
-    if( val_data==0 ) { val_stat_cov = val_pred/2; }
-    else {
-      if( val_pred!=0 ) val_stat_cov = 3./( 1./val_data + 2./val_pred );
-      else val_stat_cov = val_data;
-    }
+    // if( val_data==0 ) { val_stat_cov = val_pred/2; }
+    // else {
+    //   if( val_pred!=0 ) val_stat_cov = 3./( 1./val_data + 2./val_pred );
+    //   else val_stat_cov = val_data;
+    // }
 
     if( val_stat_cov==0 ) val_stat_cov = 1e-6;
 
