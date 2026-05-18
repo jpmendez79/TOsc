@@ -172,7 +172,7 @@ int main(int argc, char** argv)
   double pars_4v_grid[4] ={val_obj_dm2, val_obj_ttt, 0.0045, 0};
 
   // Set size of pdf
-  const int num_toys = 6000;
+  const int num_toys = 60000;
 
   // Create output vectors
   vector<double> vec_chi2_3v_with_3vToy;
