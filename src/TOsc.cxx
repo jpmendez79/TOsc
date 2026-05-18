@@ -39,18 +39,6 @@ double TOsc::FCN(const double *par)
   TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred.GetSub(0,0, 0, 26*7-1);
   TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total.GetSub(0, 26*7-1, 0, 26*7-1);
   int rows = matrix_cov_syst_total.GetNrows();
-  // cout << rows << "\n";
-  // TH1D *hdata = new TH1D("hdata", "FCN hdata", rows, 0, rows);
-  // TH1D *hpred = new TH1D("hpred", "FCN hpred", rows, 0, rows);
-  // TH2D *hcov = new TH2D("hcov", "FCN Cov Total", rows, 0, rows, rows, 0, rows);
-  // for (int i=0; i<rows; i++) {
-  //   hdata->SetBinContent(i+1, matrix_data_total(0,i));
-  // }
-  // hdata->SaveAs("hdata.root");
-  // for (int i=0; i<rows; i++) {
-  //   hpred->SetBinContent(i+1, matrix_pred_total(0,i));
-  // }
-  // hpred->SaveAs("hpred.root");
 
    /// NuMI only
   // TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld.GetSub(0,0, 26*7, 26*14-1);
@@ -99,31 +87,9 @@ double TOsc::FCN(const double *par)
   }// for(int idx=0; idx<rows; idx++)
 
   matrix_cov_total = matrix_cov_syst_total + matrix_cov_stat_total;
-  // TMatrixD matrix_delta = matrix_pred_total - matrix_data_total;
-  // save Pred
-  // matrix_delta.Write("matrix_delta");
-  // for (int idx = 0; idx < rows; idx++) {
-  //     for(int idy=0; idy<rows; idy++) {
-  //       hcov->SetBinContent(idx + 1, idy + 1, matrix_cov_total(idx, idy));
-  //     }
-  // }
-  // hcov->SaveAs("hcov.root");
-  /////// default method: invert takes ~n^3 calcualtion
-  // TMatrixD matrix_delta_T = matrix_delta.T();
-  // matrix_delta.T();
-  // TMatrixD matrix_cov_total_inv = matrix_cov_total;
-  // matrix_cov_total_inv.Invert();
-  //
-  // TMatrixD matrix_chi2 = matrix_delta * matrix_cov_total_inv *matrix_delta_T;
-  // chi2_final = matrix_chi2(0, 0);
-  // TString matfile = TString::Format("jesse_matrix_delta_dm2_%.3f.root", fit_dm2_41);
-  // TFile outFile(matfile, "RECREATE");
-  // matrix_delta.Write("matrix_delta");
-  // matrix_cov_total_inv.Write("matrix_cov_total_inv");
-  // outFile.Close();
-
+  TMatrixD matrix_delta = matrix_pred_total - matrix_data_total;
   /////// Cholesky method: decomptakes (~n^3)/6 calcualtion + (~n^2) extral cal
-  // chi2_final = Cal_chi2COV(matrix_delta, matrix_cov_total);
+  chi2_final = Cal_chi2COV(matrix_delta, matrix_cov_total);
     // map<int, TMatrixD> map_matrix_toy_spectrum;
     // map_matrix_toy_spectrum[1].ResizeTo(1,bins_eff);
     // TString fname = "toy_file_output";
@@ -142,18 +108,18 @@ double TOsc::FCN(const double *par)
       // chi2_final = matrix_chi2(0,0);
 
 
-TMatrixD delta = matrix_pred_total - matrix_data_total;
 
-TMatrixD covInv = matrix_cov_total;
-covInv.Invert();
 
-TMatrixD deltaT(delta);
-deltaT.T();
-
-TMatrixD tmp = covInv * deltaT;
-TMatrixD chi = delta * tmp;
-
-chi2_final = chi(0,0);
+// TMatrixD covInv = matrix_cov_total;
+// covInv.Invert();
+//
+// TMatrixD deltaT(delta);
+// deltaT.T();
+//
+// TMatrixD tmp = covInv * deltaT;
+// TMatrixD chi = delta * tmp;
+//
+// chi2_final = chi(0,0);
 
 
 // outfile.Close();
@@ -206,8 +172,8 @@ double TOsc::FCN_presave_only_PRED()
 
   for(int idx=0; idx<rows; idx++) {
     double val_stat_cov = 0;
-    double val_data = matrix_data_total(0, idx);
-    // double val_pred = matrix_pred_total(0, idx);
+    // double val_data = matrix_data_total(0, idx);
+    double val_pred = matrix_pred_total(0, idx);
 
     // if( val_data==0 ) { val_stat_cov = val_pred/2; }
     // else {
@@ -216,7 +182,7 @@ double TOsc::FCN_presave_only_PRED()
     // }
 
     if( val_stat_cov==0 ) val_stat_cov = 1e-6;
-
+    // Pearson Format
     matrix_cov_stat_total(idx, idx) = val_stat_cov;
   }// for(int idx=0; idx<rows; idx++)
 
