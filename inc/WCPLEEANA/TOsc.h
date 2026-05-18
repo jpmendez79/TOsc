@@ -77,14 +77,14 @@ class TOsc {
     cout<<endl<<" ---> Hello TOsc"<<endl<<endl;
 
     tosc_rand = new TRandom3(0);
-    
+
     tosc_scaleF_POT_BNB  = 1;
     tosc_scaleF_POT_NuMI = 1;
 
     flag_goodness_of_fit_CNP = 0;
 
     ///////////////////////////
-     
+
     tosc_dm2_41 = 0;
     tosc_sin2_2theta_14 = 0;
     tosc_sin2_theta_24  = 0;
@@ -100,49 +100,49 @@ class TOsc {
     minimization_sin2_2theta_14_err = -1;
     minimization_sin2_theta_24_err  = -1;
     minimization_sin2_theta_34_err  = -1;
-    
+
     ///////////////////////////
-    
+
     flag_apply_oscillation_BNB   = 1;
     flag_apply_oscillation_NuMI  = 1;
 
     ///////////////////////////
-    
+
     flag_syst_dirt   = 0;
     flag_syst_mcstat = 0;
     flag_syst_flux   = 0;
     flag_syst_geant  = 0;
     flag_syst_Xs     = 0;
     flag_syst_det    = 0;
-  
+
     ///////////////////////////
-  
+
     flag_NuMI_nueCC_from_intnue         = 0;
     flag_NuMI_nueCC_from_overlaynumu    = 0;
     flag_NuMI_nueCC_from_appnue         = 0;
     flag_NuMI_nueCC_from_appnumu        = 0;
     flag_NuMI_nueCC_from_overlaynueNC   = 0;
     flag_NuMI_nueCC_from_overlaynumuNC  = 0;
-    
+
     flag_NuMI_numuCC_from_overlaynumu   = 0;
     flag_NuMI_numuCC_from_overlaynue    = 0;
     flag_NuMI_numuCC_from_appnue        = 0;
     flag_NuMI_numuCC_from_appnumu       = 0;
     flag_NuMI_numuCC_from_overlaynumuNC = 0;
     flag_NuMI_numuCC_from_overlaynueNC  = 0;
-    
+
     flag_NuMI_CCpi0_from_overlaynumu    = 0;
     flag_NuMI_CCpi0_from_appnue         = 0;
     flag_NuMI_CCpi0_from_overlaynumuNC  = 0;
     flag_NuMI_CCpi0_from_overlaynueNC   = 0;
-      
+
     flag_NuMI_NCpi0_from_overlaynumu    = 0;
     flag_NuMI_NCpi0_from_appnue         = 0;
     flag_NuMI_NCpi0_from_overlaynumuNC  = 0;
     flag_NuMI_NCpi0_from_overlaynueNC   = 0;
-    
+
     ///////
-  
+
     flag_BNB_nueCC_from_intnue       = 0;
     flag_BNB_nueCC_from_overlaynumu  = 0;
     flag_BNB_nueCC_from_appnue       = 0;
@@ -155,28 +155,28 @@ class TOsc {
 
     flag_BNB_CCpi0_from_overlaynumu  = 0;
     flag_BNB_CCpi0_from_appnue       = 0;
-  
+
     flag_BNB_NCpi0_from_overlaynumu  = 0;
     flag_BNB_NCpi0_from_appnue       = 0;
-  
+
     ///////////////////////////
 
     tosc_NUM_TOYS = 0;
-    
+
     ///////////////////////////
-  
+
     default_oldworld_rows = 0;
     default_newworld_rows = 0;
 
   }
 
-  ////////////////////////////////////////////////////// data members  
+  ////////////////////////////////////////////////////// data members
 
   TRandom3 *tosc_rand;
-  
+
   double tosc_scaleF_POT_BNB;
   double tosc_scaleF_POT_NuMI;
-  
+
   double tosc_dm2_41;
   double tosc_sin2_2theta_14;
   double tosc_sin2_theta_24;
@@ -206,38 +206,38 @@ class TOsc {
   bool flag_syst_geant;
   bool flag_syst_Xs;
   bool flag_syst_det;
-  
+
   /////////////////////////// no specify is "CC"
   /////////////////////////// all the following true events are selected as in active volume: (cuts.h) flag_truth_inside
   /////////////////////////// flag_NuMI_nueCC_from_overlaynumu: tagged nueCC from overlay true numuCC events
   /////////////////////////// flag_NuMI_nueCC_from_overlaynueNC: tagged nueCC from overlay true nueNC events
-  
+
   bool flag_NuMI_nueCC_from_intnue;
   bool flag_NuMI_nueCC_from_overlaynumu;
   bool flag_NuMI_nueCC_from_appnue;
   bool flag_NuMI_nueCC_from_appnumu;
   bool flag_NuMI_nueCC_from_overlaynueNC;
   bool flag_NuMI_nueCC_from_overlaynumuNC;
-  
+
   bool flag_NuMI_numuCC_from_overlaynumu;
   bool flag_NuMI_numuCC_from_overlaynue;
   bool flag_NuMI_numuCC_from_appnue;
   bool flag_NuMI_numuCC_from_appnumu;
   bool flag_NuMI_numuCC_from_overlaynumuNC;
   bool flag_NuMI_numuCC_from_overlaynueNC;
- 
+
   bool flag_NuMI_CCpi0_from_overlaynumu;
   bool flag_NuMI_CCpi0_from_appnue;
   bool flag_NuMI_CCpi0_from_overlaynumuNC;
   bool flag_NuMI_CCpi0_from_overlaynueNC;
-  
+
   bool flag_NuMI_NCpi0_from_overlaynumu;
   bool flag_NuMI_NCpi0_from_appnue;
   bool flag_NuMI_NCpi0_from_overlaynumuNC;
   bool flag_NuMI_NCpi0_from_overlaynueNC;
-  
+
   ///////
-  
+
   bool flag_BNB_nueCC_from_intnue;
   bool flag_BNB_nueCC_from_overlaynumu;
   bool flag_BNB_nueCC_from_appnue;
@@ -251,21 +251,21 @@ class TOsc {
   bool flag_BNB_numuCC_from_appnumu;
   bool flag_BNB_numuCC_from_overlaynumuNC;
   bool flag_BNB_numuCC_from_overlaynueNC;
- 
+
   bool flag_BNB_CCpi0_from_overlaynumu;
   bool flag_BNB_CCpi0_from_appnue;
   bool flag_BNB_CCpi0_from_overlaynumuNC;
   bool flag_BNB_CCpi0_from_overlaynueNC;
-  
+
   bool flag_BNB_NCpi0_from_overlaynumu;
   bool flag_BNB_NCpi0_from_appnue;
   bool flag_BNB_NCpi0_from_overlaynumuNC;
   bool flag_BNB_NCpi0_from_overlaynueNC;
- 
+
   ///////////////////////////
-  
+
   TMatrixD matrix_tosc_transform;
-  
+
   map<int, TH1D*>map_tosc_default_h1d_meas;
   map<int, int>map_tosc_default_h1d_meas_bins;
   map<int, double>map_tosc_default_h1d_meas_xlow;
@@ -281,22 +281,22 @@ class TOsc {
   map<int, int>map_tosc_default_oldworld_pred_bins;
   vector<double> vector_tosc_default_oldworld_pred;
   TMatrixD matrix_tosc_default_oldworld_pred;// assignment only once
-  
+
   TMatrixD matrix_tosc_oscillation_base_oldworld_pred;// = matrix_tosc_default_oldworld_pred - oscillation components
   TMatrixD matrix_tosc_oscillation_oldworld_pred;
-  
+
   ///////////////////////////
 
   TMatrixD matrix_tosc_default_oldworld_abs_syst_addi;  // initialized, for dirt additional syst, approximation: always use the same absolute cov
   TMatrixD matrix_tosc_default_newworld_abs_syst_mcstat;// initialized, only newworld
- 
+
   TMatrixD matrix_tosc_default_oldworld_rel_syst_flux;  // initialized
   TMatrixD matrix_tosc_default_oldworld_rel_syst_geant; // initialized
   TMatrixD matrix_tosc_default_oldworld_rel_syst_Xs;    // initialized
-  TMatrixD matrix_tosc_default_oldworld_rel_syst_det;   // initialized  
- 
+  TMatrixD matrix_tosc_default_oldworld_rel_syst_det;   // initialized
+
   ///////////////////////////
-  
+
   TMatrixD matrix_tosc_eff_newworld_abs_syst_addi;
   TMatrixD matrix_tosc_eff_newworld_abs_syst_mcstat;
   TMatrixD matrix_tosc_eff_newworld_abs_syst_flux;
@@ -304,11 +304,11 @@ class TOsc {
   TMatrixD matrix_tosc_eff_newworld_abs_syst_Xs;
   TMatrixD matrix_tosc_eff_newworld_abs_syst_det;
   TMatrixD matrix_tosc_eff_newworld_abs_syst_total;
-  
+
   TMatrixD matrix_tosc_eff_newworld_meas;
   TMatrixD matrix_tosc_eff_newworld_pred;
   TMatrixD matrix_tosc_eff_newworld_noosc;
-    
+
   TMatrixD matrix_tosc_fitdata_newworld;
 
   ///////////////////////////
@@ -324,24 +324,24 @@ class TOsc {
   vector<double>vector_NuMI_nueCC_from_appnumu_scaleFPOT;       vector< vector<EventInfo> >vector_vector_NuMI_nueCC_from_appnumu_FC_eventinfo;       vector< vector<EventInfo> >vector_vector_NuMI_nueCC_from_appnumu_PC_eventinfo;
   vector<double>vector_NuMI_nueCC_from_overlaynueNC_scaleFPOT;  vector< vector<EventInfo> >vector_vector_NuMI_nueCC_from_overlaynueNC_FC_eventinfo;  vector< vector<EventInfo> >vector_vector_NuMI_nueCC_from_overlaynueNC_PC_eventinfo;
   vector<double>vector_NuMI_nueCC_from_overlaynumuNC_scaleFPOT; vector< vector<EventInfo> >vector_vector_NuMI_nueCC_from_overlaynumuNC_FC_eventinfo; vector< vector<EventInfo> >vector_vector_NuMI_nueCC_from_overlaynumuNC_PC_eventinfo;
-  
+
   vector<double>vector_NuMI_numuCC_from_overlaynumu_scaleFPOT;  vector< vector<EventInfo> >vector_vector_NuMI_numuCC_from_overlaynumu_FC_eventinfo;  vector< vector<EventInfo> >vector_vector_NuMI_numuCC_from_overlaynumu_PC_eventinfo;
   vector<double>vector_NuMI_numuCC_from_overlaynue_scaleFPOT;   vector< vector<EventInfo> >vector_vector_NuMI_numuCC_from_overlaynue_FC_eventinfo;   vector< vector<EventInfo> >vector_vector_NuMI_numuCC_from_overlaynue_PC_eventinfo;
   vector<double>vector_NuMI_numuCC_from_appnue_scaleFPOT;       vector< vector<EventInfo> >vector_vector_NuMI_numuCC_from_appnue_FC_eventinfo;       vector< vector<EventInfo> >vector_vector_NuMI_numuCC_from_appnue_PC_eventinfo;
   vector<double>vector_NuMI_numuCC_from_appnumu_scaleFPOT;      vector< vector<EventInfo> >vector_vector_NuMI_numuCC_from_appnumu_FC_eventinfo;      vector< vector<EventInfo> >vector_vector_NuMI_numuCC_from_appnumu_PC_eventinfo;
   vector<double>vector_NuMI_numuCC_from_overlaynumuNC_scaleFPOT;vector< vector<EventInfo> >vector_vector_NuMI_numuCC_from_overlaynumuNC_FC_eventinfo;vector< vector<EventInfo> >vector_vector_NuMI_numuCC_from_overlaynumuNC_PC_eventinfo;
   vector<double>vector_NuMI_numuCC_from_overlaynueNC_scaleFPOT; vector< vector<EventInfo> >vector_vector_NuMI_numuCC_from_overlaynueNC_FC_eventinfo; vector< vector<EventInfo> >vector_vector_NuMI_numuCC_from_overlaynueNC_PC_eventinfo;
-  
+
   vector<double>vector_NuMI_CCpi0_from_overlaynumu_scaleFPOT;   vector< vector<EventInfo> >vector_vector_NuMI_CCpi0_from_overlaynumu_FC_eventinfo;   vector< vector<EventInfo> >vector_vector_NuMI_CCpi0_from_overlaynumu_PC_eventinfo;
   vector<double>vector_NuMI_CCpi0_from_appnue_scaleFPOT;        vector< vector<EventInfo> >vector_vector_NuMI_CCpi0_from_appnue_FC_eventinfo;        vector< vector<EventInfo> >vector_vector_NuMI_CCpi0_from_appnue_PC_eventinfo;
   vector<double>vector_NuMI_CCpi0_from_overlaynumuNC_scaleFPOT; vector< vector<EventInfo> >vector_vector_NuMI_CCpi0_from_overlaynumuNC_FC_eventinfo; vector< vector<EventInfo> >vector_vector_NuMI_CCpi0_from_overlaynumuNC_PC_eventinfo;
   vector<double>vector_NuMI_CCpi0_from_overlaynueNC_scaleFPOT;  vector< vector<EventInfo> >vector_vector_NuMI_CCpi0_from_overlaynueNC_FC_eventinfo;  vector< vector<EventInfo> >vector_vector_NuMI_CCpi0_from_overlaynueNC_PC_eventinfo;
-  
-  vector<double>vector_NuMI_NCpi0_from_overlaynumu_scaleFPOT;   vector< vector<EventInfo> >vector_vector_NuMI_NCpi0_from_overlaynumu_eventinfo; 
+
+  vector<double>vector_NuMI_NCpi0_from_overlaynumu_scaleFPOT;   vector< vector<EventInfo> >vector_vector_NuMI_NCpi0_from_overlaynumu_eventinfo;
   vector<double>vector_NuMI_NCpi0_from_appnue_scaleFPOT;        vector< vector<EventInfo> >vector_vector_NuMI_NCpi0_from_appnue_eventinfo;
   vector<double>vector_NuMI_NCpi0_from_overlaynumuNC_scaleFPOT; vector< vector<EventInfo> >vector_vector_NuMI_NCpi0_from_overlaynumuNC_eventinfo;
   vector<double>vector_NuMI_NCpi0_from_overlaynueNC_scaleFPOT;  vector< vector<EventInfo> >vector_vector_NuMI_NCpi0_from_overlaynueNC_eventinfo;
-  
+
   ///////
 
   vector<double>vector_BNB_nueCC_from_intnue_scaleFPOT;        vector< vector<EventInfo> >vector_vector_BNB_nueCC_from_intnue_FC_eventinfo;        vector< vector<EventInfo> >vector_vector_BNB_nueCC_from_intnue_PC_eventinfo;
@@ -350,24 +350,24 @@ class TOsc {
   vector<double>vector_BNB_nueCC_from_appnumu_scaleFPOT;       vector< vector<EventInfo> >vector_vector_BNB_nueCC_from_appnumu_FC_eventinfo;       vector< vector<EventInfo> >vector_vector_BNB_nueCC_from_appnumu_PC_eventinfo;
   vector<double>vector_BNB_nueCC_from_overlaynueNC_scaleFPOT;  vector< vector<EventInfo> >vector_vector_BNB_nueCC_from_overlaynueNC_FC_eventinfo;  vector< vector<EventInfo> >vector_vector_BNB_nueCC_from_overlaynueNC_PC_eventinfo;
   vector<double>vector_BNB_nueCC_from_overlaynumuNC_scaleFPOT; vector< vector<EventInfo> >vector_vector_BNB_nueCC_from_overlaynumuNC_FC_eventinfo; vector< vector<EventInfo> >vector_vector_BNB_nueCC_from_overlaynumuNC_PC_eventinfo;
-  
+
   vector<double>vector_BNB_numuCC_from_overlaynumu_scaleFPOT;  vector< vector<EventInfo> >vector_vector_BNB_numuCC_from_overlaynumu_FC_eventinfo;  vector< vector<EventInfo> >vector_vector_BNB_numuCC_from_overlaynumu_PC_eventinfo;
   vector<double>vector_BNB_numuCC_from_overlaynue_scaleFPOT;   vector< vector<EventInfo> >vector_vector_BNB_numuCC_from_overlaynue_FC_eventinfo;   vector< vector<EventInfo> >vector_vector_BNB_numuCC_from_overlaynue_PC_eventinfo;
   vector<double>vector_BNB_numuCC_from_appnue_scaleFPOT;       vector< vector<EventInfo> >vector_vector_BNB_numuCC_from_appnue_FC_eventinfo;       vector< vector<EventInfo> >vector_vector_BNB_numuCC_from_appnue_PC_eventinfo;
   vector<double>vector_BNB_numuCC_from_appnumu_scaleFPOT;      vector< vector<EventInfo> >vector_vector_BNB_numuCC_from_appnumu_FC_eventinfo;      vector< vector<EventInfo> >vector_vector_BNB_numuCC_from_appnumu_PC_eventinfo;
   vector<double>vector_BNB_numuCC_from_overlaynumuNC_scaleFPOT;vector< vector<EventInfo> >vector_vector_BNB_numuCC_from_overlaynumuNC_FC_eventinfo;vector< vector<EventInfo> >vector_vector_BNB_numuCC_from_overlaynumuNC_PC_eventinfo;
   vector<double>vector_BNB_numuCC_from_overlaynueNC_scaleFPOT; vector< vector<EventInfo> >vector_vector_BNB_numuCC_from_overlaynueNC_FC_eventinfo; vector< vector<EventInfo> >vector_vector_BNB_numuCC_from_overlaynueNC_PC_eventinfo;
-  
+
   vector<double>vector_BNB_CCpi0_from_overlaynumu_scaleFPOT;   vector< vector<EventInfo> >vector_vector_BNB_CCpi0_from_overlaynumu_FC_eventinfo;   vector< vector<EventInfo> >vector_vector_BNB_CCpi0_from_overlaynumu_PC_eventinfo;
   vector<double>vector_BNB_CCpi0_from_appnue_scaleFPOT;        vector< vector<EventInfo> >vector_vector_BNB_CCpi0_from_appnue_FC_eventinfo;        vector< vector<EventInfo> >vector_vector_BNB_CCpi0_from_appnue_PC_eventinfo;
   vector<double>vector_BNB_CCpi0_from_overlaynumuNC_scaleFPOT; vector< vector<EventInfo> >vector_vector_BNB_CCpi0_from_overlaynumuNC_FC_eventinfo; vector< vector<EventInfo> >vector_vector_BNB_CCpi0_from_overlaynumuNC_PC_eventinfo;
   vector<double>vector_BNB_CCpi0_from_overlaynueNC_scaleFPOT;  vector< vector<EventInfo> >vector_vector_BNB_CCpi0_from_overlaynueNC_FC_eventinfo;  vector< vector<EventInfo> >vector_vector_BNB_CCpi0_from_overlaynueNC_PC_eventinfo;
-  
-  vector<double>vector_BNB_NCpi0_from_overlaynumu_scaleFPOT;   vector< vector<EventInfo> >vector_vector_BNB_NCpi0_from_overlaynumu_eventinfo; 
+
+  vector<double>vector_BNB_NCpi0_from_overlaynumu_scaleFPOT;   vector< vector<EventInfo> >vector_vector_BNB_NCpi0_from_overlaynumu_eventinfo;
   vector<double>vector_BNB_NCpi0_from_appnue_scaleFPOT;        vector< vector<EventInfo> >vector_vector_BNB_NCpi0_from_appnue_eventinfo;
   vector<double>vector_BNB_NCpi0_from_overlaynumuNC_scaleFPOT; vector< vector<EventInfo> >vector_vector_BNB_NCpi0_from_overlaynumuNC_eventinfo;
   vector<double>vector_BNB_NCpi0_from_overlaynueNC_scaleFPOT;  vector< vector<EventInfo> >vector_vector_BNB_NCpi0_from_overlaynueNC_eventinfo;
-  
+
   ///////////////////////////
 
   ///////////////////////////
@@ -383,13 +383,13 @@ class TOsc {
   TMatrixD user_matrix_tosc_temp_cv_ij_oldworld;
 
   ///////
-  
+
   TMatrixD matrix_tosc_AA;
   TMatrixD matrix_tosc_BB;
-  TMatrixD matrix_tosc_CC;  
+  TMatrixD matrix_tosc_CC;
   TMatrixD matrix_tosc_AB;
   TMatrixD matrix_tosc_AC;
-  TMatrixD matrix_tosc_BC;  
+  TMatrixD matrix_tosc_BC;
   TMatrixD matrix_tosc_BA;
   TMatrixD matrix_tosc_CA;
   TMatrixD matrix_tosc_CB;
@@ -402,16 +402,16 @@ class TOsc {
   TMatrixD matrix_tosc_temp_total_in_POT;
 
   ///////
-  
+
   TMatrixD matrix_tosc_chi2_COV_both_syst_stat_inv;
   TMatrixD matrix_tosc_chi2_pred;
 
   ////////////////////////////////////////////////////// member functions
-  
+
   void Set_default_cv_cov(TString default_cv_file, TString default_dirtadd_file, TString default_mcstat_file, TString default_fluxXs_dir, TString default_detector_dir);
 
   void Set_oscillation_base(TString evetlist_dir);
-  void Set_oscillation_base_subfunc(TString strfile_mcPOT, TString strfile_dataPOT, vector<double> *vec_ratioPOT, TString strfile_mc_e2e, TString str_treename, vector< vector<EventInfo> > *vec_vec_eventinfo);  
+  void Set_oscillation_base_subfunc(TString strfile_mcPOT, TString strfile_dataPOT, vector<double> *vec_ratioPOT, TString strfile_mc_e2e, TString str_treename, vector< vector<EventInfo> > *vec_vec_eventinfo);
   /// matrix oscillation effect result oldworld = matrix oscillation base + matrix oscillation_ ffect;
 
   void Set_oscillation_base_minus(vector<double> *vec_ratioPOT, vector< vector<EventInfo> > *vec_vec_eventinfo, int pred_channel_index, TString str_osc_mode);
@@ -423,23 +423,17 @@ class TOsc {
     tosc_sin2_theta_24  = val_sin2_theta_24;
     tosc_sin2_theta_34  = val_sin2_theta_34;
   }
-  
+
   void Apply_oscillation();
   double Prob_oscillaion(double Etrue, double baseline, int strflag_osc);
 
   void Set_apply_POT();
 
   void Set_toy_variations(int num_toys);
-// void Load_toy_variations();  
+// void Load_toy_variations();
   void Set_toy2fitdata(int itoy) {
     if( itoy > tosc_NUM_TOYS ) { cerr<<" ERROR: itoy > tosc_NUM_TOYS"<<endl; exit(1); }
     matrix_tosc_fitdata_newworld = map_matrix_tosc_toy_pred[itoy];
-  // TString fname = TString::Format("./DEBUG_TOY%i.root", itoy);
-  // cout << "DEBUG SAVE " << fname << "\n";
-  // TFile *rootfile = new TFile(fname, "recreate");
-  // matrix_tosc_fitdata_newworld.Write("fit_data");
-  // rootfile->Write();
-  // rootfile->Close();
   }
 void Load_toy_variations(int itoy) {
   TString default_toy_file = "toy_file_output.root";
@@ -452,16 +446,16 @@ void Load_toy_variations(int itoy) {
 
   map_matrix_tosc_toy_pred = input_map_matrix_tosc_toy_pred[itoy];
   // map_matrix_tosc_toy_pred.clear();
-}  
-  
-  
+}
+
+
   void Set_meas2fitdata()   { matrix_tosc_fitdata_newworld   = matrix_tosc_eff_newworld_meas; }
   void Set_asimov2fitdata() {matrix_tosc_fitdata_newworld = matrix_tosc_eff_newworld_pred; }
   void Set_noosc2fitdata()  { matrix_tosc_fitdata_newworld   = matrix_tosc_eff_newworld_noosc;}
   void Set_asimov2noosc()   { matrix_tosc_eff_newworld_noosc = matrix_tosc_eff_newworld_pred; }
 
   void Plot_user();
-  
+
   void Minimization_OscPars_FullCov(double init_dm2_41, double init_sin2_2theta_14, double init_sin2_theta_24, double init_sin2_theta_34, TString roostr_flag_fixpar);
 
   double FCN(const double *par);
@@ -479,7 +473,7 @@ void Load_toy_variations(int itoy) {
     //   /// chi2 = X^T * X
     int rows = userFA_matrix_syst_stat_toal_COV.GetNrows();
     TMatrixD userFA_decomp_matrix_cov_total = userFA_matrix_syst_stat_toal_COV;
-    TDecompChol *userFA_TDecompChol = new TDecompChol(userFA_decomp_matrix_cov_total);  
+    TDecompChol *userFA_TDecompChol = new TDecompChol(userFA_decomp_matrix_cov_total);
     TVectorD userFA_vector(rows, userFA_matrix_delta.GetMatrixArray());
     userFA_TDecompChol->Solve(userFA_vector);
     double userFA_chi2 = (userFA_matrix_delta * userFA_vector)(0);
@@ -514,8 +508,8 @@ void Load_toy_variations(int itoy) {
     h1->GetXaxis()->SetTitle(xtitle);
     h1->GetYaxis()->SetTitle(ytitle);
     if( flag_center ) {
-      h1->GetXaxis()->CenterTitle(); 
-      h1->GetYaxis()->CenterTitle(); 
+      h1->GetXaxis()->CenterTitle();
+      h1->GetYaxis()->CenterTitle();
     }
   }
 
@@ -524,8 +518,8 @@ void Load_toy_variations(int itoy) {
     h1->GetXaxis()->SetTitle(xtitle);
     h1->GetYaxis()->SetTitle(ytitle);
     if( flag_center ) {
-      h1->GetXaxis()->CenterTitle(); 
-      h1->GetYaxis()->CenterTitle(); 
+      h1->GetXaxis()->CenterTitle();
+      h1->GetYaxis()->CenterTitle();
     }
   }
 
@@ -538,7 +532,7 @@ void Load_toy_variations(int itoy) {
  private:
   int default_oldworld_rows;
   int default_newworld_rows;
-  
+
 };
 
 #endif
