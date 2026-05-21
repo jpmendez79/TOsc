@@ -151,23 +151,15 @@ int main(int argc, char** argv)
   osc_test->Set_oscillation_base(Configure_Osc::default_eventlist_dir);
 
 
-  cout << "Read in xiangpan file \n";
-  idm2 = 41;
-  it14 = 30;
   // Create arrays to hold the values I need
   double pars_3v_small[4] = {0, 0.10, 0.11, 0};
-  double val_obj_dm2 = h1d_dm2->GetBinCenter(idm2);
-  val_obj_dm2 = pow(10, val_obj_dm2);
-  double val_obj_ttt = h1d_ttt->GetBinCenter(it14);
-  val_obj_ttt = pow(10, val_obj_ttt);
-    double pars_4v_grid[4] ={val_obj_dm2, val_obj_ttt, 0.0045, 0};
 
 //
 
 // --------------------------------------------------
 // Open input file
 // --------------------------------------------------
-TString xpath = "input/presave_3v_hypothesis_toydata_01_cv.root";
+TString xpath = "presave_3v_hypothesis_toydata_01_cv.root";
 TFile* inputfile_toydata_cv = TFile::Open(xpath, "READ");
 
 if (!inputfile_toydata_cv || inputfile_toydata_cv->IsZombie()) {
@@ -199,13 +191,13 @@ TTreeReaderValue<vector<double>> vec_toydata_spectrum(
 // --------------------------------------------------
 // Your output containers
 // --------------------------------------------------
-vector<double> vec_chi2_3v;
+vector<double> vec_obs_3v;
 
 // --------------------------------------------------
 // Index map (cache)
 // --------------------------------------------------
 vector<vector<double>> spectrum_cache;
-spectrum_cache.reserve(200);  // optional optimization
+// spectrum_cache.reserve(200);  // optional optimization
 
 while (reader.Next()) {
     spectrum_cache.push_back(*vec_toydata_spectrum);
@@ -219,27 +211,41 @@ int entry_index = 0;
 	  // TMatrixD matrix_delta_3vPred_data   = matrix_toydata_temp - matrix_3v_asmiov_pred;
 	  // TMatrixD matrix_delta_3vPred_data_T = matrix_delta_3vPred_data.T(); matrix_delta_3vPred_data.T();
 	  // double chi2_3v_with_data = (matrix_delta_3vPred_data * matrix_3v_total_COV_inv * matrix_delta_3vPred_data_T)(0,0);
+std::vector<double> dm2_vals(60), ttt_vals(60);
 
-for (size_t i = 0; i < 200; i++) {
-
-    auto& spectrum = spectrum_cache[i];
-    for (int j = 0; j <= 181; j++) {
-        osc_test->matrix_tosc_fitdata_newworld(0, j) = spectrum[j];
-    }
-
-    // double chi2 = osc_test->FCN(pars_3v_small);
-    double chi2 = osc_test->FCN(pars_4v_grid);
-cout << chi2 << endl;
-    vec_chi2_3v.push_back(chi2);
+for (int i = 0; i < 60; i++) {
+    dm2_vals[i] = pow(10, h1d_dm2->GetBinCenter(i + 1));
+    ttt_vals[i] = pow(10, h1d_ttt->GetBinCenter(i + 1));
 }
+cout << "Prepared grid values\n";
 
-cout << "dm2 " << val_obj_dm2 << "ttt " << val_obj_ttt << endl;
+
+  TFile outfile("presave_deltachisquare_obs.root", "RECREATE");
+  TTree *tree = new TTree("tree", "Obs Maps");
+  TMatrixD *obs_map = new TMatrixD(60,60);
+  tree->Branch("obs_map", "TMatrixD", &obs_map);
+  // for (size_t u = 0; u < spectrum_cache.size(); u++) {
+  for (size_t u = 0; u < 50; u++) {
+    auto& spectrum = spectrum_cache[u];
+    for (int j = 0; j <= 181; j++) {
+      osc_test->matrix_tosc_fitdata_newworld(0, j) = spectrum[j];
+    }
+    double obs_3v = osc_test->FCN(pars_3v_small);
+
+    for (int index_dm2 = 0; index_dm2 < 60; index_dm2++) {
+      for ( int index_ttt = 0; index_ttt < 60; index_ttt++) {
+        double pars_4v_grid[4] ={dm2_vals[index_dm2], ttt_vals[index_ttt], 0.0045, 0};
+        // Calculate chi2 4v
+        double obs_4v = osc_test->FCN(pars_4v_grid);
+        (*obs_map)(index_dm2,index_ttt) = obs_4v - obs_3v;
+      }// index_ttt loop
+    } // index_dm2 loop
+    tree->Fill();
+    cout << "Finished Universe " << u <<endl;
 
 
-  TFile outfile("output/random_test.root", "RECREATE");
-  TTree *tree = new TTree("tree", "Obs Test");
-  tree->Branch("vec_chi2_3v", &vec_chi2_3v);
-  tree->Fill();
+  } // Universe
+
   tree->Write();
   outfile.Close();
 
