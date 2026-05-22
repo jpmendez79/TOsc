@@ -18,6 +18,7 @@ using namespace std;
 #include "TApplication.h"
 #include "TParameter.h"
 #include <chrono> // timer
+#include<algorithm>
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////// MAIN //////////////////////////////////////////////////
@@ -27,187 +28,110 @@ int main(int argc, char** argv)
   TString roostr = "";
 
   cout<<endl<<" ---> A Hello story ..."<<endl<<endl;
+  // Pre-store the 3v/4v distributions
 
+  std::vector<std::vector<double>> vec4v_cache;
+  std::vector<std::vector<double>> vec3v_cache;
+  // Number of files
+  vec4v_cache.resize(3600);
+  vec3v_cache.resize(3600);
+  int N_it14 = 60;
+  int N_idm2 = 60;
+  for (int idm2 = 0; idm2 < 60; ++idm2) {
+    for (int it14 = 0; it14 < 60; ++it14) {
 
+      int idx = idm2 * N_it14 + it14;
 
+      TString roostr = TString::Format("output-6k-size/out_dm2_ttt_%03d_%03d.root", idm2+1, it14+1);
 
-  double scaleF_POT_BNB  = 1;
-  double scaleF_POT_NuMI = 1;
-  int display = 0;
+      TFile file(roostr, "READ");
+      TTree* tree = (TTree*)file.Get("tree");
 
+      std::vector<double>* invec4v = nullptr;
+      std::vector<double>* invec3v = nullptr;
 
-  int it14 = 0;
-  int idm2 = 0;
+      tree->SetBranchAddress("vec_dchi2_4v", &invec4v);
+      tree->SetBranchAddress("vec_dchi2_3v", &invec3v);
 
+      tree->GetEntry(0);
 
-  const int NUM_dm2 = 60;
-  const int NUM_ttt = 60;
+      vec4v_cache[idx] = *invec4v;
+      vec3v_cache[idx] = *invec3v;
 
-  TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, -2, 1);
-  TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, -2, 0);
-
-
-
-  // double it14 = 0;
-  // double idm2 = 0;
-  // double it24 = 0;
-
-
-  if( !display ) {
-    gROOT->SetBatch( 1 );
-  }
-
-  TApplication theApp("theApp",&argc,argv);
-
-  /////////////////////////////////////////////////////////// Draw style
-
-
-  ///////////////////////////////////////////////////////////
-
-  TOsc *osc_test = new TOsc();
-
-  ///////
-
-  osc_test->tosc_scaleF_POT_BNB  = scaleF_POT_BNB;
-  osc_test->tosc_scaleF_POT_NuMI = scaleF_POT_NuMI;
-
-  ///////
-
-  osc_test->flag_apply_oscillation_BNB  = Configure_Osc::flag_apply_oscillation_BNB;
-  osc_test->flag_apply_oscillation_NuMI = Configure_Osc::flag_apply_oscillation_NuMI;
-
-  osc_test->flag_goodness_of_fit_CNP    = Configure_Osc::flag_goodness_of_fit_CNP;
-
-  ///////
-
-  osc_test->flag_syst_dirt   = Configure_Osc::flag_syst_dirt;
-  osc_test->flag_syst_mcstat = Configure_Osc::flag_syst_mcstat;
-  osc_test->flag_syst_flux   = Configure_Osc::flag_syst_flux;
-  osc_test->flag_syst_geant  = Configure_Osc::flag_syst_geant;
-  osc_test->flag_syst_Xs     = Configure_Osc::flag_syst_Xs;
-  osc_test->flag_syst_det    = Configure_Osc::flag_syst_det;
-
-  ///////
-
-  osc_test->flag_NuMI_nueCC_from_intnue         = Configure_Osc::flag_NuMI_nueCC_from_intnue;
-  osc_test->flag_NuMI_nueCC_from_overlaynumu    = Configure_Osc::flag_NuMI_nueCC_from_overlaynumu;
-  osc_test->flag_NuMI_nueCC_from_appnue         = Configure_Osc::flag_NuMI_nueCC_from_appnue;
-  osc_test->flag_NuMI_nueCC_from_appnumu        = Configure_Osc::flag_NuMI_nueCC_from_appnumu;
-  osc_test->flag_NuMI_nueCC_from_overlaynueNC   = Configure_Osc::flag_NuMI_nueCC_from_overlaynueNC;
-  osc_test->flag_NuMI_nueCC_from_overlaynumuNC  = Configure_Osc::flag_NuMI_nueCC_from_overlaynumuNC;
-
-  osc_test->flag_NuMI_numuCC_from_overlaynumu   = Configure_Osc::flag_NuMI_numuCC_from_overlaynumu;
-  osc_test->flag_NuMI_numuCC_from_overlaynue    = Configure_Osc::flag_NuMI_numuCC_from_overlaynue;
-  osc_test->flag_NuMI_numuCC_from_appnue        = Configure_Osc::flag_NuMI_numuCC_from_appnue;
-  osc_test->flag_NuMI_numuCC_from_appnumu       = Configure_Osc::flag_NuMI_numuCC_from_appnumu;
-  osc_test->flag_NuMI_numuCC_from_overlaynumuNC = Configure_Osc::flag_NuMI_numuCC_from_overlaynumuNC;
-  osc_test->flag_NuMI_numuCC_from_overlaynueNC  = Configure_Osc::flag_NuMI_numuCC_from_overlaynueNC;
-
-  osc_test->flag_NuMI_CCpi0_from_overlaynumu    = Configure_Osc::flag_NuMI_CCpi0_from_overlaynumu;
-  osc_test->flag_NuMI_CCpi0_from_appnue         = Configure_Osc::flag_NuMI_CCpi0_from_appnue;
-  osc_test->flag_NuMI_CCpi0_from_overlaynumuNC  = Configure_Osc::flag_NuMI_CCpi0_from_overlaynumuNC;
-  osc_test->flag_NuMI_CCpi0_from_overlaynueNC   = Configure_Osc::flag_NuMI_CCpi0_from_overlaynueNC;
-
-  osc_test->flag_NuMI_NCpi0_from_overlaynumu    = Configure_Osc::flag_NuMI_NCpi0_from_overlaynumu;
-  osc_test->flag_NuMI_NCpi0_from_appnue         = Configure_Osc::flag_NuMI_NCpi0_from_appnue;
-  osc_test->flag_NuMI_NCpi0_from_overlaynumuNC  = Configure_Osc::flag_NuMI_NCpi0_from_overlaynumuNC;
-  osc_test->flag_NuMI_NCpi0_from_overlaynueNC   = Configure_Osc::flag_NuMI_NCpi0_from_overlaynueNC;
-
-
-  ///////
-
-  osc_test->flag_BNB_nueCC_from_intnue         = Configure_Osc::flag_BNB_nueCC_from_intnue;
-  osc_test->flag_BNB_nueCC_from_overlaynumu    = Configure_Osc::flag_BNB_nueCC_from_overlaynumu;
-  osc_test->flag_BNB_nueCC_from_appnue         = Configure_Osc::flag_BNB_nueCC_from_appnue;
-  osc_test->flag_BNB_nueCC_from_appnumu        = Configure_Osc::flag_BNB_nueCC_from_appnumu;
-  osc_test->flag_BNB_nueCC_from_overlaynueNC   = Configure_Osc::flag_BNB_nueCC_from_overlaynueNC;
-  osc_test->flag_BNB_nueCC_from_overlaynumuNC  = Configure_Osc::flag_BNB_nueCC_from_overlaynumuNC;
-
-  osc_test->flag_BNB_numuCC_from_overlaynumu   = Configure_Osc::flag_BNB_numuCC_from_overlaynumu;
-  osc_test->flag_BNB_numuCC_from_overlaynue    = Configure_Osc::flag_BNB_numuCC_from_overlaynue;
-  osc_test->flag_BNB_numuCC_from_appnue        = Configure_Osc::flag_BNB_numuCC_from_appnue;
-  osc_test->flag_BNB_numuCC_from_appnumu       = Configure_Osc::flag_BNB_numuCC_from_appnumu;
-  osc_test->flag_BNB_numuCC_from_overlaynumuNC = Configure_Osc::flag_BNB_numuCC_from_overlaynumuNC;
-  osc_test->flag_BNB_numuCC_from_overlaynueNC  = Configure_Osc::flag_BNB_numuCC_from_overlaynueNC;
-
-  osc_test->flag_BNB_CCpi0_from_overlaynumu    = Configure_Osc::flag_BNB_CCpi0_from_overlaynumu;
-  osc_test->flag_BNB_CCpi0_from_appnue         = Configure_Osc::flag_BNB_CCpi0_from_appnue;
-  osc_test->flag_BNB_CCpi0_from_overlaynumuNC  = Configure_Osc::flag_BNB_CCpi0_from_overlaynumuNC;
-  osc_test->flag_BNB_CCpi0_from_overlaynueNC   = Configure_Osc::flag_BNB_CCpi0_from_overlaynueNC;
-
-  osc_test->flag_BNB_NCpi0_from_overlaynumu    = Configure_Osc::flag_BNB_NCpi0_from_overlaynumu;
-  osc_test->flag_BNB_NCpi0_from_appnue         = Configure_Osc::flag_BNB_NCpi0_from_appnue;
-  osc_test->flag_BNB_NCpi0_from_overlaynumuNC  = Configure_Osc::flag_BNB_NCpi0_from_overlaynumuNC;
-  osc_test->flag_BNB_NCpi0_from_overlaynueNC   = Configure_Osc::flag_BNB_NCpi0_from_overlaynueNC;
-
-  /////// set only one time
-  /////// set only one time
-
-  osc_test->Set_default_cv_cov(Configure_Osc::default_cv_file,
-                               Configure_Osc::default_dirtadd_file,
-                               Configure_Osc::default_mcstat_file,
-                               Configure_Osc::default_fluxXs_dir,
-                               Configure_Osc::default_detector_dir);
-  osc_test->Set_oscillation_base(Configure_Osc::default_eventlist_dir);
-
-  for(int i=1; i<argc; i++) {
-    if( strcmp(argv[i],"-it14")==0 ) {
-      stringstream convert( argv[i+1] );
-      if(  !( convert>>it14 ) ) { cerr<<" ---> Error it14 !"<<endl; exit(1); }
-    }
-    if( strcmp(argv[i],"-idm2")==0 ) {
-      stringstream convert( argv[i+1] );
-      if(  !( convert>>idm2 ) ) { cerr<<" ---> Error idm2 !"<<endl; exit(1); }
+      // file closes automatically here (scope end)
     }
   }
-
-
-  // Create arrays to hold the values I need
-  int ittt = it14;
-  double pars_3v_small[4] = {0, 0.10, 0.11, 0};
-  double val_obj_dm2 = h1d_dm2->GetBinCenter(idm2);
-  val_obj_dm2 = pow(10, val_obj_dm2);
-  double val_obj_ttt = h1d_ttt->GetBinCenter(ittt);
-  val_obj_ttt = pow(10, val_obj_ttt);
-  double pars_4v_grid[4] ={val_obj_dm2, val_obj_ttt, 0.0045, 0};
-
-
-// Branch-backed pointers
-    std::vector<double>* invec4v = nullptr;
-    std::vector<double>* invec3v = nullptr;
-
-    // Your independent copies
-    std::vector<std::vector<double>> vec4v;
-    std::vector<std::vector<double>> vec3v;
-
-
-    roostr = TString::Format("output/out_dm2_ttt_%03d_%03d.root", idm2, it14);
-    // Scope for ROOT objects
-    TFile file(roostr, "READ");
-
-    TTree* tree = (TTree*)file.Get("tree");
-
-    tree->SetBranchAddress("vec_dchi2_4v", &invec3v);
-    tree->SetBranchAddress("vec_dchi2_3v", &invec4v);
-
-    tree->GetEntry(0);
-
-    vec4v.push_back(*invec4v);
-    vec3v.push_back(*invec3v);
-
-    file.Close();
+  for (auto& v : vec4v_cache) std::sort(v.begin(), v.end());
+  for (auto& v : vec3v_cache) std::sort(v.begin(), v.end());
+  cout << "Finish Presave all out*.root files\n";
 
 
 
+
+  // A vectorized version
+  std::vector<double> cls_grid(60 * 60);
+
+  // input matrix
+  TMatrixT<double>* inmat = nullptr;
+
+  // cache already sorted BEFORE this loop
+
+  TFile obsfile("input/presave_deltachisquare_obs.root", "READ");
+  TTree* obstree = (TTree*)obsfile.Get("tree");
+  obstree->SetBranchAddress("obs_map", &inmat);
+
+  TFile file("cls_maps.root", "RECREATE");
+  TTree tree("tree", "CLs Grids");
+  tree.Branch("cls_grid", &cls_grid);
+
+  for (int universe = 0; universe < 50; ++universe) {
+
+    obstree->GetEntry(universe);
+
+    const TMatrixT<double>& obs = *inmat;
+
+    // direct pointer access (faster than operator[])
+    for (int idm2 = 0; idm2 < N_idm2; ++idm2) {
+      for (int it14 = 0; it14 < N_it14; ++it14) {
+        double refval = (*inmat)(idm2, it14);
+        int idx = idm2 * N_it14 + it14;
+
+        const std::vector<double>& vec4v = vec4v_cache[idx];
+        const std::vector<double> &vec3v = vec3v_cache[idx];
+        auto it4 = std::lower_bound(vec4v.data(), vec4v.data() + vec4v.size(), refval);
+
+        auto it3 = std::lower_bound(vec3v.data(),
+                                    vec3v.data() + vec3v.size(),
+                                    refval);
+
+        double count4v = (vec4v.data() + vec4v.size()) - it4;
+        double count3v = (vec3v.data() + vec3v.size()) - it3;
+	    double cls = 0;
+	    if( count3v == 0 ) {
+	      if( count4v == 0 ) cls = 0;
+	      else cls = 1;
+	    }
+	    else cls = count4v / count3v;
+	    if( count4v>=count3v ) cls = 1;
+
+        cls_grid[idx] = 1.0 - cls;
+      }
+    }
+
+    tree.Fill();
+
+    if (universe % 5 == 0)
+      std::cout << "Finished universe " << universe << "\n";
+  }
+
+  obsfile.Close();
+  tree.Write();
+  file.Close();
+  return 0;
   cout << " ---> Finished successfully" << endl;
 
   cout<<endl;
-  if( display ) {
-    cout<<" Enter Ctrl+c to end the program"<<endl;
-    cout<<" Enter Ctrl+c to end the program"<<endl;
-    cout<<endl;
-    theApp.Run();
-  }
+
 
   return 0;
 }
