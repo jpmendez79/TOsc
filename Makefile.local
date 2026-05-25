@@ -1,0 +1,50 @@
+CC = g++
+CC += -DDEBUG -g
+
+CFLAGS = -c -Wall -m64
+LDFLAGS = -fPIC
+
+DIR_SRC = ./src
+DIR_BIN = ./bin
+
+ROOTSYS = /usr
+
+# ROOT flags
+CFLAGS += $(shell $(ROOTSYS)/bin/root-config --cflags)
+LDFLAGS += $(shell $(ROOTSYS)/bin/root-config --libs)
+
+# Include directories
+CFLAGS += -I./inc/ -I$(ROOTSYS)/include/
+
+# All source files
+SOURCES = $(wildcard *.cxx) $(wildcard $(DIR_SRC)/*.cxx)
+
+# All object files
+OBJECTS = $(SOURCES:.cxx=.o)
+
+# Source files in src/
+SRC_SOURCES = $(wildcard $(DIR_SRC)/*.cxx)
+SRC_OBJECTS = $(SRC_SOURCES:.cxx=.o)
+
+# Top-level source files only
+TOPLEVEL_SOURCES = $(filter-out $(DIR_SRC)/%.cxx,$(SOURCES))
+
+# Executables generated from top-level .cxx files
+EXECUTABLES = $(patsubst %.cxx,$(DIR_BIN)/%,$(TOPLEVEL_SOURCES))
+
+# Default target
+all: $(EXECUTABLES)
+
+# Compile .cxx -> .o
+%.o: %.cxx
+	$(CC) $(CFLAGS) $< -o $@
+
+# Link each executable with its object file plus shared src objects
+$(DIR_BIN)/%: %.o $(SRC_OBJECTS)
+	$(CC) -o $@ $^ $(LDFLAGS) -lMinuit2
+
+# Cleanup
+clean:
+	rm -f *.o $(DIR_SRC)/*.o
+	rm -f $(EXECUTABLES)
+	rm -f *.pcm *.d *.so
