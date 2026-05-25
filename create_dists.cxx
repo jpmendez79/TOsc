@@ -44,14 +44,15 @@ int main(int argc, char** argv)
   }
 
 TString final_name =
-    TString::Format("output/test_out_dm2_ttt_%03d_%03d.root", idm2, it14);
+    TString::Format("output/out_gs_2_5PI_dm2_ttt_%03d_%03d.root", idm2, it14);
 
 TString tmp_name = final_name + ".tmp";
 
 if (std::filesystem::exists(final_name.Data())) {
     return 0;
 }
-
+  // Write Output
+TFile outfile(tmp_name, "RECREATE");
 
   double scaleF_POT_BNB  = 1;
   double scaleF_POT_NuMI = 1;
@@ -63,12 +64,6 @@ if (std::filesystem::exists(final_name.Data())) {
   // double idm2 = 0;
   // double it24 = 0;
 
-
-  if( !display ) {
-    gROOT->SetBatch( 1 );
-  }
-
-  TApplication theApp("theApp",&argc,argv);
 
   /////////////////////////////////////////////////////////// Draw style
 
@@ -223,8 +218,7 @@ if (std::filesystem::exists(final_name.Data())) {
   }
 
 
-  // Write Output
-TFile outfile(tmp_name, "RECREATE");
+outfile.cd();
   // TFile outfile(roostr, "RECREATE");
   TTree *tree = new TTree("tree", "Grid Chi2");
 
@@ -246,16 +240,11 @@ TFile outfile(tmp_name, "RECREATE");
   tree->Fill();
   tree->Write();
   outfile.Close();
+outfile.Flush();
 std::filesystem::rename(tmp_name.Data(), final_name.Data());
   cout << " ---> Finished successfully" << endl;
 
   cout<<endl;
-  if( display ) {
-    cout<<" Enter Ctrl+c to end the program"<<endl;
-    cout<<" Enter Ctrl+c to end the program"<<endl;
-    cout<<endl;
-    theApp.Run();
-  }
 
   return 0;
 }
