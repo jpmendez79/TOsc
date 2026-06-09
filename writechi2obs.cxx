@@ -41,7 +41,7 @@ int main(int argc, char** argv)
     }
   }
 
-TString final_name = TString::Format("output/size_1k_cls_out_dm2_ttt_%03d_%03d.root", idm2, it14);
+TString final_name = TString::Format("output/size_1k-2k_cls_out_dm2_ttt_%03d_%03d.root", idm2, it14);
 
 TString tmp_name = final_name + ".tmp";
 
@@ -242,11 +242,22 @@ tree->GetEntry(0);
 // std::vector<double> vec4v = *invec4v;
 // std::vector<double> vec3v = *invec3v;
 
-const int size = 1000;/* number of elements to copy */
+// Copy out the next 1000
+// const int size = 1000;/* number of elements to copy */
+
+
+constexpr std::size_t start = 1000;
+constexpr std::size_t count = 1000;
 
 // COPY OUT OF ROOT OWNERSHIP
-std::vector<double> vec4v(invec4v->begin(), invec4v->begin() + size);
-std::vector<double> vec3v(invec3v->begin(), invec3v->begin() + size);
+std::vector<double> vec4v(invec4v->begin() + start,
+                          invec4v->begin() + start + count);
+
+std::vector<double> vec3v(invec3v->begin() + start,
+                          invec3v->begin() + start + count);
+// COPY OUT OF ROOT OWNERSHIP
+// std::vector<double> vec4v(invec4v->begin(), invec4v->begin() + size);
+// std::vector<double> vec3v(invec3v->begin(), invec3v->begin() + size);
 
 // safe to close ROOT now
 file.Close();
