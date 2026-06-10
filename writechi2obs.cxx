@@ -41,7 +41,7 @@ int main(int argc, char** argv)
     }
   }
 
-TString final_name = TString::Format("output/start_2k_size2k-2k_cls_out_dm2_ttt_%03d_%03d.root", idm2, it14);
+TString final_name = TString::Format("output/start_4k_size4k-6k_cls_out_dm2_ttt_%03d_%03d.root", idm2, it14);
 
 TString tmp_name = final_name + ".tmp";
 
@@ -246,8 +246,8 @@ tree->GetEntry(0);
 // const int size = 1000;/* number of elements to copy */
 
 
-constexpr std::size_t start = 2000;
-constexpr std::size_t count = 2000;
+constexpr std::size_t start = 4000;
+constexpr std::size_t count = 6000;
 
 // COPY OUT OF ROOT OWNERSHIP
 std::vector<double> vec4v(invec4v->begin() + start,
