@@ -172,7 +172,7 @@ int main(int argc, char** argv)
   double pars_4v_grid[4] ={val_obj_dm2, val_obj_ttt, 0.0045, 0};
 
   // Set size of pdf
-  const int num_toys = 60000;
+  const int num_toys = 10000;
 
   // Create output vectors
   vector<double> vec_chi2_3v_with_3vToy;
@@ -216,7 +216,7 @@ int main(int argc, char** argv)
 
 
   // Write Output
-  roostr = TString::Format("output/out_dm2_ttt_%03d_%03d.root", idm2, it14);
+  roostr = TString::Format("output/10k_out_dm2_ttt_%03d_%03d.root", idm2, it14);
   TFile outfile(roostr, "RECREATE");
   TTree *tree = new TTree("tree", "Grid Chi2");
 
