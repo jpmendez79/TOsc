@@ -41,7 +41,7 @@ int main(int argc, char** argv)
     }
   }
 
-TString final_name = TString::Format("output/size_8k_cls_out_dm2_ttt_%03d_%03d.root", idm2, it14);
+TString final_name = TString::Format("output/size_10k_cls_out_dm2_ttt_%03d_%03d.root", idm2, it14);
 
 TString tmp_name = final_name + ".tmp";
 
@@ -217,7 +217,7 @@ vec_confidence.resize(N);
 // Loop over entries
 // --------------------------------------------------
 // Save all info needed from index file
-roostr = TString::Format("output/out_dm2_ttt_%03d_%03d.root", idm2, it14);
+roostr = TString::Format("output/10k_out_dm2_ttt_%03d_%03d.root", idm2, it14);
 cout << roostr << endl;
 TFile file(roostr, "READ");
 
