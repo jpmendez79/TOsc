@@ -41,7 +41,7 @@ int main(int argc, char** argv)
     }
   }
 
-TString final_name = TString::Format("output/size_10k_cls_out_dm2_ttt_%03d_%03d.root", idm2, it14);
+TString final_name = TString::Format("output/size_xiangpan60k_cls_out_dm2_ttt_%03d_%03d.root", idm2, it14);
 
 TString tmp_name = final_name + ".tmp";
 
@@ -156,7 +156,7 @@ TFile outfile(tmp_name, "RECREATE");
 // --------------------------------------------------
 // Open input file
 // --------------------------------------------------
-TString xpath = "xiangpan-presave.root";
+TString xpath = "input/presave_3v_hypothesis_toydata_01_cv.root";
 TFile* inputfile_toydata_cv = TFile::Open(xpath, "READ");
 
 if (!inputfile_toydata_cv || inputfile_toydata_cv->IsZombie()) {
@@ -217,7 +217,8 @@ vec_confidence.resize(N);
 // Loop over entries
 // --------------------------------------------------
 // Save all info needed from index file
-roostr = TString::Format("output/10k_out_dm2_ttt_%03d_%03d.root", idm2, it14);
+roostr = TString::Format("dir_step_3_total/out_dm2_ttt_%03d_%03d.root", idm2, it14);
+// roostr = TString::Format("output/10k_out_dm2_ttt_%03d_%03d.root", idm2, it14);
 cout << roostr << endl;
 TFile file(roostr, "READ");
 
@@ -231,8 +232,14 @@ std::vector<double>* invec3v = nullptr;
 double val_obj_dm2;
 double val_obj_ttt;
 
-tree->SetBranchAddress("vec_dchi2_4v", &invec4v);
-tree->SetBranchAddress("vec_dchi2_3v", &invec3v);
+// tree->SetBranchAddress("vec_dchi2_4v", &invec4v);
+// tree->SetBranchAddress("vec_dchi2_3v", &invec3v);
+// tree->SetBranchAddress("data_val_dm2", &val_obj_dm2);
+// tree->SetBranchAddress("data_val_ttt", &val_obj_ttt);
+
+// Xiangpan naming convention
+tree->SetBranchAddress("vec_dchi2_with_4vToy", &invec4v);
+tree->SetBranchAddress("vec_dchi2_with_3vToy", &invec3v);
 tree->SetBranchAddress("data_val_dm2", &val_obj_dm2);
 tree->SetBranchAddress("data_val_ttt", &val_obj_ttt);
 
@@ -247,7 +254,7 @@ tree->GetEntry(0);
 
 
 constexpr std::size_t start = 0;
-constexpr std::size_t count = 8000;
+constexpr std::size_t count = 10000;
 
 // COPY OUT OF ROOT OWNERSHIP
 std::vector<double> vec4v(invec4v->begin() + start,
