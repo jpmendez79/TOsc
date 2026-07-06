@@ -232,7 +232,7 @@ int main(void) {
 
       int idx = idm2 * N_it14 + it14;
 
-      TString roostr = TString::Format("output/10k_out_dm2_ttt_%03d_%03d.root", idm2+1, it14+1);
+      TString roostr = TString::Format("output/size_10k_cls_out_dm2_ttt_%03d_%03d.root", idm2+1, it14+1);
       TFile file(roostr, "READ");
 
       TTree* tree = (TTree*)file.Get("tree");
