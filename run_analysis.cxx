@@ -167,7 +167,7 @@ int main(void) {
   // Pre-create all Vectors
   TH1::AddDirectory(false);
   std::vector<TH2D *> vec_cls_universe;
-  for (int k = 0; k < 2002; ++k) {
+  for (int k = 3; k < 7; ++k) {
     vec_cls_universe.push_back(
         new TH2D(Form("hcls_%04d", k), "", 60, 1, 60, 60, 1, 60));
   }
