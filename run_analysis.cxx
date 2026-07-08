@@ -167,7 +167,7 @@ int main(void) {
   // Pre-create all Vectors
   TH1::AddDirectory(false);
   std::vector<TH2D *> vec_cls_universe;
-  for (int k = 3; k < 7; ++k) {
+  for (int k = 0; k < 2002; ++k) {
     vec_cls_universe.push_back(
         new TH2D(Form("hcls_%04d", k), "", 60, 1, 60, 60, 1, 60));
   }
@@ -176,7 +176,7 @@ int main(void) {
     for (int ittt = 1; ittt <= 60; ittt++) {
 
       // Open the file
-      TString roostr = TString::Format("output/cls_out_dm2_ttt_%03d_%03d.root", idm2, ittt);
+      TString roostr = TString::Format("output/size_xiangpan60k_cls_out_dm2_ttt_%03d_%03d.root", idm2, ittt);
       TFile f(roostr, "READ");
 
       // Get the tree
@@ -193,9 +193,11 @@ int main(void) {
       tree->GetEntry(0);
 
       // Fill histograms
-      int num_universe = vec_confidence->size();
+      // int num_universe = vec_confidence->size();
+      int num_universe = 2002;
       for (int universe = 0; universe < num_universe; universe++) {
-        vec_cls_universe[universe]->SetBinContent(ittt, idm2, (*vec_confidence)[universe]);
+        vec_cls_universe[universe]->SetBinContent(ittt, idm2,
+                                                  (*vec_confidence)[universe]);
       }
       f.Close();
     }
@@ -211,7 +213,7 @@ int main(void) {
   }
 
   // Now save everything
-  TFile out("cls_95_60x60_vanilla_numu.root", "RECREATE");
+  TFile out("cls_xj-compare-95_60x60_vanilla_numu.root", "RECREATE");
 
   TDirectory *dh = out.mkdir("histograms");
   TDirectory *dg = out.mkdir("cl_curves");
