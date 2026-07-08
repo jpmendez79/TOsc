@@ -148,10 +148,6 @@ TFile outfile(tmp_name, "RECREATE");
 
   // Create arrays to hold the values I need
   double pars_3v_small[4] = {0, 0.10, 0.11, 0};
-
-//
-
-
 // Open presaved file
 // --------------------------------------------------
 // Open input file
@@ -221,9 +217,6 @@ roostr = TString::Format("dir_step_3_total/out_dm2_ttt_%03d_%03d.root", idm2, it
 // roostr = TString::Format("output/10k_out_dm2_ttt_%03d_%03d.root", idm2, it14);
 cout << roostr << endl;
 TFile file(roostr, "READ");
-
-
-
 TTree* tree = (TTree*)file.Get("tree");
 
 std::vector<double>* invec4v = nullptr;
@@ -246,8 +239,8 @@ tree->SetBranchAddress("data_val_ttt", &val_obj_ttt);
 tree->GetEntry(0);
 
 // // COPY OUT OF ROOT OWNERSHIP
-// std::vector<double> vec4v = *invec4v;
-// std::vector<double> vec3v = *invec3v;
+std::vector<double> vec4v = *invec4v;
+std::vector<double> vec3v = *invec3v;
 
 // Copy out the next 1000
 // const int size = 1000;/* number of elements to copy */
@@ -257,12 +250,12 @@ constexpr std::size_t start = 0;
 constexpr std::size_t count = 10000;
 
 // COPY OUT OF ROOT OWNERSHIP
-std::vector<double> vec4v(invec4v->begin() + start,
-                          invec4v->begin() + start + count);
-
-std::vector<double> vec3v(invec3v->begin() + start,
-                          invec3v->begin() + start + count);
-// COPY OUT OF ROOT OWNERSHIP
+// std::vector<double> vec4v(invec4v->begin() + start,
+//                           invec4v->begin() + start + count);
+//
+// std::vector<double> vec3v(invec3v->begin() + start,
+//                           invec3v->begin() + start + count);
+// // copy OUT OF ROOT OWNERSHIP
 // std::vector<double> vec4v(invec4v->begin(), invec4v->begin() + size);
 // std::vector<double> vec3v(invec3v->begin(), invec3v->begin() + size);
 
@@ -287,12 +280,6 @@ double pars_4v_grid[4] ={val_obj_dm2, val_obj_ttt, 0.0045, 0};
     double obs_3v = osc_test->FCN(pars_3v_small);
 
     // Calculate chi2
-
-
-
-
-
-
     double obs_4v = osc_test->FCN(pars_4v_grid);
 
     // Calculate deltachi2obs
