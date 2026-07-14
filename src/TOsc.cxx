@@ -87,9 +87,9 @@ double TOsc::FCN(const double *par)
   }// for(int idx=0; idx<rows; idx++)
 
   matrix_cov_total = matrix_cov_syst_total + matrix_cov_stat_total;
-  TMatrixD matrix_delta = matrix_pred_total - matrix_data_total;
+ // TMatrixD matrix_delta = matrix_pred_total - matrix_data_total;
   /////// Cholesky method: decomptakes (~n^3)/6 calcualtion + (~n^2) extral cal
-  chi2_final = Cal_chi2COV(matrix_delta, matrix_cov_total);
+  // chi2_final = Cal_chi2COV(matrix_delta, matrix_cov_total);
     // map<int, TMatrixD> map_matrix_toy_spectrum;
     // map_matrix_toy_spectrum[1].ResizeTo(1,bins_eff);
     // TString fname = "toy_file_output";
@@ -101,11 +101,12 @@ double TOsc::FCN(const double *par)
 /////////////// Jesse Xiangpan Hack ///////////////////////
 
 	  // /////// calculate chi2_4v_with_3vToy and chi2_3v_with_3vToy
-      // TMatrixD matrix_delta =  matrix_pred_total - matrix_data_total;
-      // TMatrixD matrix_delta_T = matrix_delta.T(); matrix_delta.T();
-      // TMatrixD matrix_cov_total_inv = matrix_cov_total; matrix_cov_total_inv.Invert();
-      // TMatrixD matrix_chi2 = matrix_delta * matrix_cov_total_inv *matrix_delta_T;
-      // chi2_final = matrix_chi2(0,0);
+
+  TMatrixD matrix_delta =  matrix_pred_total - matrix_data_total;
+      TMatrixD matrix_delta_T = matrix_delta.T(); matrix_delta.T();
+      TMatrixD matrix_cov_total_inv = matrix_cov_total; matrix_cov_total_inv.Invert();
+      TMatrixD matrix_chi2 = matrix_delta * matrix_cov_total_inv *matrix_delta_T;
+      chi2_final = matrix_chi2(0,0);
 
 
 

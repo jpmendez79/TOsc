@@ -160,9 +160,9 @@ int main(void) {
   const int NUM_dm2 = 60;
   const int NUM_ttt = 60;
 
-  // TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, -2, 1);
+   // TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, -2, 1);
   // TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, -2, 0);
-  // // First load 3600 files
+  // First load 3600 files
 
   // Pre-create all Vectors
   TH1::AddDirectory(false);
@@ -176,7 +176,8 @@ int main(void) {
     for (int ittt = 1; ittt <= 60; ittt++) {
 
       // Open the file
-      TString roostr = TString::Format("output/size_xiangpan60k_cls_out_dm2_ttt_%03d_%03d.root", idm2, ittt);
+      // TString roostr = TString::Format("output/size_xiangpan60k_cls_out_dm2_ttt_%03d_%03d.root", idm2, ittt);
+      // TString roostr = TString::Format("dir_step_3_total/out_dm2_ttt_%03d_%03d.root", idm2, ittt);
       TFile f(roostr, "READ");
 
       // Get the tree
@@ -185,12 +186,13 @@ int main(void) {
 
       // Disable all unused branches
       tree->SetBranchStatus("*", 0);
-      tree->SetBranchStatus("vec_confidence", 1);
-
+      // tree->SetBranchStatus("vec_confidence", 1);
+    tree->SetBranchStatus("vec_dchi2_with_data", 1);
       // Connect the branch
       std::vector<double> *vec_confidence = nullptr;
-      tree->SetBranchAddress("vec_confidence", &vec_confidence);
-      tree->GetEntry(0);
+      // tree->SetBranchAddress("vec_confidence", &vec_confidence);
+      tree->SetBranchAddress("vec_dchi2_with_data", &vec_confidence);
+tree->GetEntry(0);
 
       // Fill histograms
       // int num_universe = vec_confidence->size();
@@ -202,18 +204,34 @@ int main(void) {
       f.Close();
     }
   }
+
+// std::vector<TH2D*> vec_cls_universe;
+// vec_cls_universe.reserve(2002);
+//
+// TFile *fin = TFile::Open("zz_results_pvalue_map_crosscheck_Xiangpan.root", "READ");
+// if (!fin || fin->IsZombie()) {
+//     throw std::runtime_error("Failed to open ROOT file.");
+// }
+// for (int k = 0; k < 2002; ++k) {
+//     TString histName = Form("map_toydata_h2_space_basic_%05d", k + 1);
+//
+//     TH2D *h = dynamic_cast<TH2D*>(fin->Get(histName));
+//     if (h) h->SetDirectory(nullptr);
+//
+//     vec_cls_universe.push_back(h);
+// }
   // Now Do the graph interpretation
-  std::vector<TGraph*> cl_curves(vec_cls_universe.size());
-
-  for (int u = 0; u < vec_cls_universe.size(); u++) {
-
-  cl_curves[u] = new TGraph();
-
-  get_CL_curve(vec_cls_universe[u], cl_curves[u],u);
-  }
+  // std::vector<TGraph*> cl_curves(vec_cls_universe.size());
+  //
+  // for (int u = 0; u < vec_cls_universe.size(); u++) {
+  //
+  // cl_curves[u] = new TGraph();
+  //
+  // get_CL_curve(vec_cls_universe[u], cl_curves[u],u);
+  // }
 
   // Now save everything
-  TFile out("cls_xj-compare-95_60x60_vanilla_numu.root", "RECREATE");
+  TFile out("dchi2obs_xiangpan_numu.root", "RECREATE");
 
   TDirectory *dh = out.mkdir("histograms");
   TDirectory *dg = out.mkdir("cl_curves");
@@ -224,9 +242,9 @@ for (int u = 0; u < vec_cls_universe.size(); u++) {
 }
 
 // graphs
-dg->cd();
-for (int u = 0; u < vec_cls_universe.size(); u++) {
-  cl_curves[u]->Write(Form("g_%04d", u));
-}
+// dg->cd();
+// for (int u = 0; u < vec_cls_universe.size(); u++) {
+//   cl_curves[u]->Write(Form("g_%04d", u));
+// }
 out.Close();
 }

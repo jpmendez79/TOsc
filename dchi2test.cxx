@@ -219,6 +219,17 @@ for (int i = 0; i < 60; i++) {
 }
 cout << "Prepared grid values\n";
 
+  // TMatrixD matrix_delta =  matrix_pred_total - matrix_data_total;
+  //     TMatrixD matrix_delta_T = matrix_delta.T(); matrix_delta.T();
+  //     TMatrixD matrix_cov_total_inv = matrix_cov_total; matrix_cov_total_inv.Invert();
+  //     TMatrixD matrix_chi2 = matrix_delta * matrix_cov_total_inv *matrix_delta_T;
+  //     chi2_final = matrix_chi2(0,0);
+
+
+
+
+
+
 
   TFile outfile("presave_deltachisquare_obs.root", "RECREATE");
   TTree *tree = new TTree("tree", "Obs Maps");
