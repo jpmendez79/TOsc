@@ -178,6 +178,7 @@ int main(void) {
       // Open the file
       // TString roostr = TString::Format("output/size_xiangpan60k_cls_out_dm2_ttt_%03d_%03d.root", idm2, ittt);
       // TString roostr = TString::Format("dir_step_3_total/out_dm2_ttt_%03d_%03d.root", idm2, ittt);
+      TString roostr = TString::Format("output/out_dm2_ttt_%03d_%03d.root", idm2, ittt);
       TFile f(roostr, "READ");
 
       // Get the tree
@@ -186,12 +187,12 @@ int main(void) {
 
       // Disable all unused branches
       tree->SetBranchStatus("*", 0);
-      // tree->SetBranchStatus("vec_confidence", 1);
-    tree->SetBranchStatus("vec_dchi2_with_data", 1);
+      tree->SetBranchStatus("vec_confidence", 1);
+    // tree->SetBranchStatus("vec_dchi2_with_data", 1);
       // Connect the branch
       std::vector<double> *vec_confidence = nullptr;
-      // tree->SetBranchAddress("vec_confidence", &vec_confidence);
-      tree->SetBranchAddress("vec_dchi2_with_data", &vec_confidence);
+      tree->SetBranchAddress("vec_confidence", &vec_confidence);
+      // tree->SetBranchAddress("vec_dchi2_with_data", &vec_confidence);
 tree->GetEntry(0);
 
       // Fill histograms
@@ -231,7 +232,7 @@ tree->GetEntry(0);
   // }
 
   // Now save everything
-  TFile out("dchi2obs_xiangpan_numu.root", "RECREATE");
+  TFile out("unit_test_03.root", "RECREATE");
 
   TDirectory *dh = out.mkdir("histograms");
   TDirectory *dg = out.mkdir("cl_curves");
