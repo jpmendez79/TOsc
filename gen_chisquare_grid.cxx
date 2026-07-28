@@ -257,7 +257,7 @@ int main(int argc, char** argv)
   // genuinely new computation each time, not a redundancy from the old
   // two-program split.
   // --------------------------------------------------
-  const int num_toys = 10000;
+  const int num_toys = 60000;
 
   vector<double> vec_dchi2_3v;
   vector<double> vec_dchi2_4v;
