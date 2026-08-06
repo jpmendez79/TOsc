@@ -32,6 +32,13 @@ int main(int argc, char** argv)
 
   int it14 = 0;
   int idm2 = 0;
+  int inumXgrids = 0;
+  int inumYgrids = 0;
+  double iparamXmin = 0;
+  double iparamXmax = 0;
+  double iparamYmin = 0;
+  double iparamYmax = 0;
+  int  inumToys = 0;
   bool flag_verbose = false;
   for(int i=1; i<argc; i++) {
     if( strcmp(argv[i],"-it14")==0 ) {
@@ -44,6 +51,34 @@ int main(int argc, char** argv)
     }
     if( strcmp(argv[i],"-v")==0 ) {
       flag_verbose = true;
+    }
+    if( strcmp(argv[i],"-numXgrids")==0 ) {
+      stringstream convert( argv[i+1] );
+      if(  !( convert>>inumXgrids ) ) { cerr<<" ---> Error  inumXgrids!"<<endl; exit(1); }
+    }
+    if( strcmp(argv[i],"-numYgrids")==0 ) {
+            stringstream convert( argv[i+1] );
+      if(  !( convert>>inumYgrids ) ) { cerr<<" ---> Error  numYgrids!"<<endl; exit(1); }
+    }
+    if( strcmp(argv[i],"-paramXmin")==0 ) {
+            stringstream convert( argv[i+1] );
+            if(  !( convert>>iparamXmin ) ) { cerr<<" ---> Error  iparamXmin!"<<endl; exit(1); }
+    }
+    if( strcmp(argv[i],"-paramXmax")==0 ) {
+            stringstream convert( argv[i+1] );
+      if(  !( convert>>iparamXmax ) ) { cerr<<" ---> Error iparamXmax!"<<endl; exit(1); }
+    }
+    if( strcmp(argv[i],"-paramYmin")==0 ) {
+            stringstream convert( argv[i+1] );
+      if(  !( convert>>iparamYmin ) ) { cerr<<" ---> Error  iparamYmin!"<<endl; exit(1); }
+    }
+    if( strcmp(argv[i],"-paramYmax")==0 ) {
+            stringstream convert( argv[i+1] );
+      if(  !( convert>>iparamYmax ) ) { cerr<<" ---> Error iparamYmax  !"<<endl; exit(1); }
+    }
+    if( strcmp(argv[i],"-numToys")==0 ) {
+      stringstream convert( argv[i+1] );
+      if(  !( convert>>inumToys ) ) { cerr<<" ---> Error inumToys !"<<endl; exit(1); }
     }
   }
 
@@ -83,10 +118,10 @@ int main(int argc, char** argv)
   // so building these histograms before the output .tmp file exists avoids
   // them being silently swept into it.
   // --------------------------------------------------
-  const int NUM_dm2 = 60;
-  const int NUM_ttt = 60;
-  const double DM2_LO = -2, DM2_HI = 1;
-  const double TTT_LO = -2, TTT_HI = 0;
+  const int NUM_dm2 = inumYgrids;
+  const int NUM_ttt = inumXgrids;
+  const double DM2_LO = iparamYmin, DM2_HI = iparamYmax;
+  const double TTT_LO = iparamXmin, TTT_HI = iparamXmax;
 
   TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, DM2_LO, DM2_HI);
   TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, TTT_LO, TTT_HI);
@@ -257,7 +292,7 @@ int main(int argc, char** argv)
   // genuinely new computation each time, not a redundancy from the old
   // two-program split.
   // --------------------------------------------------
-  const int num_toys = 60000;
+  const int num_toys = inumToys;
 
   vector<double> vec_chi2_3vToy_3v;
   vector<double> vec_chi2_3vToy_4v;
