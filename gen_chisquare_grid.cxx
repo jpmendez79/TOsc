@@ -259,10 +259,19 @@ int main(int argc, char** argv)
   // --------------------------------------------------
   const int num_toys = 60000;
 
-  vector<double> vec_dchi2_3v;
+  vector<double> vec_chi2_3vToy_3v;
+  vector<double> vec_chi2_3vToy_4v;
+  vector<double> vec_chi2_4vToy_3v;
+  vector<double> vec_chi2_4vToy_4v;
   vector<double> vec_dchi2_4v;
+  vector<double> vec_dchi2_3v;
   vec_dchi2_3v.reserve(num_toys);
   vec_dchi2_4v.reserve(num_toys);
+  vec_chi2_3vToy_3v.reserve(num_toys);
+  vec_chi2_3vToy_4v.reserve(num_toys);
+  vec_chi2_4vToy_3v.reserve(num_toys);
+  vec_chi2_4vToy_4v.reserve(num_toys);
+
 
   cout << "Generate 3v\n";
   osc_test->Set_oscillation_pars(0, 0.10, 0.11, 0);
@@ -273,6 +282,8 @@ int main(int argc, char** argv)
     osc_test->Set_toy2fitdata(i+1);
     double chi2_3v = osc_test->FCN(pars_3v_small);
     double chi2_4v = osc_test->FCN(pars_4v_grid);
+    vec_chi2_3vToy_3v.push_back(chi2_3v);
+    vec_chi2_3vToy_4v.push_back(chi2_4v);
     vec_dchi2_3v.push_back(chi2_4v - chi2_3v);
   }
 
@@ -285,6 +296,8 @@ int main(int argc, char** argv)
     osc_test->Set_toy2fitdata(i+1);
     double chi2_3v = osc_test->FCN(pars_3v_small);
     double chi2_4v = osc_test->FCN(pars_4v_grid);
+    vec_chi2_4vToy_3v.push_back(chi2_3v);
+    vec_chi2_4vToy_4v.push_back(chi2_4v);
     vec_dchi2_4v.push_back(chi2_4v - chi2_3v);
   }
 
@@ -344,6 +357,14 @@ int main(int argc, char** argv)
   outtree.Branch("grid_idx_ttt", &ittt, "ittt/I");
   outtree.Branch("data_val_dm2", &val_obj_dm2, "val_obj_dm2/D");
   outtree.Branch("data_val_ttt", &val_obj_ttt, "val_obj_ttt/D");
+
+  outtree.Branch("vec_chi2_4vToy_4v", &vec_chi2_4vToy_4v);
+  outtree.Branch("vec_chi2_4vToy_3v", &vec_chi2_4vToy_3v);
+  outtree.Branch("vec_dchi2_4v", &vec_dchi2_4v);
+
+  outtree.Branch("vec_chi2_3vToy_4v", &vec_chi2_4vToy_4v);
+  outtree.Branch("vec_chi2_3vToy_3v", &vec_chi2_4vToy_3v);
+  outtree.Branch("vec_dchi2_3v", &vec_dchi2_3v);
 
   outtree.Branch("vec_obs_3v", &vec_obs_3v);
   outtree.Branch("vec_obs_4v", &vec_obs_4v);
