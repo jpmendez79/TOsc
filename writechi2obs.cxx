@@ -246,8 +246,8 @@ std::vector<double> vec3v = *invec3v;
 // const int size = 1000;/* number of elements to copy */
 
 
-// constexpr std::size_t start = 0;
-// constexpr std::size_t count = 30000;
+constexpr std::size_t start = 0;
+constexpr std::size_t count = 6000;
 
 // COPY OUT OF ROOT OWNERSHIP
 // std::vector<double> vec4v(invec4v->begin() + start,
