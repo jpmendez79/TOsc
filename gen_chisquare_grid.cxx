@@ -52,30 +52,6 @@ int main(int argc, char** argv)
     if( strcmp(argv[i],"-v")==0 ) {
       flag_verbose = true;
     }
-    if( strcmp(argv[i],"-numXgrids")==0 ) {
-      stringstream convert( argv[i+1] );
-      if(  !( convert>>inumXgrids ) ) { cerr<<" ---> Error  inumXgrids!"<<endl; exit(1); }
-    }
-    if( strcmp(argv[i],"-numYgrids")==0 ) {
-            stringstream convert( argv[i+1] );
-      if(  !( convert>>inumYgrids ) ) { cerr<<" ---> Error  numYgrids!"<<endl; exit(1); }
-    }
-    if( strcmp(argv[i],"-paramXmin")==0 ) {
-            stringstream convert( argv[i+1] );
-            if(  !( convert>>iparamXmin ) ) { cerr<<" ---> Error  iparamXmin!"<<endl; exit(1); }
-    }
-    if( strcmp(argv[i],"-paramXmax")==0 ) {
-            stringstream convert( argv[i+1] );
-      if(  !( convert>>iparamXmax ) ) { cerr<<" ---> Error iparamXmax!"<<endl; exit(1); }
-    }
-    if( strcmp(argv[i],"-paramYmin")==0 ) {
-            stringstream convert( argv[i+1] );
-      if(  !( convert>>iparamYmin ) ) { cerr<<" ---> Error  iparamYmin!"<<endl; exit(1); }
-    }
-    if( strcmp(argv[i],"-paramYmax")==0 ) {
-            stringstream convert( argv[i+1] );
-      if(  !( convert>>iparamYmax ) ) { cerr<<" ---> Error iparamYmax  !"<<endl; exit(1); }
-    }
     if( strcmp(argv[i],"-numToys")==0 ) {
       stringstream convert( argv[i+1] );
       if(  !( convert>>inumToys ) ) { cerr<<" ---> Error inumToys !"<<endl; exit(1); }
@@ -92,7 +68,7 @@ int main(int argc, char** argv)
   // lets GNU parallel farm the full (idm2, it14) grid across many nodes without any
   // node needing to know which grid points other nodes have already finished.
   // --------------------------------------------------
-  TString final_name = TString::Format("output/out_dm2_ttt_%03d_%03d.root", idm2, it14);
+  TString final_name = TString::Format("output/inv_decay_BNB_grid_60x60_dm2_ttt_%03d_%03d.root", idm2, it14);
   TString tmp_name = final_name + ".tmp";
 
   if (std::filesystem::exists(final_name.Data())) {
@@ -118,10 +94,10 @@ int main(int argc, char** argv)
   // so building these histograms before the output .tmp file exists avoids
   // them being silently swept into it.
   // --------------------------------------------------
-  const int NUM_dm2 = inumYgrids;
-  const int NUM_ttt = inumXgrids;
-  const double DM2_LO = iparamYmin, DM2_HI = iparamYmax;
-  const double TTT_LO = iparamXmin, TTT_HI = iparamXmax;
+  const int NUM_dm2 = 60;
+  const int NUM_ttt = 60;
+  const double DM2_LO = -1, DM2_HI = 2;
+  const double TTT_LO = -1, TTT_HI = 1;
 
   TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, DM2_LO, DM2_HI);
   TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, TTT_LO, TTT_HI);
