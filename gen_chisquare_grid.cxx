@@ -283,16 +283,68 @@ int main(int argc, char** argv)
   vec_chi2_4vToy_3v.reserve(num_toys);
   vec_chi2_4vToy_4v.reserve(num_toys);
 
-
   cout << "Generate 3v\n";
   osc_test->Set_oscillation_pars(0, 0.10, 0.11, 0);
   osc_test->Apply_oscillation();
   osc_test->Set_apply_POT();// meas, CV, COV: all ready
   osc_test->Set_toy_variations(num_toys);
   for (int i = 0; i < num_toys; i++) {
-    osc_test->Set_toy2fitdata(i+1);
-    double chi2_3v = osc_test->FCN(pars_3v_small);
-    double chi2_4v = osc_test->FCN(pars_4v_grid);
+    osc_test->Set_toy2fitdata(i + 1);
+    /////// standard order
+    osc_test->Set_oscillation_pars(pars_3v_small[0], pars_3v_small[1], pars_3v_small[2], 0);
+    osc_test->Apply_oscillation();
+    osc_test->Set_apply_POT();// meas, CV, COV: all ready
+
+    // Create data structures to hold tosc internals
+    /// BNB only
+    TMatrixD matrix_data_total = osc_test->matrix_tosc_fitdata_newworld.GetSub(0,0, 0, 26*7-1);
+    TMatrixD matrix_pred_total = osc_test->matrix_tosc_eff_newworld_pred.GetSub(0,0, 0, 26*7-1);
+    TMatrixD matrix_cov_syst_total = osc_test->matrix_tosc_eff_newworld_abs_syst_total.GetSub(0, 26*7-1, 0, 26*7-1);
+    int rows = matrix_cov_syst_total.GetNrows();
+    TMatrixD matrix_cov_stat_total(rows, rows);
+    TMatrixD matrix_cov_total(rows, rows);
+
+    for(int idx=0; idx<rows; idx++) {
+      double val_stat_cov = 0;
+      double val_pred = matrix_pred_total(0, idx);
+      val_stat_cov = val_pred;// Pearson's format
+      if( val_stat_cov==0 ) val_stat_cov = 1e-6;
+      matrix_cov_stat_total(idx, idx) = val_stat_cov;
+    }
+
+    matrix_cov_total = matrix_cov_syst_total + matrix_cov_stat_total;
+    TMatrixD matrix_delta =  matrix_pred_total - matrix_data_total;
+    TMatrixD matrix_delta_T = matrix_delta.T(); matrix_delta.T();
+    TMatrixD matrix_cov_total_inv = matrix_cov_total; matrix_cov_total_inv.Invert();
+    TMatrixD matrix_chi2 = matrix_delta * matrix_cov_total_inv *matrix_delta_T;
+    double chi2_3v = matrix_chi2(0, 0);
+    // 4v
+    osc_test->Set_oscillation_pars(pars_4v_grid[0], pars_4v_grid[1], pars_4v_grid[2], 0);
+    osc_test->Apply_oscillation();
+    osc_test->Set_apply_POT();// meas, CV, COV: all ready
+
+    // Create data structures to hold tosc internals
+    /// BNB only
+    matrix_data_total = osc_test->matrix_tosc_fitdata_newworld.GetSub(0,0, 0, 26*7-1);
+    matrix_pred_total = osc_test->matrix_tosc_eff_newworld_pred.GetSub(0,0, 0, 26*7-1);
+    matrix_cov_syst_total = osc_test->matrix_tosc_eff_newworld_abs_syst_total.GetSub(0, 26*7-1, 0, 26*7-1);
+    rows = matrix_cov_syst_total.GetNrows();
+
+    for(int idx=0; idx<rows; idx++) {
+      double val_stat_cov = 0;
+      double val_pred = matrix_pred_total(0, idx);
+      val_stat_cov = val_pred;// Pearson's format
+      if( val_stat_cov==0 ) val_stat_cov = 1e-6;
+      matrix_cov_stat_total(idx, idx) = val_stat_cov;
+    }
+
+    matrix_cov_total = matrix_cov_syst_total + matrix_cov_stat_total;
+    matrix_delta =  matrix_pred_total - matrix_data_total;
+    matrix_delta_T = matrix_delta.T(); matrix_delta.T();
+    matrix_cov_total_inv = matrix_cov_total; matrix_cov_total_inv.Invert();
+    matrix_chi2 = matrix_delta * matrix_cov_total_inv *matrix_delta_T;
+    double chi2_4v = matrix_chi2(0, 0);
+
     vec_chi2_3vToy_3v.push_back(chi2_3v);
     vec_chi2_3vToy_4v.push_back(chi2_4v);
     vec_dchi2_3v.push_back(chi2_4v - chi2_3v);
@@ -304,9 +356,61 @@ int main(int argc, char** argv)
   osc_test->Set_apply_POT();// meas, CV, COV: all ready
   osc_test->Set_toy_variations(num_toys);
   for (int i = 0; i < num_toys; i++) {
-    osc_test->Set_toy2fitdata(i+1);
-    double chi2_3v = osc_test->FCN(pars_3v_small);
-    double chi2_4v = osc_test->FCN(pars_4v_grid);
+    osc_test->Set_toy2fitdata(i + 1);
+    /////// standard order
+    osc_test->Set_oscillation_pars(pars_3v_small[0], pars_3v_small[1], pars_3v_small[2], 0);
+    osc_test->Apply_oscillation();
+    osc_test->Set_apply_POT();// meas, CV, COV: all ready
+
+    // Create data structures to hold tosc internals
+    /// BNB only
+    TMatrixD matrix_data_total = osc_test->matrix_tosc_fitdata_newworld.GetSub(0,0, 0, 26*7-1);
+    TMatrixD matrix_pred_total = osc_test->matrix_tosc_eff_newworld_pred.GetSub(0,0, 0, 26*7-1);
+    TMatrixD matrix_cov_syst_total = osc_test->matrix_tosc_eff_newworld_abs_syst_total.GetSub(0, 26*7-1, 0, 26*7-1);
+    int rows = matrix_cov_syst_total.GetNrows();
+    TMatrixD matrix_cov_stat_total(rows, rows);
+    TMatrixD matrix_cov_total(rows, rows);
+
+    for(int idx=0; idx<rows; idx++) {
+      double val_stat_cov = 0;
+      double val_pred = matrix_pred_total(0, idx);
+      val_stat_cov = val_pred;// Pearson's format
+      if( val_stat_cov==0 ) val_stat_cov = 1e-6;
+      matrix_cov_stat_total(idx, idx) = val_stat_cov;
+    }
+
+    matrix_cov_total = matrix_cov_syst_total + matrix_cov_stat_total;
+    TMatrixD matrix_delta =  matrix_pred_total - matrix_data_total;
+    TMatrixD matrix_delta_T = matrix_delta.T(); matrix_delta.T();
+    TMatrixD matrix_cov_total_inv = matrix_cov_total; matrix_cov_total_inv.Invert();
+    TMatrixD matrix_chi2 = matrix_delta * matrix_cov_total_inv *matrix_delta_T;
+    double chi2_3v = matrix_chi2(0, 0);
+    // 4v
+    osc_test->Set_oscillation_pars(pars_4v_grid[0], pars_4v_grid[1], pars_4v_grid[2], 0);
+    osc_test->Apply_oscillation();
+    osc_test->Set_apply_POT();// meas, CV, COV: all ready
+
+    // Create data structures to hold tosc internals
+    /// BNB only
+    matrix_data_total = osc_test->matrix_tosc_fitdata_newworld.GetSub(0,0, 0, 26*7-1);
+    matrix_pred_total = osc_test->matrix_tosc_eff_newworld_pred.GetSub(0,0, 0, 26*7-1);
+    matrix_cov_syst_total = osc_test->matrix_tosc_eff_newworld_abs_syst_total.GetSub(0, 26*7-1, 0, 26*7-1);
+    rows = matrix_cov_syst_total.GetNrows();
+
+    for(int idx=0; idx<rows; idx++) {
+      double val_stat_cov = 0;
+      double val_pred = matrix_pred_total(0, idx);
+      val_stat_cov = val_pred;// Pearson's format
+      if( val_stat_cov==0 ) val_stat_cov = 1e-6;
+      matrix_cov_stat_total(idx, idx) = val_stat_cov;
+    }
+
+    matrix_cov_total = matrix_cov_syst_total + matrix_cov_stat_total;
+    matrix_delta =  matrix_pred_total - matrix_data_total;
+    matrix_delta_T = matrix_delta.T(); matrix_delta.T();
+    matrix_cov_total_inv = matrix_cov_total; matrix_cov_total_inv.Invert();
+    matrix_chi2 = matrix_delta * matrix_cov_total_inv *matrix_delta_T;
+    double chi2_4v = matrix_chi2(0, 0);
     vec_chi2_4vToy_3v.push_back(chi2_3v);
     vec_chi2_4vToy_4v.push_back(chi2_4v);
     vec_dchi2_4v.push_back(chi2_4v - chi2_3v);
