@@ -64,3 +64,4 @@ bin/*
 *.txt
 
 /test/
+__pycache__/compare_grid_outputs.cpython-313.pyc
