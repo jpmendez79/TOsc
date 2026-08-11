@@ -74,8 +74,11 @@ int main(int argc, char **argv) {
   // nodes without any node needing to know which grid points other nodes have
   // already finished.
   // --------------------------------------------------
-  TString final_name = TString::Format(
-      "output/inv_decay_BNB_grid_60x60_dm2_ttt_%03d_%03d.root", idm2, it14);
+  // TString final_name = TString::Format(
+  //                                      "output/inv_decay_BNB_grid_60x60_dm2_ttt_%03d_%03d.root", idm2, it14);
+    TString final_name = TString::Format(
+      "output/31_numu_disp_BNB_grid_60x60_dm2_ttt_%03d_%03d.root", idm2, it14);
+
   TString tmp_name = final_name + ".tmp";
 
   if (std::filesystem::exists(final_name.Data())) {
@@ -105,7 +108,7 @@ int main(int argc, char **argv) {
   const int NUM_dm2 = 60;
   const int NUM_ttt = 60;
   const double DM2_LO = -1, DM2_HI = 2;
-  const double TTT_LO = -1, TTT_HI = 1;
+  const double TTT_LO = -2, TTT_HI = 0;
 
   TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, DM2_LO, DM2_HI);
   TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, TTT_LO, TTT_HI);
