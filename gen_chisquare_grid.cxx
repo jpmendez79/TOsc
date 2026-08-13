@@ -108,7 +108,7 @@ int main(int argc, char **argv) {
   const int NUM_dm2 = 60;
   const int NUM_ttt = 60;
   const double DM2_LO = -1, DM2_HI = 2;
-  const double TTT_LO = -2, TTT_HI = 0;
+  const double TTT_LO = -3, TTT_HI = 0;
 
   TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, DM2_LO, DM2_HI);
   TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, TTT_LO, TTT_HI);

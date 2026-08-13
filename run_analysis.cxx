@@ -159,8 +159,8 @@ void get_CL_curve(TH2 *h2_CL_input, TGraph *gh_CL_curve, int flag_index)
 int main(void) {
   const int NUM_dm2 = 60;
   const int NUM_ttt = 60;
-  const double DM2_LO = -1, DM2_HI = 2;
-  const double TTT_LO = -2, TTT_HI = 0;
+  const double DM2_LO = -2, DM2_HI = 2;
+  const double TTT_LO = -3, TTT_HI = 0;
   double xbins[61], ybins[61];
   // Construct log10 bin boundaries
   for (int i = 0; i <= 60; i++) {
@@ -169,11 +169,11 @@ int main(void) {
       ybins[j] = pow(10, DM2_LO + j*(DM2_HI-DM2_LO)/NUM_dm2);  // dm2 bins
     }
   }
+  //
+  TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, &ybins[0]);
+  TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, &xbins[0]);
 
-  TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, &xbins[0]);
-  TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, &ybins[0]);
-
-   // TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, -2, 1);
+   // TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, -1, 2);
    // TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, -2, 0);
 
   // First load 3600 files
@@ -184,7 +184,7 @@ int main(void) {
 
   for (int k = 0; k < 2002; ++k) {
     // vec_cls_universe.push_back(
-    //     new TH2D(Form("hcls_%04d", k), "", 60, 1, 60, 60, 1, 60));
+        // new TH2D(Form("hcls_%04d", k), "", 60, TTT_LO, TTT_HI, 60, DM2_LO, DM2_HI));
     vec_cls_universe.push_back(   new TH2D(Form("hcls_%04d", k), "", NUM_ttt, &xbins[0], NUM_dm2, &ybins[0]));//
   }
   std::vector<TGraph *> cl_curves(vec_cls_universe.size());
@@ -222,7 +222,7 @@ tree->GetEntry(0);
   }
 
   // Now save everything
-  TFile out("cls_map_BNB_vanilla_disp_60x60.root", "RECREATE");
+  TFile out("cls_map_BNB_vanilla_disp_60x60-notfancy.root", "RECREATE");
 
   // histograms
 

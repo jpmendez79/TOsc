@@ -94,6 +94,7 @@ void plot_brazil_band(TString infile = "test/cls_map_BNB_vanilla_disp_60x60.root
   band2->GetXaxis()->SetLabelSize(0.04);
   band2->GetYaxis()->SetLabelSize(0.04);
 
+
   band1->Draw("F same");
   gh_median->Draw("L same");
   gr_example->Draw("L same");
