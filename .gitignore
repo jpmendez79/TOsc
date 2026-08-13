@@ -65,3 +65,6 @@ bin/*
 
 /test/
 __pycache__/compare_grid_outputs.cpython-313.pyc
+run_analysis_cxx.d
+run_analysis_cxx_ACLiC_dict68bdb0884e_dictUmbrella.h
+run_analysis_cxx_ACLiC_dict6c99508274_dictContent.h
