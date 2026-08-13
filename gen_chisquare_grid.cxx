@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
   // TString final_name = TString::Format(
   //                                      "output/inv_decay_BNB_grid_60x60_dm2_ttt_%03d_%03d.root", idm2, it14);
     TString final_name = TString::Format(
-      "output/31_numu_disp_BNB_grid_60x60_dm2_ttt_%03d_%03d.root", idm2, it14);
+      "output/BNB_vanilla_numu_disp_grid_60x60_dm2_ttt_%03d_%03d.root", idm2, it14);
 
   TString tmp_name = final_name + ".tmp";
 
