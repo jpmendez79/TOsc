@@ -159,7 +159,7 @@ void get_CL_curve(TH2 *h2_CL_input, TGraph *gh_CL_curve, int flag_index)
 int main(void) {
   const int NUM_dm2 = 60;
   const int NUM_ttt = 60;
-  const double DM2_LO = -2, DM2_HI = 2;
+  const double DM2_LO = -1, DM2_HI = 2;
   const double TTT_LO = -3, TTT_HI = 0;
   double xbins[61], ybins[61];
   // Construct log10 bin boundaries
@@ -174,7 +174,7 @@ int main(void) {
   TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, &xbins[0]);
 
    // TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, -1, 2);
-   // TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, -2, 0);
+   // TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, -3, 0);
 
   // First load 3600 files
 

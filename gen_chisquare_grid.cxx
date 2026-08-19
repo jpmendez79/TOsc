@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
   // TString final_name = TString::Format(
   //                                      "output/inv_decay_BNB_grid_60x60_dm2_ttt_%03d_%03d.root", idm2, it14);
     TString final_name = TString::Format(
-      "output/BNB_vanilla_numu_disp_grid_60x60_dm2_ttt_%03d_%03d.root", idm2, it14);
+      "output/BNBvanilla_numu_disp_grid_60x60_dm2_ttt_%03d_%03d.root", idm2, it14);
 
   TString tmp_name = final_name + ".tmp";
 
@@ -113,6 +113,14 @@ int main(int argc, char **argv) {
   TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, DM2_LO, DM2_HI);
   TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, TTT_LO, TTT_HI);
 
+  int ittt = it14;
+  double pars_3v_small[4] = {0, 0.10, 0.11, 0};
+  double val_obj_dm2 = h1d_dm2->GetBinCenter(idm2);
+  val_obj_dm2 = pow(10, val_obj_dm2);
+  double val_obj_ttt = h1d_ttt->GetBinCenter(ittt);
+  val_obj_ttt = pow(10, val_obj_ttt);
+  double pars_4v_grid[4] = {val_obj_dm2, val_obj_ttt, 0.0045, 0};
+
   if (flag_verbose) {
     cout << "\n ---> Verbose configuration:\n";
     cout << "  input presave file     : " << xpath << "\n";
@@ -135,14 +143,6 @@ int main(int argc, char **argv) {
          << Configure_Osc::default_eventlist_dir << "\n";
     cout << endl;
   }
-
-  int ittt = it14;
-  double pars_3v_small[4] = {0, 0.10, 0.11, 0};
-  double val_obj_dm2 = h1d_dm2->GetBinCenter(idm2);
-  val_obj_dm2 = pow(10, val_obj_dm2);
-  double val_obj_ttt = h1d_ttt->GetBinCenter(ittt);
-  val_obj_ttt = pow(10, val_obj_ttt);
-  double pars_4v_grid[4] = {val_obj_dm2, val_obj_ttt, 0.0045, 0};
 
   // --------------------------------------------------
   // TOsc setup (identical in both original files) -- one-time per process,
