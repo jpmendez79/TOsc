@@ -193,7 +193,7 @@ int main(void) {
     for (int ittt = 1; ittt <= 60; ittt++) {
 
       // TString roostr = TString::Format("output/out_dm2_ttt_%03d_%03d.root", idm2, ittt);
-      TString roostr = TString::Format("output/BNB_vanilla_numu_disp_grid_60x60_dm2_ttt_%03d_%03d.root", idm2, ittt);
+      TString roostr = TString::Format("output/BNBvanilla_numu_disp_grid_60x60_dm2_ttt_%03d_%03d.root", idm2, ittt);
       TFile f(roostr, "READ");
 
       // Get the tree
