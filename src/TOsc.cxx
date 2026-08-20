@@ -147,18 +147,18 @@ double TOsc::FCN_presave_only_PRED()
 
   ///////
 
-  TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld;
-  TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred;
-  TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total;
-  int rows = matrix_cov_syst_total.GetNrows();
+  // TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld;
+  // TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred;
+  // TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total;
+  // int rows = matrix_cov_syst_total.GetNrows();
 
   /////// modify
 
   /// BNB only
-  // TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld.GetSub(0,0, 0, 26*7-1);
-  // TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred.GetSub(0,0, 0, 26*7-1);
-  // TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total.GetSub(0, 26*7-1, 0, 26*7-1);
-  // int rows = matrix_cov_syst_total.GetNrows();
+  TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld.GetSub(0,0, 0, 26*7-1);
+  TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred.GetSub(0,0, 0, 26*7-1);
+  TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total.GetSub(0, 26*7-1, 0, 26*7-1);
+  int rows = matrix_cov_syst_total.GetNrows();
 
   /// NuMI only
   // TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld.GetSub(0,0, 26*7, 26*14-1);
@@ -301,10 +301,10 @@ double TOsc::FCN_Pearson_FCnew(const double *par)
   /////// modify
 
   /// BNB only
-  // TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld.GetSub(0,0, 0, 26*7-1);
-  // TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred.GetSub(0,0, 0, 26*7-1);
-  // TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total.GetSub(0, 26*7-1, 0, 26*7-1);
-  // int rows = matrix_cov_syst_total.GetNrows();
+  TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld.GetSub(0,0, 0, 26*7-1);
+  TMatrixD matrix_pred_total = matrix_tosc_eff_newworld_pred.GetSub(0,0, 0, 26*7-1);
+  TMatrixD matrix_cov_syst_total = matrix_tosc_eff_newworld_abs_syst_total.GetSub(0, 26*7-1, 0, 26*7-1);
+  int rows = matrix_cov_syst_total.GetNrows();
 
   /// NuMI only
   // TMatrixD matrix_data_total = matrix_tosc_fitdata_newworld.GetSub(0,0, 26*7, 26*14-1);
@@ -314,20 +314,20 @@ double TOsc::FCN_Pearson_FCnew(const double *par)
 
   /// BNB numuCC FC, xxx (2)
 
-  int bins_eff = 26*7;
-  TMatrixD matrix_gof_trans_eff( 26*14, bins_eff );// oldworld, newworld
-  for( int ibin=1; ibin<=bins_eff; ibin++) matrix_gof_trans_eff(ibin-1, ibin-1) = 1;
-
-  int rows = bins_eff;
-
-  TMatrixD matrix_gof_trans_eff_T = matrix_gof_trans_eff.T(); matrix_gof_trans_eff.T();
-  TMatrixD matrix_gof_pred = matrix_tosc_eff_newworld_pred * matrix_gof_trans_eff;
-  TMatrixD matrix_gof_data = matrix_tosc_fitdata_newworld * matrix_gof_trans_eff;
-  TMatrixD matrix_gof_syst = matrix_gof_trans_eff_T * (matrix_tosc_eff_newworld_abs_syst_total) * matrix_gof_trans_eff;
-
-  TMatrixD matrix_data_total = matrix_gof_data;
-  TMatrixD matrix_pred_total = matrix_gof_pred;
-  TMatrixD matrix_cov_syst_total = matrix_gof_syst;
+  // int bins_eff = 26*7;
+  // TMatrixD matrix_gof_trans_eff( 26*14, bins_eff );// oldworld, newworld
+  // for( int ibin=1; ibin<=bins_eff; ibin++) matrix_gof_trans_eff(ibin-1, ibin-1) = 1;
+  //
+  // int rows = bins_eff;
+  //
+  // TMatrixD matrix_gof_trans_eff_T = matrix_gof_trans_eff.T(); matrix_gof_trans_eff.T();
+  // TMatrixD matrix_gof_pred = matrix_tosc_eff_newworld_pred * matrix_gof_trans_eff;
+  // TMatrixD matrix_gof_data = matrix_tosc_fitdata_newworld * matrix_gof_trans_eff;
+  // TMatrixD matrix_gof_syst = matrix_gof_trans_eff_T * (matrix_tosc_eff_newworld_abs_syst_total) * matrix_gof_trans_eff;
+  //
+  // TMatrixD matrix_data_total = matrix_gof_data;
+  // TMatrixD matrix_pred_total = matrix_gof_pred;
+  // TMatrixD matrix_cov_syst_total = matrix_gof_syst;
 
   ///////
 

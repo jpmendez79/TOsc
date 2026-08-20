@@ -1,11 +1,11 @@
-#include<iostream>
-#include<sstream>
-#include<cmath>
-#include<filesystem>
 #include "stdlib.h"
+#include <cmath>
+#include <filesystem>
+#include <iostream>
+#include <sstream>
 using namespace std;
 
-#include<vector>
+#include <vector>
 
 #include "WCPLEEANA/TOsc.h"
 
@@ -16,83 +16,69 @@ using namespace std;
 #include "TApplication.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////// MAIN //////////////////////////////////////////////////
+///////////////////////////////////////////////// MAIN
+/////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-// Combines the two-stage create_dists.cxx -> writechi2obs.cxx pipeline into a single
-// per-grid-point program. Stage 1 (toy Delta-chi2 generation) and stage 2 (observed
-// CLs/confidence calculation) now share one process and one TOsc instance, so the
-// intermediate ROOT file that used to connect them is no longer written at all.
+// Combines the two-stage create_dists.cxx -> writechi2obs.cxx pipeline into a
+// single per-grid-point program. Stage 1 (toy Delta-chi2 generation) and stage
+// 2 (observed CLs/confidence calculation) now share one process and one TOsc
+// instance, so the intermediate ROOT file that used to connect them is no
+// longer written at all.
 //
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   TString roostr = "";
 
-  cout<<endl<<" ---> A Hello story ..."<<endl<<endl;
+  cout << endl << " ---> A Hello story ..." << endl << endl;
 
   int it14 = 0;
   int idm2 = 0;
-  int inumXgrids = 0;
-  int inumYgrids = 0;
-  double iparamXmin = 0;
-  double iparamXmax = 0;
-  double iparamYmin = 0;
-  double iparamYmax = 0;
-  int  inumToys = 0;
+  int inumToys = 0;
   bool flag_verbose = false;
-  for(int i=1; i<argc; i++) {
-    if( strcmp(argv[i],"-it14")==0 ) {
-      stringstream convert( argv[i+1] );
-      if(  !( convert>>it14 ) ) { cerr<<" ---> Error it14 !"<<endl; exit(1); }
+  for (int i = 1; i < argc; i++) {
+    if (strcmp(argv[i], "-it14") == 0) {
+      stringstream convert(argv[i + 1]);
+      if (!(convert >> it14)) {
+        cerr << " ---> Error it14 !" << endl;
+        exit(1);
+      }
     }
-    if( strcmp(argv[i],"-idm2")==0 ) {
-      stringstream convert( argv[i+1] );
-      if(  !( convert>>idm2 ) ) { cerr<<" ---> Error idm2 !"<<endl; exit(1); }
+    if (strcmp(argv[i], "-idm2") == 0) {
+      stringstream convert(argv[i + 1]);
+      if (!(convert >> idm2)) {
+        cerr << " ---> Error idm2 !" << endl;
+        exit(1);
+      }
     }
-    if( strcmp(argv[i],"-v")==0 ) {
+    if (strcmp(argv[i], "-v") == 0) {
       flag_verbose = true;
     }
-    if( strcmp(argv[i],"-numXgrids")==0 ) {
-      stringstream convert( argv[i+1] );
-      if(  !( convert>>inumXgrids ) ) { cerr<<" ---> Error  inumXgrids!"<<endl; exit(1); }
-    }
-    if( strcmp(argv[i],"-numYgrids")==0 ) {
-            stringstream convert( argv[i+1] );
-      if(  !( convert>>inumYgrids ) ) { cerr<<" ---> Error  numYgrids!"<<endl; exit(1); }
-    }
-    if( strcmp(argv[i],"-paramXmin")==0 ) {
-            stringstream convert( argv[i+1] );
-            if(  !( convert>>iparamXmin ) ) { cerr<<" ---> Error  iparamXmin!"<<endl; exit(1); }
-    }
-    if( strcmp(argv[i],"-paramXmax")==0 ) {
-            stringstream convert( argv[i+1] );
-      if(  !( convert>>iparamXmax ) ) { cerr<<" ---> Error iparamXmax!"<<endl; exit(1); }
-    }
-    if( strcmp(argv[i],"-paramYmin")==0 ) {
-            stringstream convert( argv[i+1] );
-      if(  !( convert>>iparamYmin ) ) { cerr<<" ---> Error  iparamYmin!"<<endl; exit(1); }
-    }
-    if( strcmp(argv[i],"-paramYmax")==0 ) {
-            stringstream convert( argv[i+1] );
-      if(  !( convert>>iparamYmax ) ) { cerr<<" ---> Error iparamYmax  !"<<endl; exit(1); }
-    }
-    if( strcmp(argv[i],"-numToys")==0 ) {
-      stringstream convert( argv[i+1] );
-      if(  !( convert>>inumToys ) ) { cerr<<" ---> Error inumToys !"<<endl; exit(1); }
+    if (strcmp(argv[i], "-numToys") == 0) {
+      stringstream convert(argv[i + 1]);
+      if (!(convert >> inumToys)) {
+        cerr << " ---> Error inumToys !" << endl;
+        exit(1);
+      }
     }
   }
 
-  // Presave input path -- declared here (rather than at its point of use further
-  // down) so it's available for the -v diagnostic dump before any expensive setup.
+  // Presave input path -- declared here (rather than at its point of use
+  // further down) so it's available for the -v diagnostic dump before any
+  // expensive setup.
   TString xpath = "input/presave_3v_hypothesis_toydata_01_cv.root";
 
   // --------------------------------------------------
-  // Skip-if-already-done check: this is the cheapest possible point to bail out,
-  // before touching TOsc, the presave file, or any ROOT object at all. This is what
-  // lets GNU parallel farm the full (idm2, it14) grid across many nodes without any
-  // node needing to know which grid points other nodes have already finished.
+  // Skip-if-already-done check: this is the cheapest possible point to bail
+  // out, before touching TOsc, the presave file, or any ROOT object at all.
+  // This is what lets GNU parallel farm the full (idm2, it14) grid across many
+  // nodes without any node needing to know which grid points other nodes have
+  // already finished.
   // --------------------------------------------------
-  TString final_name = TString::Format("output/out_dm2_ttt_%03d_%03d.root", idm2, it14);
+  // TString final_name = TString::Format(
+  //                                      "output/inv_decay_BNB_grid_60x60_dm2_ttt_%03d_%03d.root", idm2, it14);
+    TString final_name = TString::Format(
+      "output/BNBvanilla_numu_disp_grid_60x60_dm2_ttt_%03d_%03d.root", idm2, it14);
+
   TString tmp_name = final_name + ".tmp";
 
   if (std::filesystem::exists(final_name.Data())) {
@@ -100,16 +86,17 @@ int main(int argc, char** argv)
     return 0;
   }
 
-  // output/ is gitignored and absent on a fresh checkout; create_directories is a
-  // safe no-op if it already exists (including when raced by concurrent workers).
+  // output/ is gitignored and absent on a fresh checkout; create_directories is
+  // a safe no-op if it already exists (including when raced by concurrent
+  // workers).
   std::filesystem::create_directories("output");
 
   int display = 0;
-  if( !display ) {
-    gROOT->SetBatch( 1 );
+  if (!display) {
+    gROOT->SetBatch(1);
   }
 
-  TApplication theApp("theApp",&argc,argv);
+  TApplication theApp("theApp", &argc, argv);
 
   // --------------------------------------------------
   // Grid values, computed exactly once and reused by both stages below.
@@ -118,28 +105,13 @@ int main(int argc, char** argv)
   // so building these histograms before the output .tmp file exists avoids
   // them being silently swept into it.
   // --------------------------------------------------
-  const int NUM_dm2 = inumYgrids;
-  const int NUM_ttt = inumXgrids;
-  const double DM2_LO = iparamYmin, DM2_HI = iparamYmax;
-  const double TTT_LO = iparamXmin, TTT_HI = iparamXmax;
+  const int NUM_dm2 = 60;
+  const int NUM_ttt = 60;
+  const double DM2_LO = -1, DM2_HI = 2;
+  const double TTT_LO = -3, TTT_HI = 0;
 
   TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, DM2_LO, DM2_HI);
   TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, TTT_LO, TTT_HI);
-
-  if( flag_verbose ) {
-    cout << "\n ---> Verbose configuration:\n";
-    cout << "  input presave file     : " << xpath << "\n";
-    cout << "  final output file      : " << final_name << "\n";
-    cout << "  h1d_dm2 bounds [bins]   : [" << DM2_LO << ", " << DM2_HI << "] (" << NUM_dm2 << " bins)\n";
-    cout << "  h1d_ttt bounds [bins]   : [" << TTT_LO << ", " << TTT_HI << "] (" << NUM_ttt << " bins)\n";
-    cout << "  default_cv_file         : " << Configure_Osc::default_cv_file << "\n";
-    cout << "  default_dirtadd_file    : " << Configure_Osc::default_dirtadd_file << "\n";
-    cout << "  default_mcstat_file     : " << Configure_Osc::default_mcstat_file << "\n";
-    cout << "  default_fluxXs_dir      : " << Configure_Osc::default_fluxXs_dir << "\n";
-    cout << "  default_detector_dir    : " << Configure_Osc::default_detector_dir << "\n";
-    cout << "  default_eventlist_dir   : " << Configure_Osc::default_eventlist_dir << "\n";
-    cout << endl;
-  }
 
   int ittt = it14;
   double pars_3v_small[4] = {0, 0.10, 0.11, 0};
@@ -149,86 +121,150 @@ int main(int argc, char** argv)
   val_obj_ttt = pow(10, val_obj_ttt);
   double pars_4v_grid[4] = {val_obj_dm2, val_obj_ttt, 0.0045, 0};
 
+  if (flag_verbose) {
+    cout << "\n ---> Verbose configuration:\n";
+    cout << "  input presave file     : " << xpath << "\n";
+    cout << "  final output file      : " << final_name << "\n";
+    cout << "  h1d_dm2 bounds [bins]   : [" << DM2_LO << ", " << DM2_HI << "] ("
+         << NUM_dm2 << " bins)\n";
+    cout << "  h1d_ttt bounds [bins]   : [" << TTT_LO << ", " << TTT_HI << "] ("
+         << NUM_ttt << " bins)\n";
+    cout << "  default_cv_file         : " << Configure_Osc::default_cv_file
+         << "\n";
+    cout << "  default_dirtadd_file    : "
+         << Configure_Osc::default_dirtadd_file << "\n";
+    cout << "  default_mcstat_file     : " << Configure_Osc::default_mcstat_file
+         << "\n";
+    cout << "  default_fluxXs_dir      : " << Configure_Osc::default_fluxXs_dir
+         << "\n";
+    cout << "  default_detector_dir    : "
+         << Configure_Osc::default_detector_dir << "\n";
+    cout << "  default_eventlist_dir   : "
+         << Configure_Osc::default_eventlist_dir << "\n";
+    cout << endl;
+  }
+
   // --------------------------------------------------
   // TOsc setup (identical in both original files) -- one-time per process,
   // shared by stage 1 and stage 2 so they operate on exactly the same state.
   // --------------------------------------------------
-  double scaleF_POT_BNB  = 1;
+  double scaleF_POT_BNB = 1;
   double scaleF_POT_NuMI = 1;
 
   TOsc *osc_test = new TOsc();
 
-  osc_test->tosc_scaleF_POT_BNB  = scaleF_POT_BNB;
+  osc_test->tosc_scaleF_POT_BNB = scaleF_POT_BNB;
   osc_test->tosc_scaleF_POT_NuMI = scaleF_POT_NuMI;
 
-  osc_test->flag_apply_oscillation_BNB  = Configure_Osc::flag_apply_oscillation_BNB;
-  osc_test->flag_apply_oscillation_NuMI = Configure_Osc::flag_apply_oscillation_NuMI;
+  osc_test->flag_apply_oscillation_BNB =
+      Configure_Osc::flag_apply_oscillation_BNB;
+  osc_test->flag_apply_oscillation_NuMI =
+      Configure_Osc::flag_apply_oscillation_NuMI;
 
-  osc_test->flag_goodness_of_fit_CNP    = Configure_Osc::flag_goodness_of_fit_CNP;
+  osc_test->flag_goodness_of_fit_CNP = Configure_Osc::flag_goodness_of_fit_CNP;
 
-  osc_test->flag_syst_dirt   = Configure_Osc::flag_syst_dirt;
+  osc_test->flag_syst_dirt = Configure_Osc::flag_syst_dirt;
   osc_test->flag_syst_mcstat = Configure_Osc::flag_syst_mcstat;
-  osc_test->flag_syst_flux   = Configure_Osc::flag_syst_flux;
-  osc_test->flag_syst_geant  = Configure_Osc::flag_syst_geant;
-  osc_test->flag_syst_Xs     = Configure_Osc::flag_syst_Xs;
-  osc_test->flag_syst_det    = Configure_Osc::flag_syst_det;
+  osc_test->flag_syst_flux = Configure_Osc::flag_syst_flux;
+  osc_test->flag_syst_geant = Configure_Osc::flag_syst_geant;
+  osc_test->flag_syst_Xs = Configure_Osc::flag_syst_Xs;
+  osc_test->flag_syst_det = Configure_Osc::flag_syst_det;
 
-  osc_test->flag_NuMI_nueCC_from_intnue         = Configure_Osc::flag_NuMI_nueCC_from_intnue;
-  osc_test->flag_NuMI_nueCC_from_overlaynumu    = Configure_Osc::flag_NuMI_nueCC_from_overlaynumu;
-  osc_test->flag_NuMI_nueCC_from_appnue         = Configure_Osc::flag_NuMI_nueCC_from_appnue;
-  osc_test->flag_NuMI_nueCC_from_appnumu        = Configure_Osc::flag_NuMI_nueCC_from_appnumu;
-  osc_test->flag_NuMI_nueCC_from_overlaynueNC   = Configure_Osc::flag_NuMI_nueCC_from_overlaynueNC;
-  osc_test->flag_NuMI_nueCC_from_overlaynumuNC  = Configure_Osc::flag_NuMI_nueCC_from_overlaynumuNC;
+  osc_test->flag_NuMI_nueCC_from_intnue =
+      Configure_Osc::flag_NuMI_nueCC_from_intnue;
+  osc_test->flag_NuMI_nueCC_from_overlaynumu =
+      Configure_Osc::flag_NuMI_nueCC_from_overlaynumu;
+  osc_test->flag_NuMI_nueCC_from_appnue =
+      Configure_Osc::flag_NuMI_nueCC_from_appnue;
+  osc_test->flag_NuMI_nueCC_from_appnumu =
+      Configure_Osc::flag_NuMI_nueCC_from_appnumu;
+  osc_test->flag_NuMI_nueCC_from_overlaynueNC =
+      Configure_Osc::flag_NuMI_nueCC_from_overlaynueNC;
+  osc_test->flag_NuMI_nueCC_from_overlaynumuNC =
+      Configure_Osc::flag_NuMI_nueCC_from_overlaynumuNC;
 
-  osc_test->flag_NuMI_numuCC_from_overlaynumu   = Configure_Osc::flag_NuMI_numuCC_from_overlaynumu;
-  osc_test->flag_NuMI_numuCC_from_overlaynue    = Configure_Osc::flag_NuMI_numuCC_from_overlaynue;
-  osc_test->flag_NuMI_numuCC_from_appnue        = Configure_Osc::flag_NuMI_numuCC_from_appnue;
-  osc_test->flag_NuMI_numuCC_from_appnumu       = Configure_Osc::flag_NuMI_numuCC_from_appnumu;
-  osc_test->flag_NuMI_numuCC_from_overlaynumuNC = Configure_Osc::flag_NuMI_numuCC_from_overlaynumuNC;
-  osc_test->flag_NuMI_numuCC_from_overlaynueNC  = Configure_Osc::flag_NuMI_numuCC_from_overlaynueNC;
+  osc_test->flag_NuMI_numuCC_from_overlaynumu =
+      Configure_Osc::flag_NuMI_numuCC_from_overlaynumu;
+  osc_test->flag_NuMI_numuCC_from_overlaynue =
+      Configure_Osc::flag_NuMI_numuCC_from_overlaynue;
+  osc_test->flag_NuMI_numuCC_from_appnue =
+      Configure_Osc::flag_NuMI_numuCC_from_appnue;
+  osc_test->flag_NuMI_numuCC_from_appnumu =
+      Configure_Osc::flag_NuMI_numuCC_from_appnumu;
+  osc_test->flag_NuMI_numuCC_from_overlaynumuNC =
+      Configure_Osc::flag_NuMI_numuCC_from_overlaynumuNC;
+  osc_test->flag_NuMI_numuCC_from_overlaynueNC =
+      Configure_Osc::flag_NuMI_numuCC_from_overlaynueNC;
 
-  osc_test->flag_NuMI_CCpi0_from_overlaynumu    = Configure_Osc::flag_NuMI_CCpi0_from_overlaynumu;
-  osc_test->flag_NuMI_CCpi0_from_appnue         = Configure_Osc::flag_NuMI_CCpi0_from_appnue;
-  osc_test->flag_NuMI_CCpi0_from_overlaynumuNC  = Configure_Osc::flag_NuMI_CCpi0_from_overlaynumuNC;
-  osc_test->flag_NuMI_CCpi0_from_overlaynueNC   = Configure_Osc::flag_NuMI_CCpi0_from_overlaynueNC;
+  osc_test->flag_NuMI_CCpi0_from_overlaynumu =
+      Configure_Osc::flag_NuMI_CCpi0_from_overlaynumu;
+  osc_test->flag_NuMI_CCpi0_from_appnue =
+      Configure_Osc::flag_NuMI_CCpi0_from_appnue;
+  osc_test->flag_NuMI_CCpi0_from_overlaynumuNC =
+      Configure_Osc::flag_NuMI_CCpi0_from_overlaynumuNC;
+  osc_test->flag_NuMI_CCpi0_from_overlaynueNC =
+      Configure_Osc::flag_NuMI_CCpi0_from_overlaynueNC;
 
-  osc_test->flag_NuMI_NCpi0_from_overlaynumu    = Configure_Osc::flag_NuMI_NCpi0_from_overlaynumu;
-  osc_test->flag_NuMI_NCpi0_from_appnue         = Configure_Osc::flag_NuMI_NCpi0_from_appnue;
-  osc_test->flag_NuMI_NCpi0_from_overlaynumuNC  = Configure_Osc::flag_NuMI_NCpi0_from_overlaynumuNC;
-  osc_test->flag_NuMI_NCpi0_from_overlaynueNC   = Configure_Osc::flag_NuMI_NCpi0_from_overlaynueNC;
+  osc_test->flag_NuMI_NCpi0_from_overlaynumu =
+      Configure_Osc::flag_NuMI_NCpi0_from_overlaynumu;
+  osc_test->flag_NuMI_NCpi0_from_appnue =
+      Configure_Osc::flag_NuMI_NCpi0_from_appnue;
+  osc_test->flag_NuMI_NCpi0_from_overlaynumuNC =
+      Configure_Osc::flag_NuMI_NCpi0_from_overlaynumuNC;
+  osc_test->flag_NuMI_NCpi0_from_overlaynueNC =
+      Configure_Osc::flag_NuMI_NCpi0_from_overlaynueNC;
 
-  osc_test->flag_BNB_nueCC_from_intnue         = Configure_Osc::flag_BNB_nueCC_from_intnue;
-  osc_test->flag_BNB_nueCC_from_overlaynumu    = Configure_Osc::flag_BNB_nueCC_from_overlaynumu;
-  osc_test->flag_BNB_nueCC_from_appnue         = Configure_Osc::flag_BNB_nueCC_from_appnue;
-  osc_test->flag_BNB_nueCC_from_appnumu        = Configure_Osc::flag_BNB_nueCC_from_appnumu;
-  osc_test->flag_BNB_nueCC_from_overlaynueNC   = Configure_Osc::flag_BNB_nueCC_from_overlaynueNC;
-  osc_test->flag_BNB_nueCC_from_overlaynumuNC  = Configure_Osc::flag_BNB_nueCC_from_overlaynumuNC;
+  osc_test->flag_BNB_nueCC_from_intnue =
+      Configure_Osc::flag_BNB_nueCC_from_intnue;
+  osc_test->flag_BNB_nueCC_from_overlaynumu =
+      Configure_Osc::flag_BNB_nueCC_from_overlaynumu;
+  osc_test->flag_BNB_nueCC_from_appnue =
+      Configure_Osc::flag_BNB_nueCC_from_appnue;
+  osc_test->flag_BNB_nueCC_from_appnumu =
+      Configure_Osc::flag_BNB_nueCC_from_appnumu;
+  osc_test->flag_BNB_nueCC_from_overlaynueNC =
+      Configure_Osc::flag_BNB_nueCC_from_overlaynueNC;
+  osc_test->flag_BNB_nueCC_from_overlaynumuNC =
+      Configure_Osc::flag_BNB_nueCC_from_overlaynumuNC;
 
-  osc_test->flag_BNB_numuCC_from_overlaynumu   = Configure_Osc::flag_BNB_numuCC_from_overlaynumu;
-  osc_test->flag_BNB_numuCC_from_overlaynue    = Configure_Osc::flag_BNB_numuCC_from_overlaynue;
-  osc_test->flag_BNB_numuCC_from_appnue        = Configure_Osc::flag_BNB_numuCC_from_appnue;
-  osc_test->flag_BNB_numuCC_from_appnumu       = Configure_Osc::flag_BNB_numuCC_from_appnumu;
-  osc_test->flag_BNB_numuCC_from_overlaynumuNC = Configure_Osc::flag_BNB_numuCC_from_overlaynumuNC;
-  osc_test->flag_BNB_numuCC_from_overlaynueNC  = Configure_Osc::flag_BNB_numuCC_from_overlaynueNC;
+  osc_test->flag_BNB_numuCC_from_overlaynumu =
+      Configure_Osc::flag_BNB_numuCC_from_overlaynumu;
+  osc_test->flag_BNB_numuCC_from_overlaynue =
+      Configure_Osc::flag_BNB_numuCC_from_overlaynue;
+  osc_test->flag_BNB_numuCC_from_appnue =
+      Configure_Osc::flag_BNB_numuCC_from_appnue;
+  osc_test->flag_BNB_numuCC_from_appnumu =
+      Configure_Osc::flag_BNB_numuCC_from_appnumu;
+  osc_test->flag_BNB_numuCC_from_overlaynumuNC =
+      Configure_Osc::flag_BNB_numuCC_from_overlaynumuNC;
+  osc_test->flag_BNB_numuCC_from_overlaynueNC =
+      Configure_Osc::flag_BNB_numuCC_from_overlaynueNC;
 
-  osc_test->flag_BNB_CCpi0_from_overlaynumu    = Configure_Osc::flag_BNB_CCpi0_from_overlaynumu;
-  osc_test->flag_BNB_CCpi0_from_appnue         = Configure_Osc::flag_BNB_CCpi0_from_appnue;
-  osc_test->flag_BNB_CCpi0_from_overlaynumuNC  = Configure_Osc::flag_BNB_CCpi0_from_overlaynumuNC;
-  osc_test->flag_BNB_CCpi0_from_overlaynueNC   = Configure_Osc::flag_BNB_CCpi0_from_overlaynueNC;
+  osc_test->flag_BNB_CCpi0_from_overlaynumu =
+      Configure_Osc::flag_BNB_CCpi0_from_overlaynumu;
+  osc_test->flag_BNB_CCpi0_from_appnue =
+      Configure_Osc::flag_BNB_CCpi0_from_appnue;
+  osc_test->flag_BNB_CCpi0_from_overlaynumuNC =
+      Configure_Osc::flag_BNB_CCpi0_from_overlaynumuNC;
+  osc_test->flag_BNB_CCpi0_from_overlaynueNC =
+      Configure_Osc::flag_BNB_CCpi0_from_overlaynueNC;
 
-  osc_test->flag_BNB_NCpi0_from_overlaynumu    = Configure_Osc::flag_BNB_NCpi0_from_overlaynumu;
-  osc_test->flag_BNB_NCpi0_from_appnue         = Configure_Osc::flag_BNB_NCpi0_from_appnue;
-  osc_test->flag_BNB_NCpi0_from_overlaynumuNC  = Configure_Osc::flag_BNB_NCpi0_from_overlaynumuNC;
-  osc_test->flag_BNB_NCpi0_from_overlaynueNC   = Configure_Osc::flag_BNB_NCpi0_from_overlaynueNC;
+  osc_test->flag_BNB_NCpi0_from_overlaynumu =
+      Configure_Osc::flag_BNB_NCpi0_from_overlaynumu;
+  osc_test->flag_BNB_NCpi0_from_appnue =
+      Configure_Osc::flag_BNB_NCpi0_from_appnue;
+  osc_test->flag_BNB_NCpi0_from_overlaynumuNC =
+      Configure_Osc::flag_BNB_NCpi0_from_overlaynumuNC;
+  osc_test->flag_BNB_NCpi0_from_overlaynueNC =
+      Configure_Osc::flag_BNB_NCpi0_from_overlaynueNC;
 
   /////// set only one time
   /////// set only one time
 
-  osc_test->Set_default_cv_cov(Configure_Osc::default_cv_file,
-                               Configure_Osc::default_dirtadd_file,
-                               Configure_Osc::default_mcstat_file,
-                               Configure_Osc::default_fluxXs_dir,
-                               Configure_Osc::default_detector_dir);
+  osc_test->Set_default_cv_cov(
+      Configure_Osc::default_cv_file, Configure_Osc::default_dirtadd_file,
+      Configure_Osc::default_mcstat_file, Configure_Osc::default_fluxXs_dir,
+      Configure_Osc::default_detector_dir);
   osc_test->Set_oscillation_base(Configure_Osc::default_eventlist_dir);
 
   // --------------------------------------------------
@@ -237,26 +273,27 @@ int main(int argc, char** argv)
   // ~40,000 FCN evaluations. The number of entries here (N) is what determines
   // the size of every output vector.
   // --------------------------------------------------
-  TFile* inputfile_toydata_cv = TFile::Open(xpath, "READ");
+  TFile *inputfile_toydata_cv = TFile::Open(xpath, "READ");
 
   if (!inputfile_toydata_cv || inputfile_toydata_cv->IsZombie()) {
-      std::cerr << "Error: cannot open input file\n";
-      return 1;
+    std::cerr << "Error: cannot open input file\n";
+    return 1;
   }
 
-  TTree* tree_toydata = (TTree*)inputfile_toydata_cv->Get("tree_toydata");
+  TTree *tree_toydata = (TTree *)inputfile_toydata_cv->Get("tree_toydata");
 
   if (!tree_toydata) {
-      std::cerr << "Error: tree_toydata not found\n";
-      return 1;
+    std::cerr << "Error: tree_toydata not found\n";
+    return 1;
   }
 
   TTreeReader reader(tree_toydata);
-  TTreeReaderValue<vector<double>> vec_toydata_spectrum(reader, "vec_toydata_spectrum");
+  TTreeReaderValue<vector<double>> vec_toydata_spectrum(reader,
+                                                        "vec_toydata_spectrum");
 
   vector<vector<double>> spectrum_cache;
   while (reader.Next()) {
-      spectrum_cache.push_back(*vec_toydata_spectrum);
+    spectrum_cache.push_back(*vec_toydata_spectrum);
   }
   inputfile_toydata_cv->Close();
 
@@ -277,22 +314,74 @@ int main(int argc, char** argv)
   // --------------------------------------------------
   TFile outfile(tmp_name, "RECREATE");
 
-  // --------------------------------------------------
-  // Stage 1 (from create_dists.cxx): generate toy Delta-chi2 distributions
-  // under the 3v and 4v hypotheses. Only the Delta-chi2 = chi2_4v - chi2_3v
-  // values are kept -- the individual chi2_3v/chi2_4v-per-toy vectors that
-  // create_dists.cxx also wrote are never read back by stage 2, so they are
-  // not stored here at all.
-  //
-  // Set_toy_variations() re-decomposes the systematic covariance matrix
-  // (eigen-decomposition) that Apply_oscillation()/Set_apply_POT() just
-  // rebuilt for the hypothesis in question. That covariance is different for
-  // the 3v vs. 4v hypothesis and different at every grid point, so this work
-  // is NOT cacheable across hypotheses or across grid points -- it is
-  // genuinely new computation each time, not a redundancy from the old
-  // two-program split.
-  // --------------------------------------------------
+  // int bins_eff = 181;
+  // // setting Up the bins and spectrum mask
+  int bins_all = 26 * 14;
+  int bins_eff = 26 * 7;
+
+  TMatrixD matrix_gof_trans_eff( bins_all, bins_eff );// oldworld, newworld
+  for( int ibin=1; ibin<=bins_eff;  ibin++) matrix_gof_trans_eff(ibin-1, ibin - 1) = 1;
+
+  //////////////////// for 3v: 3v_asmiov_pred, 3v_total_COV_inv, 3vToy
+  map<int, TMatrixD> map_matrix_spectrum_3vToy; // index begins at 1
+  TMatrixD matrix_3v_asimov_pred(1, bins_eff);
+  TMatrixD matrix_3v_total_COV_inv(bins_eff, bins_eff);
+
+  // Setting up a 3v null-osc Generation
+  osc_test->Set_oscillation_pars(pars_3v_small[0], pars_3v_small[1],
+                                 pars_3v_small[2], pars_3v_small[3]);
+  osc_test->Apply_oscillation();
+  osc_test->Set_apply_POT(); // meas, CV, COV: all ready
+  osc_test->Set_meas2fitdata();
+  osc_test->FCN_Pearson_FCnew(pars_3v_small);
+
+
+  // Save prediction and inverted chi2 out of tosc internal to local variables
+  matrix_3v_asimov_pred = osc_test->matrix_tosc_chi2_pred;
+  cout << "----------DEBUG HERE" << endl;
+  matrix_3v_total_COV_inv = osc_test->matrix_tosc_chi2_COV_both_syst_stat_inv;
   const int num_toys = inumToys;
+  osc_test->Set_toy_variations(num_toys);
+  for (int i = 0; i < num_toys; i++) {
+    // Resize the matrix to the correct nunmber of bins
+    map_matrix_spectrum_3vToy[i].ResizeTo(1, bins_eff);
+    // Apply the mask to save the spectrum portion we are interested in
+    map_matrix_spectrum_3vToy[i] =
+      osc_test->map_matrix_tosc_toy_pred[i + 1] * matrix_gof_trans_eff;
+
+    if (i % 100 == 0) {
+      cout << "Finished 3v toy " << i << "\n";
+        }
+  }
+
+  //////////////////// for 4v: 4v_asmiov_pred, 4v_total_COV_inv, 4vToy
+  map<int, TMatrixD> map_matrix_spectrum_4vToy; // index begins at 1
+  TMatrixD matrix_4v_asimov_pred(1, bins_eff);
+  TMatrixD matrix_4v_total_COV_inv(bins_eff, bins_eff);
+
+  // Setting up a 4v null-osc Generation
+  osc_test->Set_oscillation_pars(pars_3v_small[0], pars_3v_small[1],
+                                 pars_3v_small[2], pars_3v_small[3]);
+  osc_test->Apply_oscillation();
+  osc_test->Set_apply_POT(); // meas, CV, COV: all ready
+  osc_test->Set_meas2fitdata();
+  osc_test->FCN_Pearson_FCnew(pars_4v_grid);
+
+  // Save prediction and inverted chi2 out of tosc internal to local variables
+  matrix_4v_asimov_pred = osc_test->matrix_tosc_chi2_pred;
+  matrix_4v_total_COV_inv = osc_test->matrix_tosc_chi2_COV_both_syst_stat_inv;
+
+  osc_test->Set_toy_variations(num_toys);
+  for (int i = 0; i < num_toys; i++) {
+    // Resize the matrix to the correct nunmber of bins
+    map_matrix_spectrum_4vToy[i].ResizeTo(1, bins_eff);
+    // Apply the mask to save the spectrum portion we are interested in
+	map_matrix_spectrum_4vToy[i] = osc_test->map_matrix_tosc_toy_pred[i + 1] * matrix_gof_trans_eff;
+    if (i % 100 == 0) {
+      cout << "Finished 4v toy " << i << "\n";
+        }
+  }
+
 
   vector<double> vec_chi2_3vToy_3v;
   vector<double> vec_chi2_3vToy_4v;
@@ -300,86 +389,128 @@ int main(int argc, char** argv)
   vector<double> vec_chi2_4vToy_4v;
   vector<double> vec_dchi2_4v;
   vector<double> vec_dchi2_3v;
-  vec_dchi2_3v.reserve(num_toys);
-  vec_dchi2_4v.reserve(num_toys);
-  vec_chi2_3vToy_3v.reserve(num_toys);
-  vec_chi2_3vToy_4v.reserve(num_toys);
-  vec_chi2_4vToy_3v.reserve(num_toys);
-  vec_chi2_4vToy_4v.reserve(num_toys);
+  vec_dchi2_3v.resize(num_toys);
+  vec_dchi2_4v.resize(num_toys);
+  vec_chi2_3vToy_3v.resize(num_toys);
+  vec_chi2_3vToy_4v.resize(num_toys);
+  vec_chi2_4vToy_3v.resize(num_toys);
+  vec_chi2_4vToy_4v.resize(num_toys);
 
+  cout<<endl<<" ---> Produce dchi2_with_4vToy"<<endl<<endl;
+  int counter = 0;
+	for(auto it=map_matrix_spectrum_4vToy.begin(); it!=map_matrix_spectrum_4vToy.end(); it++) {
+	  int i4vToy = it->first;
 
-  cout << "Generate 3v\n";
-  osc_test->Set_oscillation_pars(0, 0.10, 0.11, 0);
-  osc_test->Apply_oscillation();
-  osc_test->Set_apply_POT();// meas, CV, COV: all ready
-  osc_test->Set_toy_variations(num_toys);
-  for (int i = 0; i < num_toys; i++) {
-    osc_test->Set_toy2fitdata(i+1);
-    double chi2_3v = osc_test->FCN(pars_3v_small);
-    double chi2_4v = osc_test->FCN(pars_4v_grid);
-    vec_chi2_3vToy_3v.push_back(chi2_3v);
-    vec_chi2_3vToy_4v.push_back(chi2_4v);
-    vec_dchi2_3v.push_back(chi2_4v - chi2_3v);
-  }
+	  /////// calculate chi2_4v_with_4vToy and chi2_3v_with_4vToy
+	  TMatrixD matrix_delta_4vPred_4vToy   = map_matrix_spectrum_4vToy[i4vToy] - matrix_4v_asimov_pred;
+	  TMatrixD matrix_delta_4vPred_4vToy_T = matrix_delta_4vPred_4vToy.T(); matrix_delta_4vPred_4vToy.T();
+	  double chi2_4v = (matrix_delta_4vPred_4vToy * matrix_4v_total_COV_inv * matrix_delta_4vPred_4vToy_T)(0,0);
 
-  cout << "Generate 4v\n";
-  osc_test->Set_oscillation_pars(pars_4v_grid[0], pars_4v_grid[1], pars_4v_grid[2], pars_4v_grid[3]);
-  osc_test->Apply_oscillation();
-  osc_test->Set_apply_POT();// meas, CV, COV: all ready
-  osc_test->Set_toy_variations(num_toys);
-  for (int i = 0; i < num_toys; i++) {
-    osc_test->Set_toy2fitdata(i+1);
-    double chi2_3v = osc_test->FCN(pars_3v_small);
-    double chi2_4v = osc_test->FCN(pars_4v_grid);
-    vec_chi2_4vToy_3v.push_back(chi2_3v);
-    vec_chi2_4vToy_4v.push_back(chi2_4v);
-    vec_dchi2_4v.push_back(chi2_4v - chi2_3v);
-  }
+	  TMatrixD matrix_delta_3vPred_4vToy   = map_matrix_spectrum_4vToy[i4vToy] - matrix_3v_asimov_pred;
+	  TMatrixD matrix_delta_3vPred_4vToy_T = matrix_delta_3vPred_4vToy.T(); matrix_delta_3vPred_4vToy.T();
+	  double chi2_3v = (matrix_delta_3vPred_4vToy * matrix_3v_total_COV_inv * matrix_delta_3vPred_4vToy_T)(0,0);
 
-  // Sorted in place and used directly by stage 2 below -- no intermediate
-  // ROOT file write/read/copy round-trip needed since these are already
-  // process-owned std::vectors.
+	  double dchi2 = chi2_4v - chi2_3v;
+
+	  vec_chi2_4vToy_4v[counter] = chi2_4v;
+	  vec_chi2_4vToy_3v[counter] = chi2_3v;
+      vec_dchi2_4v[counter] = dchi2;
+      counter++;
+	}
+
+	///////
+
+	cout<<endl<<" ---> Produce dchi2_with_3vToy"<<endl<<endl;
+    counter = 0;
+	for(auto it=map_matrix_spectrum_3vToy.begin(); it!=map_matrix_spectrum_3vToy.end(); it++) {
+	  int i3vToy = it->first;
+
+	  /////// calculate chi2_4v_with_3vToy and chi2_3v_with_3vToy
+	  TMatrixD matrix_delta_4vPred_3vToy   = map_matrix_spectrum_3vToy[i3vToy] - matrix_4v_asimov_pred;
+	  TMatrixD matrix_delta_4vPred_3vToy_T = matrix_delta_4vPred_3vToy.T(); matrix_delta_4vPred_3vToy.T();
+	  double chi2_4v = (matrix_delta_4vPred_3vToy * matrix_4v_total_COV_inv * matrix_delta_4vPred_3vToy_T)(0,0);
+
+	  TMatrixD matrix_delta_3vPred_3vToy   = map_matrix_spectrum_3vToy[i3vToy] - matrix_3v_asimov_pred;
+	  TMatrixD matrix_delta_3vPred_3vToy_T = matrix_delta_3vPred_3vToy.T(); matrix_delta_3vPred_3vToy.T();
+	  double chi2_3v= (matrix_delta_3vPred_3vToy * matrix_3v_total_COV_inv * matrix_delta_3vPred_3vToy_T)(0,0);
+
+	  double dchi2 = chi2_4v - chi2_3v;
+
+	  vec_chi2_3vToy_4v[counter] = chi2_4v;
+	  vec_chi2_3vToy_3v[counter] = chi2_3v;
+      vec_dchi2_3v[counter] = dchi2;
+      counter++;
+    }
+
   std::sort(vec_dchi2_3v.begin(), vec_dchi2_3v.end());
   std::sort(vec_dchi2_4v.begin(), vec_dchi2_4v.end());
 
-  // --------------------------------------------------
-  // Stage 2 (from writechi2obs.cxx): for every presave universe, compute the
-  // observed Delta-chi2 and derive CLs/confidence against the toy
-  // distributions generated above.
-  // --------------------------------------------------
+  // Create the observation chi2
+
   for (int u = 0; u < N; u++) {
-    auto& spectrum = spectrum_cache[u];
-    for (int j = 0; j <= 181; j++) {
-      osc_test->matrix_tosc_fitdata_newworld(0, j) = spectrum[j];
+    // Load the current toy data
+    auto &spectrum = spectrum_cache[u];
+
+    // Create a temp holding variable to propper size. Only the first bins_eff
+    // entries of spectrum are ever kept (matrix_gof_trans_eff zeroes out
+    // everything beyond that), so read exactly that many -- spectrum may not
+    // actually have bins_all entries, and reading past its end via operator[]
+    // is undefined behavior (occasionally landing on a NaN in adjacent heap
+    // memory, which survives the mask multiply since 0*NaN is NaN, not 0).
+    TMatrixD matrix_toydata_temp(1, bins_eff);
+
+    for (int j = 0; j < bins_eff; j++) {
+      matrix_toydata_temp(0, j) = spectrum[j];
     }
 
-    double obs_3v = osc_test->FCN(pars_3v_small);
-    double obs_4v = osc_test->FCN(pars_4v_grid);
-    double deltachi2obs = obs_4v - obs_3v;
+    /////// calculate chi2_4v_with_data and chi2_3v_with_data
+	//TMatrixD matrix_delta_4vPred_data   = map_toydata_spectrum[idata] - matrix_4v_asmiov_pred;
+	  TMatrixD matrix_delta_4vPred_data   = matrix_toydata_temp - matrix_4v_asimov_pred;
+	  TMatrixD matrix_delta_4vPred_data_T = matrix_delta_4vPred_data.T(); matrix_delta_4vPred_data.T();
+	  double obs_4v = (matrix_delta_4vPred_data * matrix_4v_total_COV_inv * matrix_delta_4vPred_data_T)(0,0);
 
-    auto it4 = std::lower_bound(vec_dchi2_4v.data(), vec_dchi2_4v.data() + vec_dchi2_4v.size(), deltachi2obs);
-    auto it3 = std::lower_bound(vec_dchi2_3v.data(), vec_dchi2_3v.data() + vec_dchi2_3v.size(), deltachi2obs);
+      TMatrixD matrix_delta_3vPred_data   = matrix_toydata_temp - matrix_3v_asimov_pred;
+	  TMatrixD matrix_delta_3vPred_data_T = matrix_delta_3vPred_data.T(); matrix_delta_3vPred_data.T();
+	  double obs_3v = (matrix_delta_3vPred_data * matrix_3v_total_COV_inv * matrix_delta_3vPred_data_T)(0,0);
+
+      double deltachi2obs = obs_4v - obs_3v;
+
+
+      auto it4 = std::lower_bound(vec_dchi2_4v.data(),
+                                vec_dchi2_4v.data() + vec_dchi2_4v.size(),
+                                deltachi2obs);
+      auto it3 = std::lower_bound(vec_dchi2_3v.data(),
+                                vec_dchi2_3v.data() + vec_dchi2_3v.size(),
+                                deltachi2obs);
     double count4v = (vec_dchi2_4v.data() + vec_dchi2_4v.size()) - it4;
     double count3v = (vec_dchi2_3v.data() + vec_dchi2_3v.size()) - it3;
 
-    double cls = 0;
-    if( count3v == 0 ) {
-      if( count4v == 0 ) cls = 0;
-      else cls = 1;
-    }
-    else cls = count4v / count3v;
-    if( count4v>=count3v ) cls = 1;
-    double confidence = 1.0 - cls;
-
+    // Save observational deltachisquare
     vec_obs_3v[u] = obs_3v;
     vec_obs_4v[u] = obs_4v;
     vec_dchi2obs[u] = deltachi2obs;
+
+    // Calculte CLs
+    double cls = 0;
+    if (count3v == 0) {
+      if (count4v == 0)
+        cls = 0;
+      else
+        cls = 1;
+    } else
+      cls = count4v / count3v;
+    if (count4v >= count3v)
+      cls = 1;
+    double confidence = 1.0 - cls;
+
     vec_lines_3v[u] = count3v;
     vec_lines4v[u] = count4v;
     vec_confidence[u] = confidence;
 
-    if (u%100 == 0) cout << "Finished Universe " << u << endl;
-  } // Universe
+    if (u % 100 == 0)
+      cout << "Finished CLs Calculation " << u << "\n";
+  }
+
 
   // --------------------------------------------------
   // Write final output. Explicit cd() so the new TTree attaches to outfile
@@ -415,11 +546,11 @@ int main(int argc, char** argv)
   std::filesystem::rename(tmp_name.Data(), final_name.Data());
   cout << " ---> Finished successfully" << endl;
 
-  cout<<endl;
-  if( display ) {
-    cout<<" Enter Ctrl+c to end the program"<<endl;
-    cout<<" Enter Ctrl+c to end the program"<<endl;
-    cout<<endl;
+  cout << endl;
+  if (display) {
+    cout << " Enter Ctrl+c to end the program" << endl;
+    cout << " Enter Ctrl+c to end the program" << endl;
+    cout << endl;
     theApp.Run();
   }
 

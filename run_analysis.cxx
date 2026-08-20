@@ -159,26 +159,41 @@ void get_CL_curve(TH2 *h2_CL_input, TGraph *gh_CL_curve, int flag_index)
 int main(void) {
   const int NUM_dm2 = 60;
   const int NUM_ttt = 60;
+  const double DM2_LO = -1, DM2_HI = 2;
+  const double TTT_LO = -3, TTT_HI = 0;
+  double xbins[61], ybins[61];
+  // Construct log10 bin boundaries
+  for (int i = 0; i <= 60; i++) {
+    for (int j = 0; j <= 60; j++) {
+      xbins[i] = pow(10, TTT_LO + i*(TTT_HI-TTT_LO)/NUM_ttt);  // theta bins
+      ybins[j] = pow(10, DM2_LO + j*(DM2_HI-DM2_LO)/NUM_dm2);  // dm2 bins
+    }
+  }
+  //
+  TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, &ybins[0]);
+  TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, &xbins[0]);
 
-   // TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, -2, 1);
-  // TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, -2, 0);
+   // TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, -1, 2);
+   // TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, -3, 0);
+
   // First load 3600 files
 
   // Pre-create all Vectors
   TH1::AddDirectory(false);
   std::vector<TH2D *> vec_cls_universe;
-  for (int k = 0; k < 2002; ++k) {
-    vec_cls_universe.push_back(
-        new TH2D(Form("hcls_%04d", k), "", 60, 1, 60, 60, 1, 60));
-  }
 
+  for (int k = 0; k < 2002; ++k) {
+    // vec_cls_universe.push_back(
+        // new TH2D(Form("hcls_%04d", k), "", 60, TTT_LO, TTT_HI, 60, DM2_LO, DM2_HI));
+    vec_cls_universe.push_back(   new TH2D(Form("hcls_%04d", k), "", NUM_ttt, &xbins[0], NUM_dm2, &ybins[0]));//
+  }
+  std::vector<TGraph *> cl_curves(vec_cls_universe.size());
+  std::vector<TGraph*> cl_curves_invert(vec_cls_universe.size());
   for (int idm2 = 1; idm2 <= 60; idm2++) {
     for (int ittt = 1; ittt <= 60; ittt++) {
 
-      // Open the file
-      // TString roostr = TString::Format("output/size_xiangpan60k_cls_out_dm2_ttt_%03d_%03d.root", idm2, ittt);
-      // TString roostr = TString::Format("dir_step_3_total/out_dm2_ttt_%03d_%03d.root", idm2, ittt);
-      TString roostr = TString::Format("output/out_dm2_ttt_%03d_%03d.root", idm2, ittt);
+      // TString roostr = TString::Format("output/out_dm2_ttt_%03d_%03d.root", idm2, ittt);
+      TString roostr = TString::Format("output/BNBvanilla_numu_disp_grid_60x60_dm2_ttt_%03d_%03d.root", idm2, ittt);
       TFile f(roostr, "READ");
 
       // Get the tree
@@ -206,46 +221,67 @@ tree->GetEntry(0);
     }
   }
 
-// std::vector<TH2D*> vec_cls_universe;
-// vec_cls_universe.reserve(2002);
-//
-// TFile *fin = TFile::Open("zz_results_pvalue_map_crosscheck_Xiangpan.root", "READ");
-// if (!fin || fin->IsZombie()) {
-//     throw std::runtime_error("Failed to open ROOT file.");
-// }
-// for (int k = 0; k < 2002; ++k) {
-//     TString histName = Form("map_toydata_h2_space_basic_%05d", k + 1);
-//
-//     TH2D *h = dynamic_cast<TH2D*>(fin->Get(histName));
-//     if (h) h->SetDirectory(nullptr);
-//
-//     vec_cls_universe.push_back(h);
-// }
-  // Now Do the graph interpretation
-  // std::vector<TGraph*> cl_curves(vec_cls_universe.size());
-  //
-  // for (int u = 0; u < vec_cls_universe.size(); u++) {
-  //
-  // cl_curves[u] = new TGraph();
-  //
-  // get_CL_curve(vec_cls_universe[u], cl_curves[u],u);
-  // }
-
   // Now save everything
-  TFile out("xiangpan-sub-6k-cls.root", "RECREATE");
+  TFile out("cls_map_BNB_vanilla_disp_60x60-notfancy.root", "RECREATE");
 
-  TDirectory *dh = out.mkdir("histograms");
-  TDirectory *dg = out.mkdir("cl_curves");
   // histograms
-dh->cd();
+
 for (int u = 0; u < vec_cls_universe.size(); u++) {
-  vec_cls_universe[u]->Write(Form("h_%04d", u));
+  vec_cls_universe[u]->Write(Form("h2_%04d", u));
+  cl_curves[u] = new TGraph();
+  cl_curves_invert[u] = new TGraph();
+  get_CL_curve(vec_cls_universe[u], cl_curves[u], u);
+  int size = cl_curves[u]->GetN();
+  for(int idx=0; idx<size; idx++) {
+    double xx, yy;
+    cl_curves[u]->GetPoint(idx, xx, yy);
+    cl_curves_invert[u]->SetPoint(idx, yy, xx);
+    }
+
+  cl_curves[u]->Write(Form("gr_%04d", u));
+  cl_curves_invert[u]->Write(Form("iv_%04d", u));
 }
 
+// l2sigma, l1sigma, m, u1sigma, u2sigma
+double p[5] = {0.023, 0.159, 0.5, .841, .977};
+double l2sigma[NUM_dm2];
+double l1sigma[NUM_dm2];
+double median[NUM_dm2];
+double u1sigma[NUM_dm2];
+double u2sigma[NUM_dm2];
+for (int idm2 = 0; idm2 < NUM_dm2; idm2++) {
+  std::vector<double> xvals;
+  for (int universe = 0; universe < 2002; universe++) {
+    xvals.push_back(cl_curves_invert[universe]->Eval(ybins[idm2]));
+  }
+  std::sort(xvals.begin(), xvals.end());
+
+  int n = xvals.size();
+  auto percentile_val = [&](double frac) {
+    int idx = std::min(std::max((int)(frac * n), 0), n - 1);
+    return xvals[idx];
+  };
+
+  double v_l2 = percentile_val(p[0]);
+  double v_l1 = percentile_val(p[1]);
+  double v_m  = percentile_val(p[2]);
+  double v_u1 = percentile_val(p[3]);
+  double v_u2 = percentile_val(p[4]);
+
+  median[idm2]  = v_m;
+  l1sigma[idm2] = v_m  - v_l1;
+  u1sigma[idm2] = v_u1 - v_m;
+  l2sigma[idm2] = v_m  - v_l2;
+  u2sigma[idm2] = v_u2 - v_m;
+}
+TGraphAsymmErrors *sigma1 = new TGraphAsymmErrors(NUM_dm2, &median[0], &ybins[0], &l1sigma[0], &u1sigma[0]);
+TGraphAsymmErrors *sigma2 = new TGraphAsymmErrors(NUM_dm2, &median[0], &ybins[0], &l2sigma[0], &u2sigma[0]);
+sigma1->Write("sigma1");
+sigma2->Write("sigma2");
 // graphs
 // dg->cd();
 // for (int u = 0; u < vec_cls_universe.size(); u++) {
-//   cl_curves[u]->Write(Form("g_%04d", u));
+//
 // }
 out.Close();
 }
