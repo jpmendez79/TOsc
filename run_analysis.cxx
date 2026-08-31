@@ -222,7 +222,7 @@ tree->GetEntry(0);
   }
 
   // Now save everything
-  TFile out("cls_map_BNB_vanilla_disp_60x60-notfancy.root", "RECREATE");
+  TFile out("cls_map_BNB_vanilla_disp_60x60-direct.root", "RECREATE");
 
   // histograms
 
@@ -255,24 +255,34 @@ for (int idm2 = 0; idm2 < NUM_dm2; idm2++) {
     xvals.push_back(cl_curves_invert[universe]->Eval(ybins[idm2]));
   }
   std::sort(xvals.begin(), xvals.end());
-
-  int n = xvals.size();
-  auto percentile_val = [&](double frac) {
-    int idx = std::min(std::max((int)(frac * n), 0), n - 1);
-    return xvals[idx];
-  };
-
-  double v_l2 = percentile_val(p[0]);
-  double v_l1 = percentile_val(p[1]);
-  double v_m  = percentile_val(p[2]);
-  double v_u1 = percentile_val(p[3]);
-  double v_u2 = percentile_val(p[4]);
-
-  median[idm2]  = v_m;
-  l1sigma[idm2] = v_m  - v_l1;
-  u1sigma[idm2] = v_u1 - v_m;
-  l2sigma[idm2] = v_m  - v_l2;
-  u2sigma[idm2] = v_u2 - v_m;
+// Direct Result
+double qv[5];
+    for (int i=0; i<5; i++) {
+    qv[i] = p[i]*xvals.size();
+    }
+  l2sigma[idm2] = xvals[qv[0]];
+  l1sigma[idm2] = xvals[qv[1]];
+  median[idm2]  = xvals[qv[2]];
+  u1sigma[idm2] = xvals[qv[3]];
+  u2sigma[idm2] = xvals[qv[4]];
+// Interpolated Result
+  // int n = xvals.size();
+  // auto percentile_val = [&](double frac) {
+  //   int idx = std::min(std::max((int)(frac * n), 0), n - 1);
+  //   return xvals[idx];
+  // };
+  //
+  // double v_l2 = percentile_val(p[0]);
+  // double v_l1 = percentile_val(p[1]);
+  // double v_m  = percentile_val(p[2]);
+  // double v_u1 = percentile_val(p[3]);
+  // double v_u2 = percentile_val(p[4]);
+  //
+  // median[idm2]  = v_m;
+  // l1sigma[idm2] = v_m  - v_l1;
+  // u1sigma[idm2] = v_u1 - v_m;
+  // l2sigma[idm2] = v_m  - v_l2;
+  // u2sigma[idm2] = v_u2 - v_m;
 }
 TGraphAsymmErrors *sigma1 = new TGraphAsymmErrors(NUM_dm2, &median[0], &ybins[0], &l1sigma[0], &u1sigma[0]);
 TGraphAsymmErrors *sigma2 = new TGraphAsymmErrors(NUM_dm2, &median[0], &ybins[0], &l2sigma[0], &u2sigma[0]);

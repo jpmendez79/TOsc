@@ -34,6 +34,8 @@ int main(int argc, char **argv) {
   int it14 = 0;
   int idm2 = 0;
   int inumToys = 0;
+  int ig2 = 0;
+
   bool flag_verbose = false;
   for (int i = 1; i < argc; i++) {
     if (strcmp(argv[i], "-it14") == 0) {
@@ -47,6 +49,13 @@ int main(int argc, char **argv) {
       stringstream convert(argv[i + 1]);
       if (!(convert >> idm2)) {
         cerr << " ---> Error idm2 !" << endl;
+        exit(1);
+      }
+    }
+    if (strcmp(argv[i], "-ig2") == 0) {
+      stringstream convert(argv[i + 1]);
+      if (!(convert >> ig2)) {
+        cerr << " ---> Error int num g2 !" << endl;
         exit(1);
       }
     }
@@ -65,7 +74,10 @@ int main(int argc, char **argv) {
   // Presave input path -- declared here (rather than at its point of use
   // further down) so it's available for the -v diagnostic dump before any
   // expensive setup.
-  TString xpath = "input/presave_3v_hypothesis_toydata_01_cv.root";
+  // TString xpath =
+  // "input/current-xpan-presave_3v_hypothesis_toydata_01_cv.root";
+  TString xpath = "jpmendez_presave_3v_hypothesis_toydata_01_cv.root";
+
 
   // --------------------------------------------------
   // Skip-if-already-done check: this is the cheapest possible point to bail
@@ -74,10 +86,10 @@ int main(int argc, char **argv) {
   // nodes without any node needing to know which grid points other nodes have
   // already finished.
   // --------------------------------------------------
-  // TString final_name = TString::Format(
-  //                                      "output/inv_decay_BNB_grid_60x60_dm2_ttt_%03d_%03d.root", idm2, it14);
-    TString final_name = TString::Format(
-      "output/BNBvanilla_numu_disp_grid_60x60_dm2_ttt_%03d_%03d.root", idm2, it14);
+  TString final_name = TString::Format(
+                                       "output/inv_decay_BNB_grid_60x60_g2_dm2_ttt_%01d_%03d_%03d.root", ig2, idm2, it14);
+    // TString final_name = TString::Format(
+    //   "output/fixed_4vToygentoo_FCN_BNB_vanilla_numu_disp_grid_60x60_dm2_ttt_%03d_%03d.root", idm2, it14);
 
   TString tmp_name = final_name + ".tmp";
 
@@ -119,7 +131,9 @@ int main(int argc, char **argv) {
   val_obj_dm2 = pow(10, val_obj_dm2);
   double val_obj_ttt = h1d_ttt->GetBinCenter(ittt);
   val_obj_ttt = pow(10, val_obj_ttt);
-  double pars_4v_grid[4] = {val_obj_dm2, val_obj_ttt, 0.0045, 0};
+  double val_g2 = ig2 * M_PI;
+  double pars_4v_grid[4] = {val_obj_dm2, val_obj_ttt, 0, val_g2};
+
 
   if (flag_verbose) {
     cout << "\n ---> Verbose configuration:\n";
@@ -329,7 +343,7 @@ int main(int argc, char **argv) {
 
   // Setting up a 3v null-osc Generation
   osc_test->Set_oscillation_pars(pars_3v_small[0], pars_3v_small[1],
-                                 pars_3v_small[2], pars_3v_small[3]);
+                                 pars_3v_small[2], pars_3v_small[3], 0);
   osc_test->Apply_oscillation();
   osc_test->Set_apply_POT(); // meas, CV, COV: all ready
   osc_test->Set_meas2fitdata();
@@ -338,7 +352,6 @@ int main(int argc, char **argv) {
 
   // Save prediction and inverted chi2 out of tosc internal to local variables
   matrix_3v_asimov_pred = osc_test->matrix_tosc_chi2_pred;
-  cout << "----------DEBUG HERE" << endl;
   matrix_3v_total_COV_inv = osc_test->matrix_tosc_chi2_COV_both_syst_stat_inv;
   const int num_toys = inumToys;
   osc_test->Set_toy_variations(num_toys);
@@ -360,8 +373,10 @@ int main(int argc, char **argv) {
   TMatrixD matrix_4v_total_COV_inv(bins_eff, bins_eff);
 
   // Setting up a 4v null-osc Generation
+  // osc_test->Set_oscillation_pars(pars_4v_grid[0], pars_4v_grid[1],
+  //                                pars_4v_grid[2], pars_4v_grid[3], 0);
   osc_test->Set_oscillation_pars(pars_3v_small[0], pars_3v_small[1],
-                                 pars_3v_small[2], pars_3v_small[3]);
+                                 pars_3v_small[2], pars_3v_small[3], 0);
   osc_test->Apply_oscillation();
   osc_test->Set_apply_POT(); // meas, CV, COV: all ready
   osc_test->Set_meas2fitdata();
@@ -528,8 +543,8 @@ int main(int argc, char **argv) {
   outtree.Branch("vec_chi2_4vToy_3v", &vec_chi2_4vToy_3v);
   outtree.Branch("vec_dchi2_4v", &vec_dchi2_4v);
 
-  outtree.Branch("vec_chi2_3vToy_4v", &vec_chi2_4vToy_4v);
-  outtree.Branch("vec_chi2_3vToy_3v", &vec_chi2_4vToy_3v);
+  outtree.Branch("vec_chi2_3vToy_4v", &vec_chi2_3vToy_4v);
+  outtree.Branch("vec_chi2_3vToy_3v", &vec_chi2_3vToy_3v);
   outtree.Branch("vec_dchi2_3v", &vec_dchi2_3v);
 
   outtree.Branch("vec_obs_3v", &vec_obs_3v);

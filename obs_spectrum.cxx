@@ -163,13 +163,13 @@ cout<<endl;
       val_dm2_41         = 0;
       val_sin2_2theta_14 = 0.2;
       val_sin2_theta_24  = 0.3;
-      osc_test->Set_oscillation_pars(val_dm2_41, val_sin2_2theta_14, val_sin2_theta_24, val_sin2_theta_34);
+      osc_test->Set_oscillation_pars(val_dm2_41, val_sin2_2theta_14, val_sin2_theta_24, val_sin2_theta_34, 0);
       osc_test->Apply_oscillation();
       osc_test->Set_apply_POT();// meas, CV, COV: all ready
 
       int i_toydata = 0;
       vector<double>vec_toydata_spectrum;
-      TFile *outfile_toydata = new TFile("presave_3v_hypothesis_toydata_01_cv.root", "recreate");
+      TFile *outfile_toydata = new TFile("jpmendez_presave_3v_hypothesis_toydata_01_cv.root", "recreate");
       TTree *tree_toydata = new TTree("tree_toydata", "toydata_with_3v_hypothesis ---> i_toydata(1) for real measurement, i_toydata(2) for asimov");
       tree_toydata->Branch("i_toydata", &i_toydata, "i_toydata/I");
       tree_toydata->Branch("vec_toydata_spectrum", &vec_toydata_spectrum);

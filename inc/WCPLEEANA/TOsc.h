@@ -89,6 +89,7 @@ class TOsc {
     tosc_sin2_2theta_14 = 0;
     tosc_sin2_theta_24  = 0;
     tosc_sin2_theta_34  = 0;
+    tosc_g2 = 0;
 
     minimization_status     = -1;
     minimization_chi2       = -1;
@@ -96,10 +97,12 @@ class TOsc {
     minimization_sin2_2theta_14_val = -1;
     minimization_sin2_theta_24_val  = -1;
     minimization_sin2_theta_34_val  = -1;
+    minimization_g2_val             = -1;
     minimization_dm2_41_err         = -1;
     minimization_sin2_2theta_14_err = -1;
     minimization_sin2_theta_24_err  = -1;
     minimization_sin2_theta_34_err  = -1;
+    minimization_g2_err             = -1;
 
     ///////////////////////////
 
@@ -181,6 +184,7 @@ class TOsc {
   double tosc_sin2_2theta_14;
   double tosc_sin2_theta_24;
   double tosc_sin2_theta_34;
+  double tosc_g2;
 
   int    minimization_status;
   double minimization_chi2;
@@ -188,10 +192,12 @@ class TOsc {
   double minimization_sin2_2theta_14_val;
   double minimization_sin2_theta_24_val;
   double minimization_sin2_theta_34_val;
+  double minimization_g2_val;
   double minimization_dm2_41_err;
   double minimization_sin2_2theta_14_err;
   double minimization_sin2_theta_24_err;
   double minimization_sin2_theta_34_err;
+  double minimization_g2_err;
 
   ///////////////////////////
 
@@ -417,11 +423,12 @@ class TOsc {
   void Set_oscillation_base_minus(vector<double> *vec_ratioPOT, vector< vector<EventInfo> > *vec_vec_eventinfo, int pred_channel_index, TString str_osc_mode);
   void Set_oscillation_base_added(vector<double> *vec_ratioPOT, vector< vector<EventInfo> > *vec_vec_eventinfo, int pred_channel_index, TString str_osc_mode);
 
-  void Set_oscillation_pars(double val_dm2_41, double val_sin2_2theta_14, double val_sin2_theta_24, double val_sin2_theta_34) {
+  void Set_oscillation_pars(double val_dm2_41, double val_sin2_2theta_14, double val_sin2_theta_24, double val_sin2_theta_34, double val_g2) {
     tosc_dm2_41 = val_dm2_41;
     tosc_sin2_2theta_14 = val_sin2_2theta_14;
     tosc_sin2_theta_24  = val_sin2_theta_24;
-    tosc_sin2_theta_34  = val_sin2_theta_34;
+    tosc_sin2_theta_34 = val_sin2_theta_34;
+    tosc_g2 = val_g2;
   }
 
   void Apply_oscillation();
@@ -456,7 +463,7 @@ void Load_toy_variations(int itoy) {
 
   void Plot_user();
 
-  void Minimization_OscPars_FullCov(double init_dm2_41, double init_sin2_2theta_14, double init_sin2_theta_24, double init_sin2_theta_34, TString roostr_flag_fixpar);
+  void Minimization_OscPars_FullCov(double init_dm2_41, double init_sin2_2theta_14, double init_sin2_theta_24, double init_sin2_theta_34, double init_g2, TString roostr_flag_fixpar);
 
   double FCN(const double *par);
   double FCN_presave_only_PRED();

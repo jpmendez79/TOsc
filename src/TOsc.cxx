@@ -18,9 +18,9 @@ double TOsc::FCN(const double *par)
   double fit_dm2_41         = par[0];
   double fit_sin2_2theta_14 = par[1];
   double fit_sin2_theta_24 = par[2];
-
+  double fit_g2 = par[3];
   /////// standard order
-  Set_oscillation_pars(fit_dm2_41, fit_sin2_2theta_14, fit_sin2_theta_24, 0);
+  Set_oscillation_pars(fit_dm2_41, fit_sin2_2theta_14, fit_sin2_theta_24, 0, fit_g2);
   Apply_oscillation();
   Set_apply_POT();// meas, CV, COV: all ready
 
@@ -285,9 +285,9 @@ double TOsc::FCN_Pearson_FCnew(const double *par)
   double fit_dm2_41         = par[0];
   double fit_sin2_2theta_14 = par[1];
   double fit_sin2_theta_24  = par[2];
-
+  double fit_g2 =               par[3];
   /////// standard order
-  Set_oscillation_pars(fit_dm2_41, fit_sin2_2theta_14, fit_sin2_theta_24, 0);
+  Set_oscillation_pars(fit_dm2_41, fit_sin2_2theta_14, fit_sin2_theta_24, 0, fit_g2);
   Apply_oscillation();
   Set_apply_POT();// meas, CV, COV: all ready
 
@@ -376,7 +376,7 @@ double TOsc::FCN_Pearson_FCnew(const double *par)
 
 ///////
 
-void TOsc::Minimization_OscPars_FullCov(double init_dm2_41, double init_sin2_2theta_14, double init_sin2_theta_24, double init_sin2_theta_34, TString roostr_flag_fixpar)
+void TOsc::Minimization_OscPars_FullCov(double init_dm2_41, double init_sin2_2theta_14, double init_sin2_theta_24, double init_sin2_theta_34, double init_g2, TString roostr_flag_fixpar)
 {
   ROOT::Minuit2::Minuit2Minimizer min_osc( ROOT::Minuit2::kMigrad );
   min_osc.SetPrintLevel(2);
@@ -389,19 +389,20 @@ void TOsc::Minimization_OscPars_FullCov(double init_dm2_41, double init_sin2_2th
   /// set fitting parameters
   ROOT::Math::Functor Chi2Functor_osc(
 				      [&](const double *par) {return FCN( par );},// FCN
-				      3// number of fitting parameters
+				      4// number of fitting parameters
 				      );
 
   min_osc.SetFunction(Chi2Functor_osc);
 
   min_osc.SetVariable( 0, "dm2_41", init_dm2_41, 1e-2);
   min_osc.SetVariable( 1, "sin2_theta_14", init_sin2_2theta_14, 1e-4);
-  min_osc.SetVariable( 2, "sin2_theta_24", init_sin2_theta_24, 1e-4);
+  min_osc.SetVariable(2, "sin2_theta_24", init_sin2_theta_24, 1e-4);
+  min_osc.SetVariable(3, "g2", init_g2, 1e-4);
 
   min_osc.SetLowerLimitedVariable(0, "dm2_41", init_dm2_41, 1e-3, 0);
   min_osc.SetLimitedVariable(1, "sin2_theta_14", init_sin2_2theta_14, 1e-4, 0, 1);
   min_osc.SetLimitedVariable(2, "sin2_theta_24", init_sin2_theta_24, 1e-4, 0, 1);
-
+  min_osc.SetLimitedVariable(3, "g2", init_g2, 1e-4, 0, 4*M_PI);
   if( roostr_flag_fixpar.Contains("dm2") ) {
     min_osc.SetFixedVariable( 0, "dm2_41", init_dm2_41 );
   }
@@ -410,6 +411,9 @@ void TOsc::Minimization_OscPars_FullCov(double init_dm2_41, double init_sin2_2th
   }
   if( roostr_flag_fixpar.Contains("t24") ) {
     min_osc.SetFixedVariable( 2, "sin2_theta_24", init_sin2_theta_24 );
+  }
+  if( roostr_flag_fixpar.Contains("g2") ) {
+    min_osc.SetFixedVariable( 3, "g2", init_g2 );
   }
 
   min_osc.Minimize();
@@ -431,12 +435,19 @@ void TOsc::Minimization_OscPars_FullCov(double init_dm2_41, double init_sin2_2th
   minimization_sin2_theta_24_val = par_val[2];
   minimization_sin2_theta_24_err = par_err[2];
 
+  minimization_g2_val = par_val[3];
+  minimization_g2_err = par_err[3];
+
   if( par_val[0]!=par_val[0] ) minimization_status = 123;
   if( par_val[1]!=par_val[1] ) minimization_status = 123;
-  if( par_val[2]!=par_val[2] ) minimization_status = 123;
+  if (par_val[2] != par_val[2])
+    minimization_status = 123;
+  if( par_val[3]!=par_val[3] ) minimization_status = 123;
   if( par_err[0]!=par_err[0] ) minimization_status = 124;
   if( par_err[1]!=par_err[1] ) minimization_status = 124;
-  if( par_err[2]!=par_err[2] ) minimization_status = 124;
+  if (par_err[2] != par_err[2])
+    minimization_status = 124;
+  if( par_err[3]!=par_err[3] ) minimization_status = 124;
 
   if( 1 ) {
     cout<<endl;
@@ -1451,7 +1462,7 @@ double TOsc::Prob_oscillaion(double Etrue, double baseline, int strflag_osc)// o
   ///////
   double sin2_Delta = sin_Delta * sin_Delta;
   // Invisible Decay
-  double g2 = 2.5 * M_PI;
+  double g2 = tosc_g2;
   /* double g2 = 0; */
   double Delta = 1.267 * tosc_dm2_41 * baseline / Etrue;
   double cos_2Delta = cos(2 * Delta);
@@ -1472,10 +1483,10 @@ double TOsc::Prob_oscillaion(double Etrue, double baseline, int strflag_osc)// o
     //prob = 1 - tosc_sin2_2theta_14 * sin2_Delta;
     break;
   case numu2numu:
-    /* prob = 1 - 4*effective_cos2_theta_14*tosc_sin2_theta_24 * (1 - effective_cos2_theta_14*tosc_sin2_theta_24) * sin2_Delta; */
+    // prob = 1 - 4*effective_cos2_theta_14*tosc_sin2_theta_24 * (1 - effective_cos2_theta_14*tosc_sin2_theta_24) * sin2_Delta;
     //prob = 1;
-    prob = 1 - tosc_sin2_2theta_14 * sin2_Delta;
-    // prob = 1 - 2*x*(1 - exp(-1 * g2 * Delta / (8 * M_PI)) * cos_2Delta) + x*x*(1 - 2*exp(-1 * g2 * Delta / (8 * M_PI)) * cos_2Delta +exp(-1 * g2 * Delta / (4 * M_PI)));
+    // prob = 1 - tosc_sin2_2theta_14 * sin2_Delta;
+    prob = 1 - 2*x*(1 - exp(-1 * g2 * Delta / (8 * M_PI)) * cos_2Delta) + x*x*(1 - 2*exp(-1 * g2 * Delta / (8 * M_PI)) * cos_2Delta +exp(-1 * g2 * Delta / (4 * M_PI)));
     /* prob = 1 - t*(1 - exp(-1 * g2 * Delta / (8 * M_PI)) * cos_2Delta) + (t2/4)*(1 - 2*exp(-1 * g2 * Delta / (8 * M_PI)) * cos_2Delta +exp(-1 * g2 * Delta / (4 * M_PI))); */
     /* prob = 1 - (u/2)*(1 - exp(-1 * g2 * Delta / (8 * M_PI)) * cos_2Delta) + (u2/16)*(1 - 2*exp(-1 * g2 * Delta / (8 * M_PI)) * cos_2Delta +exp(-1 * g2 * Delta / (4 * M_PI))); */
 
