@@ -161,8 +161,8 @@ cout<<endl;
 
       /// standard order
       val_dm2_41         = 0;
-      val_sin2_2theta_14 = 0.2;
-      val_sin2_theta_24  = 0.3;
+      val_sin2_2theta_14 = 0.10;
+      val_sin2_theta_24  = 0.11;
       osc_test->Set_oscillation_pars(val_dm2_41, val_sin2_2theta_14, val_sin2_theta_24, val_sin2_theta_34, 0);
       osc_test->Apply_oscillation();
       osc_test->Set_apply_POT();// meas, CV, COV: all ready
