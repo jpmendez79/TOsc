@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
   int it14 = 0;
   int idm2 = 0;
   int inumToys = 0;
-  int ig2 = 0;
+  double ig2 = 0;
 
   bool flag_verbose = false;
   for (int i = 1; i < argc; i++) {
@@ -86,8 +86,9 @@ int main(int argc, char **argv) {
   // nodes without any node needing to know which grid points other nodes have
   // already finished.
   // --------------------------------------------------
-  TString final_name = TString::Format(
-                                       "output/inv_decay_BNB_grid_60x60_g2_dm2_ttt_%01d_%03d_%03d.root", ig2, idm2, it14);
+TString final_name = TString::Format(
+                                     "output/inv_decay_BNB_grid_60x60_g2_dm2_ttt_%.2f_%03d_%03d.root", ig2, idm2, it14);
+
     // TString final_name = TString::Format(
     //   "output/fixed_4vToygentoo_FCN_BNB_vanilla_numu_disp_grid_60x60_dm2_ttt_%03d_%03d.root", idm2, it14);
 
