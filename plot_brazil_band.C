@@ -93,6 +93,8 @@ void plot_brazil_band(TString infile = "test/cls_map_BNB_vanilla_disp_60x60.root
   band2->GetYaxis()->SetTitleSize(0.05);
   band2->GetXaxis()->SetLabelSize(0.04);
   band2->GetYaxis()->SetLabelSize(0.04);
+  band2->GetYaxis()->SetRangeUser(0.09, 100);
+  band2->GetXaxis()->SetRangeUser(0.01, 1);
 
 
   band1->Draw("F same");
