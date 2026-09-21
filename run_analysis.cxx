@@ -191,7 +191,6 @@ int main(int argc, char **argv) {
 
    // TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, -1, 2);
    // TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, -3, 0);
-
   // First load 3600 files
 
   // Pre-create all Vectors
@@ -209,7 +208,7 @@ int main(int argc, char **argv) {
     for (int ittt = 1; ittt <= 60; ittt++) {
 
       // TString roostr = TString::Format("output/out_dm2_ttt_%03d_%03d.root", idm2, ittt);
-      TString roostr = TString::Format("output/inv_decay_BNB_grid_60x60_g2_dm2_ttt_%.2f_%03d_%03d.root", ig2, idm2, ittt);
+      TString roostr = TString::Format("output/inv_decay_BNB_numu_grid_60x60_g2_dm2_ttt_%.2f_%03d_%03d.root", ig2, idm2, ittt);
       TFile f(roostr, "READ");
 
       // Get the tree
