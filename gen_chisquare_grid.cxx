@@ -87,7 +87,7 @@ int main(int argc, char **argv) {
   // already finished.
   // --------------------------------------------------
 TString final_name = TString::Format(
-                                     "output/inv_decay_BNB_grid_60x60_g2_dm2_ttt_%.2f_%03d_%03d.root", ig2, idm2, it14);
+                                     "output/inv_decay_BNB_numu_grid_60x60_g2_dm2_ttt_%.2f_%03d_%03d.root", ig2, idm2, it14);
 
     // TString final_name = TString::Format(
     //   "output/fixed_4vToygentoo_FCN_BNB_vanilla_numu_disp_grid_60x60_dm2_ttt_%03d_%03d.root", idm2, it14);
@@ -127,7 +127,7 @@ TString final_name = TString::Format(
   TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, TTT_LO, TTT_HI);
 
   int ittt = it14;
-  double pars_3v_small[4] = {0, 0.10, 0.11, 0};
+  double pars_3v_small[4] = {0, 0.0, 0.0, 0};
   double val_obj_dm2 = h1d_dm2->GetBinCenter(idm2);
   val_obj_dm2 = pow(10, val_obj_dm2);
   double val_obj_ttt = h1d_ttt->GetBinCenter(ittt);
@@ -373,6 +373,7 @@ TString final_name = TString::Format(
   TMatrixD matrix_4v_asimov_pred(1, bins_eff);
   TMatrixD matrix_4v_total_COV_inv(bins_eff, bins_eff);
 
+
   // Setting up a 4v null-osc Generation
   // osc_test->Set_oscillation_pars(pars_4v_grid[0], pars_4v_grid[1],
   //                                pars_4v_grid[2], pars_4v_grid[3], 0);
@@ -386,6 +387,14 @@ TString final_name = TString::Format(
   // Save prediction and inverted chi2 out of tosc internal to local variables
   matrix_4v_asimov_pred = osc_test->matrix_tosc_chi2_pred;
   matrix_4v_total_COV_inv = osc_test->matrix_tosc_chi2_COV_both_syst_stat_inv;
+// TString mat_file_name = TString::Format(
+//                                      "4v_asimov_inv_decay_BNB_grid_60x60_g2_dm2_ttt_%.2f_%03d_%03d.root", ig2, idm2, it14);
+// TFile specfile(mat_file_name, "RECREATE");
+// specfile.cd();
+//
+//
+// matrix_4v_asimov_pred.Write("mat_4v_asimov");
+// specfile.Close();
 
   osc_test->Set_toy_variations(num_toys);
   for (int i = 0; i < num_toys; i++) {
