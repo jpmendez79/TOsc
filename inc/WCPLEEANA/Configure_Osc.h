@@ -2,20 +2,20 @@ namespace Configure_Osc
 {
   /////////////////////////// default files for spectra and covariance matrixes
 
-  TString default_cv_file      = "/cshare/users/jpmendez/inputs/TOsc_input/xiangpan/dataset_input/merge.root";
-  TString default_dirtadd_file = "/cshare/users/jpmendez/inputs/TOsc_input/xiangpan/dataset_input/merge.root";
-  TString default_mcstat_file  = "/cshare/users/jpmendez/inputs/TOsc_input/xiangpan/dataset_input/0.log";// mc_stat from no oscillation
-  TString default_fluxXs_dir   = "/cshare/users/jpmendez/inputs/TOsc_input/xiangpan/dataset_input/hist_rootfiles/XsFlux_edit/";// hack flux for NuMI
-  TString default_detector_dir = "/cshare/users/jpmendez/inputs/TOsc_input/xiangpan/dataset_input/hist_rootfiles/DetVar_edit/";// hack oscillation: use the intrinsic
-  TString default_eventlist_dir= "/cshare/users/jpmendez/inputs/TOsc_input/xiangpan/dataset_input/";
-  /* TString default_cv_file      = "/home/jpmendez/TOsc_input/xiangpan/dataset_input/merge.root"; */
-  /* tstring default_dirtadd_file = "/home/jpmendez/TOsc_input/xiangpan/dataset_input/merge.root"; */
-  /* TString default_mcstat_file  = "/home/jpmendez/TOsc_input/xiangpan/dataset_input/0.log";// mc_stat from no oscillation */
-  /* TString default_fluxXs_dir   = "/home/jpmendez/TOsc_input/xiangpan/dataset_input/hist_rootfiles/XsFlux_edit/";// hack flux for NuMI */
-  /* TString default_detector_dir = "/home/jpmendez/TOsc_input/xiangpan/dataset_input/hist_rootfiles/DetVar_edit/";// hack oscillation: use the intrinsic */
-  /* TString default_eventlist_dir= "/home/jpmendez/TOsc_input/xiangpan/dataset_input/"; */
+  /* TString default_cv_file      = "/cshare/users/jpmendez/inputs/TOsc_input/xiangpan/dataset_input/merge.root"; */
+  /* TString default_dirtadd_file = "/cshare/users/jpmendez/inputs/TOsc_input/xiangpan/dataset_input/merge.root"; */
+  /* TString default_mcstat_file  = "/cshare/users/jpmendez/inputs/TOsc_input/xiangpan/dataset_input/0.log";// mc_stat from no oscillation */
+  /* TString default_fluxXs_dir   = "/cshare/users/jpmendez/inputs/TOsc_input/xiangpan/dataset_input/hist_rootfiles/XsFlux_edit/";// hack flux for NuMI */
+  /* TString default_detector_dir = "/cshare/users/jpmendez/inputs/TOsc_input/xiangpan/dataset_input/hist_rootfiles/DetVar_edit/";// hack oscillation: use the intrinsic */
+  /* TString default_eventlist_dir= "/cshare/users/jpmendez/inputs/TOsc_input/xiangpan/dataset_input/"; */
+  TString default_cv_file      = "/home/jpmendez/analysis/TOsc_input/dataset_input/merge.root";
+  TString default_dirtadd_file = "/home/jpmendez/analysis/TOsc_input/dataset_input/merge.root";
+  TString default_mcstat_file  = "/home/jpmendez/analysis/TOsc_input/dataset_input/0.log";// mc_stat from no oscillation
+  TString default_fluxXs_dir   = "/home/jpmendez/analysis/TOsc_input/dataset_input/hist_rootfiles/XsFlux_edit/";// hack flux for NuMI
+  TString default_detector_dir = "/home/jpmendez/analysis/TOsc_input/dataset_input/hist_rootfiles/DetVar_edit/";// hack oscillation: use the intrinsic
+  TString default_eventlist_dir= "/home/jpmendez/analysis/TOsc_input/dataset_input/";
 
-  /////////////////////////// By default 1. Don't modify the two values below. (X. JI)
+  /////////////////////////// by default 1. Don't modify the two values below. (X. JI)
 
   bool flag_apply_oscillation_BNB  = 1;
   bool flag_apply_oscillation_NuMI = 1;

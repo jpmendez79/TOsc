@@ -156,7 +156,23 @@ void get_CL_curve(TH2 *h2_CL_input, TGraph *gh_CL_curve, int flag_index)
 }
 
 
-int main(void) {
+int main(int argc, char **argv) {
+
+  double ig2 = 0;
+
+  bool flag_verbose = false;
+  for (int i = 1; i < argc; i++) {
+    if (strcmp(argv[i], "-ig2") == 0) {
+      stringstream convert(argv[i + 1]);
+      if (!(convert >> ig2)) {
+        cerr << " ---> Error int num g2 !" << endl;
+        exit(1);
+      }
+    }
+  }
+
+
+
   const int NUM_dm2 = 60;
   const int NUM_ttt = 60;
   const double DM2_LO = -1, DM2_HI = 2;
@@ -175,7 +191,6 @@ int main(void) {
 
    // TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, -1, 2);
    // TH1D *h1d_ttt = new TH1D("h1d_ttt", "h1d_ttt", NUM_ttt, -3, 0);
-
   // First load 3600 files
 
   // Pre-create all Vectors
@@ -193,7 +208,7 @@ int main(void) {
     for (int ittt = 1; ittt <= 60; ittt++) {
 
       // TString roostr = TString::Format("output/out_dm2_ttt_%03d_%03d.root", idm2, ittt);
-      TString roostr = TString::Format("output/BNBvanilla_numu_disp_grid_60x60_dm2_ttt_%03d_%03d.root", idm2, ittt);
+      TString roostr = TString::Format("output/inv_decay_BNB_numu_grid_60x60_g2_dm2_ttt_%.2f_%03d_%03d.root", ig2, idm2, ittt);
       TFile f(roostr, "READ");
 
       // Get the tree
@@ -220,9 +235,9 @@ tree->GetEntry(0);
       f.Close();
     }
   }
-
+TString outstring = TString::Format("output/cls_map_BNB_inv_decay_g2_%.2f_numu_disp_60x60.root", ig2);
   // Now save everything
-  TFile out("cls_map_BNB_vanilla_disp_60x60-notfancy.root", "RECREATE");
+  TFile out(outstring, "RECREATE");
 
   // histograms
 
@@ -255,24 +270,34 @@ for (int idm2 = 0; idm2 < NUM_dm2; idm2++) {
     xvals.push_back(cl_curves_invert[universe]->Eval(ybins[idm2]));
   }
   std::sort(xvals.begin(), xvals.end());
-
-  int n = xvals.size();
-  auto percentile_val = [&](double frac) {
-    int idx = std::min(std::max((int)(frac * n), 0), n - 1);
-    return xvals[idx];
-  };
-
-  double v_l2 = percentile_val(p[0]);
-  double v_l1 = percentile_val(p[1]);
-  double v_m  = percentile_val(p[2]);
-  double v_u1 = percentile_val(p[3]);
-  double v_u2 = percentile_val(p[4]);
-
-  median[idm2]  = v_m;
-  l1sigma[idm2] = v_m  - v_l1;
-  u1sigma[idm2] = v_u1 - v_m;
-  l2sigma[idm2] = v_m  - v_l2;
-  u2sigma[idm2] = v_u2 - v_m;
+// Direct Result
+double qv[5];
+    for (int i=0; i<5; i++) {
+    qv[i] = p[i]*xvals.size();
+    }
+  median[idm2]  = xvals[qv[2]];
+  l1sigma[idm2] = median[idm2] - xvals[qv[1]];
+  u1sigma[idm2] = xvals[qv[3]] - median[idm2];
+  l2sigma[idm2] = median[idm2] - xvals[qv[0]];
+  u2sigma[idm2] = xvals[qv[4]] - median[idm2];
+// Interpolated Result
+  // int n = xvals.size();
+  // auto percentile_val = [&](double frac) {
+  //   int idx = std::min(std::max((int)(frac * n), 0), n - 1);
+  //   return xvals[idx];
+  // };
+  //
+  // double v_l2 = percentile_val(p[0]);
+  // double v_l1 = percentile_val(p[1]);
+  // double v_m  = percentile_val(p[2]);
+  // double v_u1 = percentile_val(p[3]);
+  // double v_u2 = percentile_val(p[4]);
+  //
+  // median[idm2]  = v_m;
+  // l1sigma[idm2] = v_m  - v_l1;
+  // u1sigma[idm2] = v_u1 - v_m;
+  // l2sigma[idm2] = v_m  - v_l2;
+  // u2sigma[idm2] = v_u2 - v_m;
 }
 TGraphAsymmErrors *sigma1 = new TGraphAsymmErrors(NUM_dm2, &median[0], &ybins[0], &l1sigma[0], &u1sigma[0]);
 TGraphAsymmErrors *sigma2 = new TGraphAsymmErrors(NUM_dm2, &median[0], &ybins[0], &l2sigma[0], &u2sigma[0]);

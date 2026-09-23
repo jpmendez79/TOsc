@@ -5,16 +5,36 @@
 // Usage:
 //   root -l plot_brazil_band.C
 //   root -l 'plot_brazil_band.C("cls_map_BNB_vanilla_disp_60x60.root")'
+// save a lot of useless repetitive typing
+TLegend * MakeLegend(float left=0.7, float bottom=0.5, float right=0.9, float top=0.85)
+{
+  auto leg = new TLegend(left, bottom, right, top);
+  leg->SetFillStyle(0);  // unfortunately can't set this in TStyle :(
+
+  return leg;
+}
 
 void plot_brazil_band(TString infile = "test/cls_map_BNB_vanilla_disp_60x60.root")
 {
   gStyle->SetOptStat(0);
+  gStyle->SetOptTitle(0);
 
   TFile *f = TFile::Open(infile, "READ");
   if (!f || f->IsZombie()) {
     cout << "*** could not open " << infile << endl;
     return;
   }
+
+  bool has_g2 = false;
+  double g2_value = 0;
+  TPRegexp g2_pattern("g2_([0-9]+\\.[0-9]{2})");
+  TObjArray *g2_matches = g2_pattern.MatchS(infile);
+  if (g2_matches->GetLast() == 1) {
+    has_g2 = true;
+    g2_value = ((TObjString*)g2_matches->At(1))->GetString().Atof();
+    cout << "g2 = " << g2_value << endl;
+  }
+  delete g2_matches;
 
   TGraphAsymmErrors *sigma1 = (TGraphAsymmErrors*)f->Get("sigma1");
   TGraphAsymmErrors *sigma2 = (TGraphAsymmErrors*)f->Get("sigma2");
@@ -85,7 +105,7 @@ void plot_brazil_band(TString infile = "test/cls_map_BNB_vanilla_disp_60x60.root
   gr_example->SetLineWidth(2);
 
   band2->Draw("AF");
-  band2->GetXaxis()->SetTitle("sin^{2}2#theta");
+  band2->GetXaxis()->SetTitle("sin^{2}(2#theta_{#mu#mu})");
   band2->GetYaxis()->SetTitle("#Deltam^{2} [eV^{2}]");
   band2->GetXaxis()->CenterTitle(1);
   band2->GetYaxis()->CenterTitle(1);
@@ -93,6 +113,8 @@ void plot_brazil_band(TString infile = "test/cls_map_BNB_vanilla_disp_60x60.root
   band2->GetYaxis()->SetTitleSize(0.05);
   band2->GetXaxis()->SetLabelSize(0.04);
   band2->GetYaxis()->SetLabelSize(0.04);
+  band2->GetYaxis()->SetRangeUser(0.09, 100);
+  band2->GetXaxis()->SetRangeUser(0.01, 1);
 
 
   band1->Draw("F same");
@@ -103,11 +125,21 @@ void plot_brazil_band(TString infile = "test/cls_map_BNB_vanilla_disp_60x60.root
   lg->SetBorderSize(0);
   lg->SetFillStyle(0);
   lg->SetTextSize(0.03);
-  lg->AddEntry(gh_median, "Median expected", "l");
-  lg->AddEntry(band1, "1#sigma band", "f");
-  lg->AddEntry(band2, "2#sigma band", "f");
-  lg->AddEntry(gr_example, "gr_0001 (example universe)", "l");
+  lg->AddEntry(gh_median, "Median sensitivity", "l");
+  // lg->AddEntry(gr_example, "95% CLs Data Exclusion", "l");
   lg->Draw();
 
+  if (has_g2) {
+    TLatex *label_g2 = new TLatex(0.5, 0.89, Form("g^{2} = %.2f#pi", g2_value));
+    label_g2->SetNDC();
+    label_g2->SetTextSize(0.04);
+    label_g2->Draw();
+  }
+
+
+  // Force the raster output to the requested pixel size, independent of
+  // whatever size the on-screen window ended up at (window managers can
+  // resize/decorate it, which otherwise crops the saved PNG).
+  canv_brazil_band->SetCanvasSize(800, 700);
   canv_brazil_band->SaveAs("canv_brazil_band.png");
 }
