@@ -150,13 +150,13 @@ namespace Configure_Osc
   ///////
 
   bool flag_BNB_nueCC_from_intnue        = 0;// ####### work
-  bool flag_BNB_nueCC_from_overlaynumu   = 0;// ####### work
+  bool flag_BNB_nueCC_from_overlaynumu   = 1;// ####### work edit suggested by Xiangpan
   bool flag_BNB_nueCC_from_appnue        = 0;// ####### work
   bool flag_BNB_nueCC_from_appnumu       = 0;
   bool flag_BNB_nueCC_from_dirtnue       = 0;// approximation: ignore osc-effect. LEE PRD paper(BNB case): dirt/data = 1/557
   bool flag_BNB_nueCC_from_dirtnumu      = 0;// approximation: ignore osc-effect.
   bool flag_BNB_nueCC_from_overlaynueNC  = 0;// ####### work
-  bool flag_BNB_nueCC_from_overlaynumuNC = 0;// ####### work
+  bool flag_BNB_nueCC_from_overlaynumuNC = 1;// ####### work edit suggested by xiangpan
 
   bool flag_BNB_numuCC_from_overlaynumu  = 1;// ####### work
   bool flag_BNB_numuCC_from_overlaynue   = 0;

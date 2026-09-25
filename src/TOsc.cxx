@@ -174,7 +174,7 @@ double TOsc::FCN_presave_only_PRED()
   for(int idx=0; idx<rows; idx++) {
     double val_stat_cov = 0;
     // double val_data = matrix_data_total(0, idx);
-    double 1val_pred = matrix_pred_total(0, idx);
+    double val_pred = matrix_pred_total(0, idx);
 
     // if( val_data==0 ) { val_stat_cov = val_pred/2; }
     // else {
