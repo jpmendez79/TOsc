@@ -23,7 +23,7 @@ CFLAGS += -I./inc/ -I$(ROOTSYS)/include/
 
 # -------- Remote Config --------
 REMOTE = pg8
-REMOTE_DIR = ~/analysis/invisible-decay
+REMOTE_DIR = ~/analysis/invisible-decay-slice
 
 # -------- Remote Build --------
 
@@ -37,7 +37,7 @@ push:
         --include="*.icc" \
 		--exclude="*" \
 		./ $(REMOTE):$(REMOTE_DIR) \
-    && scp Makefile.remote $(REMOTE):$(REMOTE_DIR)/Makefile
+    && scp Makefile.remote $(REMOTE):$(REMOTE_DIR)/Makefile && scp run_one.sh $(REMOTE):$(REMOTE_DIR)/run_one.sh
 
 # Always sync Makefile explicitly
 # rsync -avz Makefile $(REMOTE):$(REMOTE_DIR)

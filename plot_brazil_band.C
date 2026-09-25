@@ -38,7 +38,7 @@ void plot_brazil_band(TString infile = "test/cls_map_BNB_vanilla_disp_60x60.root
 
   TGraphAsymmErrors *sigma1 = (TGraphAsymmErrors*)f->Get("sigma1");
   TGraphAsymmErrors *sigma2 = (TGraphAsymmErrors*)f->Get("sigma2");
-  TGraph *gr_example = (TGraph*)f->Get("gr_0000");
+  TGraph *gr_example = (TGraph*)f->Get("gr_0001");
 
   if (!sigma1 || !sigma2 || !gr_example) {
     cout << "*** missing sigma1/sigma2/gr_0001 in " << infile << endl;
