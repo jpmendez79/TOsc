@@ -74,102 +74,102 @@ struct EventInfo {
 class TOsc {
  public:
   TOsc() {
-    cout<<endl<<" ---> Hello TOsc"<<endl<<endl;
+	cout<<endl<<" ---> Hello TOsc"<<endl<<endl;
 
-    tosc_rand = new TRandom3(0);
+	tosc_rand = new TRandom3(0);
 
-    tosc_scaleF_POT_BNB  = 1;
-    tosc_scaleF_POT_NuMI = 1;
+	tosc_scaleF_POT_BNB  = 1;
+	tosc_scaleF_POT_NuMI = 1;
 
-    flag_goodness_of_fit_CNP = 0;
+	flag_goodness_of_fit_CNP = 0;
 
-    ///////////////////////////
+	///////////////////////////
 
-    tosc_dm2_41 = 0;
-    tosc_sin2_2theta_14 = 0;
-    tosc_sin2_theta_24  = 0;
-    tosc_sin2_theta_34  = 0;
-    tosc_g2 = 0;
+	tosc_dm2_41 = 0;
+	tosc_sin2_2theta_14 = 0;
+	tosc_sin2_theta_24  = 0;
+	tosc_sin2_theta_34  = 0;
+	tosc_g2 = 0;
 
-    minimization_status     = -1;
-    minimization_chi2       = -1;
-    minimization_dm2_41_val = -1;
-    minimization_sin2_2theta_14_val = -1;
-    minimization_sin2_theta_24_val  = -1;
-    minimization_sin2_theta_34_val  = -1;
-    minimization_g2_val             = -1;
-    minimization_dm2_41_err         = -1;
-    minimization_sin2_2theta_14_err = -1;
-    minimization_sin2_theta_24_err  = -1;
-    minimization_sin2_theta_34_err  = -1;
-    minimization_g2_err             = -1;
+	minimization_status     = -1;
+	minimization_chi2       = -1;
+	minimization_dm2_41_val = -1;
+	minimization_sin2_2theta_14_val = -1;
+	minimization_sin2_theta_24_val  = -1;
+	minimization_sin2_theta_34_val  = -1;
+	minimization_g2_val             = -1;
+	minimization_dm2_41_err         = -1;
+	minimization_sin2_2theta_14_err = -1;
+	minimization_sin2_theta_24_err  = -1;
+	minimization_sin2_theta_34_err  = -1;
+	minimization_g2_err             = -1;
 
-    ///////////////////////////
+	///////////////////////////
 
-    flag_apply_oscillation_BNB   = 1;
-    flag_apply_oscillation_NuMI  = 1;
+	flag_apply_oscillation_BNB   = 1;
+	flag_apply_oscillation_NuMI  = 1;
 
-    ///////////////////////////
+	///////////////////////////
 
-    flag_syst_dirt   = 0;
-    flag_syst_mcstat = 0;
-    flag_syst_flux   = 0;
-    flag_syst_geant  = 0;
-    flag_syst_Xs     = 0;
-    flag_syst_det    = 0;
+	flag_syst_dirt   = 0;
+	flag_syst_mcstat = 0;
+	flag_syst_flux   = 0;
+	flag_syst_geant  = 0;
+	flag_syst_Xs     = 0;
+	flag_syst_det    = 0;
 
-    ///////////////////////////
+	///////////////////////////
 
-    flag_NuMI_nueCC_from_intnue         = 0;
-    flag_NuMI_nueCC_from_overlaynumu    = 0;
-    flag_NuMI_nueCC_from_appnue         = 0;
-    flag_NuMI_nueCC_from_appnumu        = 0;
-    flag_NuMI_nueCC_from_overlaynueNC   = 0;
-    flag_NuMI_nueCC_from_overlaynumuNC  = 0;
+	flag_NuMI_nueCC_from_intnue         = 0;
+	flag_NuMI_nueCC_from_overlaynumu    = 0;
+	flag_NuMI_nueCC_from_appnue         = 0;
+	flag_NuMI_nueCC_from_appnumu        = 0;
+	flag_NuMI_nueCC_from_overlaynueNC   = 0;
+	flag_NuMI_nueCC_from_overlaynumuNC  = 0;
 
-    flag_NuMI_numuCC_from_overlaynumu   = 0;
-    flag_NuMI_numuCC_from_overlaynue    = 0;
-    flag_NuMI_numuCC_from_appnue        = 0;
-    flag_NuMI_numuCC_from_appnumu       = 0;
-    flag_NuMI_numuCC_from_overlaynumuNC = 0;
-    flag_NuMI_numuCC_from_overlaynueNC  = 0;
+	flag_NuMI_numuCC_from_overlaynumu   = 0;
+	flag_NuMI_numuCC_from_overlaynue    = 0;
+	flag_NuMI_numuCC_from_appnue        = 0;
+	flag_NuMI_numuCC_from_appnumu       = 0;
+	flag_NuMI_numuCC_from_overlaynumuNC = 0;
+	flag_NuMI_numuCC_from_overlaynueNC  = 0;
 
-    flag_NuMI_CCpi0_from_overlaynumu    = 0;
-    flag_NuMI_CCpi0_from_appnue         = 0;
-    flag_NuMI_CCpi0_from_overlaynumuNC  = 0;
-    flag_NuMI_CCpi0_from_overlaynueNC   = 0;
+	flag_NuMI_CCpi0_from_overlaynumu    = 0;
+	flag_NuMI_CCpi0_from_appnue         = 0;
+	flag_NuMI_CCpi0_from_overlaynumuNC  = 0;
+	flag_NuMI_CCpi0_from_overlaynueNC   = 0;
 
-    flag_NuMI_NCpi0_from_overlaynumu    = 0;
-    flag_NuMI_NCpi0_from_appnue         = 0;
-    flag_NuMI_NCpi0_from_overlaynumuNC  = 0;
-    flag_NuMI_NCpi0_from_overlaynueNC   = 0;
+	flag_NuMI_NCpi0_from_overlaynumu    = 0;
+	flag_NuMI_NCpi0_from_appnue         = 0;
+	flag_NuMI_NCpi0_from_overlaynumuNC  = 0;
+	flag_NuMI_NCpi0_from_overlaynueNC   = 0;
 
-    ///////
+	///////
 
-    flag_BNB_nueCC_from_intnue       = 0;
-    flag_BNB_nueCC_from_overlaynumu  = 0;
-    flag_BNB_nueCC_from_appnue       = 0;
-    flag_BNB_nueCC_from_appnumu      = 0;
+	flag_BNB_nueCC_from_intnue       = 0;
+	flag_BNB_nueCC_from_overlaynumu  = 0;
+	flag_BNB_nueCC_from_appnue       = 0;
+	flag_BNB_nueCC_from_appnumu      = 0;
 
-    flag_BNB_numuCC_from_overlaynumu = 0;
-    flag_BNB_numuCC_from_overlaynue  = 0;
-    flag_BNB_numuCC_from_appnue      = 0;
-    flag_BNB_numuCC_from_appnumu     = 0;
+	flag_BNB_numuCC_from_overlaynumu = 0;
+	flag_BNB_numuCC_from_overlaynue  = 0;
+	flag_BNB_numuCC_from_appnue      = 0;
+	flag_BNB_numuCC_from_appnumu     = 0;
 
-    flag_BNB_CCpi0_from_overlaynumu  = 0;
-    flag_BNB_CCpi0_from_appnue       = 0;
+	flag_BNB_CCpi0_from_overlaynumu  = 0;
+	flag_BNB_CCpi0_from_appnue       = 0;
 
-    flag_BNB_NCpi0_from_overlaynumu  = 0;
-    flag_BNB_NCpi0_from_appnue       = 0;
+	flag_BNB_NCpi0_from_overlaynumu  = 0;
+	flag_BNB_NCpi0_from_appnue       = 0;
 
-    ///////////////////////////
+	///////////////////////////
 
-    tosc_NUM_TOYS = 0;
+	tosc_NUM_TOYS = 0;
 
-    ///////////////////////////
+	///////////////////////////
 
-    default_oldworld_rows = 0;
-    default_newworld_rows = 0;
+	default_oldworld_rows = 0;
+	default_newworld_rows = 0;
 
   }
 
@@ -424,11 +424,11 @@ class TOsc {
   void Set_oscillation_base_added(vector<double> *vec_ratioPOT, vector< vector<EventInfo> > *vec_vec_eventinfo, int pred_channel_index, TString str_osc_mode);
 
   void Set_oscillation_pars(double val_dm2_41, double val_sin2_2theta_14, double val_sin2_theta_24, double val_sin2_theta_34, double val_g2) {
-    tosc_dm2_41 = val_dm2_41;
-    tosc_sin2_2theta_14 = val_sin2_2theta_14;
-    tosc_sin2_theta_24  = val_sin2_theta_24;
-    tosc_sin2_theta_34 = val_sin2_theta_34;
-    tosc_g2 = val_g2;
+	tosc_dm2_41 = val_dm2_41;
+	tosc_sin2_2theta_14 = val_sin2_2theta_14;
+	tosc_sin2_theta_24  = val_sin2_theta_24;
+	tosc_sin2_theta_34 = val_sin2_theta_34;
+	tosc_g2 = val_g2;
   }
 
   void Apply_oscillation();
@@ -439,8 +439,8 @@ class TOsc {
   void Set_toy_variations(int num_toys);
 // void Load_toy_variations();
   void Set_toy2fitdata(int itoy) {
-    if( itoy > tosc_NUM_TOYS ) { cerr<<" ERROR: itoy > tosc_NUM_TOYS"<<endl; exit(1); }
-    matrix_tosc_fitdata_newworld = map_matrix_tosc_toy_pred[itoy];
+	if( itoy > tosc_NUM_TOYS ) { cerr<<" ERROR: itoy > tosc_NUM_TOYS"<<endl; exit(1); }
+	matrix_tosc_fitdata_newworld = map_matrix_tosc_toy_pred[itoy];
   }
 void Load_toy_variations(int itoy) {
   TString default_toy_file = "toy_file_output.root";
@@ -463,7 +463,7 @@ void Load_toy_variations(int itoy) {
 
   void Plot_user();
 
-  void Minimization_OscPars_FullCov(double init_dm2_41, double init_sin2_2theta_14, double init_sin2_theta_24, double init_sin2_theta_34, double init_g2, TString roostr_flag_fixpar);
+ void Minimization_OscPars_FullCov(double init_dm2_41, double init_sin2_2theta_14, double init_sin2_theta_24, double init_sin2_theta_34, double init_g2, TString roostr_flag_fixpar, int meas_index);
 
   double FCN(const double *par);
   double FCN_presave_only_PRED();
@@ -472,26 +472,26 @@ void Load_toy_variations(int itoy) {
   double FCN_Pearson_FCnew(const double *par);
 
   double Cal_chi2COV(TMatrixD userFA_matrix_delta, TMatrixD userFA_matrix_syst_stat_toal_COV) {
-    //   Cholesky method or more general LU method
-    //   /// LX = B;
-    //   /// chi2 = D^T * COV^-1 * D
-    //   /// chi2 = D^T * (LL^T) * D // Cholesky
-    //   /// chi2 = (L^-1D)^T * (L^-1D)
-    //   /// chi2 = X^T * X
-    int rows = userFA_matrix_syst_stat_toal_COV.GetNrows();
-    TMatrixD userFA_decomp_matrix_cov_total = userFA_matrix_syst_stat_toal_COV;
-    TDecompChol *userFA_TDecompChol = new TDecompChol(userFA_decomp_matrix_cov_total);
-    TVectorD userFA_vector(rows, userFA_matrix_delta.GetMatrixArray());
-    userFA_TDecompChol->Solve(userFA_vector);
-    double userFA_chi2 = (userFA_matrix_delta * userFA_vector)(0);
-    delete userFA_TDecompChol;
-    return userFA_chi2;
+	//   Cholesky method or more general LU method
+	//   /// LX = B;
+	//   /// chi2 = D^T * COV^-1 * D
+	//   /// chi2 = D^T * (LL^T) * D // Cholesky
+	//   /// chi2 = (L^-1D)^T * (L^-1D)
+	//   /// chi2 = X^T * X
+	int rows = userFA_matrix_syst_stat_toal_COV.GetNrows();
+	TMatrixD userFA_decomp_matrix_cov_total = userFA_matrix_syst_stat_toal_COV;
+	TDecompChol *userFA_TDecompChol = new TDecompChol(userFA_decomp_matrix_cov_total);
+	TVectorD userFA_vector(rows, userFA_matrix_delta.GetMatrixArray());
+	userFA_TDecompChol->Solve(userFA_vector);
+	double userFA_chi2 = (userFA_matrix_delta * userFA_vector)(0);
+	delete userFA_TDecompChol;
+	return userFA_chi2;
   }
 
   double func_CLs(double eff_d4v, double eff_d3v, double eff_dd) {
-    double result = ( 1+TMath::Erf( (eff_d4v-eff_dd)/sqrt(8*fabs(eff_d4v)) ) )
-      / ( 1+TMath::Erf( (eff_d3v-eff_dd)/sqrt(8*fabs(eff_d3v)) ) );
-    return result;
+	double result = ( 1+TMath::Erf( (eff_d4v-eff_dd)/sqrt(8*fabs(eff_d4v)) ) )
+	  / ( 1+TMath::Erf( (eff_d3v-eff_dd)/sqrt(8*fabs(eff_d3v)) ) );
+	return result;
   }
 
   int Exe_Goodness_of_fit(int num_Y, int num_X, TMatrixD matrix_pred, TMatrixD matrix_data, TMatrixD matrix_syst, int index);
@@ -504,30 +504,30 @@ void Load_toy_variations(int itoy) {
 
   void func_title_size(TH1 *h1, double xlabel, double xtitle, double ylabel, double ytitle)
   {
-    h1->GetXaxis()->SetTitleSize(xtitle);
-    h1->GetXaxis()->SetLabelSize(xlabel);
-    h1->GetYaxis()->SetTitleSize(ytitle);
-    h1->GetYaxis()->SetLabelSize(ylabel);
+	h1->GetXaxis()->SetTitleSize(xtitle);
+	h1->GetXaxis()->SetLabelSize(xlabel);
+	h1->GetYaxis()->SetTitleSize(ytitle);
+	h1->GetYaxis()->SetLabelSize(ylabel);
   }
 
   void func_xy_title(TH1 *h1, TString xtitle, TString ytitle, bool flag_center)
   {
-    h1->GetXaxis()->SetTitle(xtitle);
-    h1->GetYaxis()->SetTitle(ytitle);
-    if( flag_center ) {
-      h1->GetXaxis()->CenterTitle();
-      h1->GetYaxis()->CenterTitle();
-    }
+	h1->GetXaxis()->SetTitle(xtitle);
+	h1->GetYaxis()->SetTitle(ytitle);
+	if( flag_center ) {
+	  h1->GetXaxis()->CenterTitle();
+	  h1->GetYaxis()->CenterTitle();
+	}
   }
 
   void func_xy_title(TH2 *h1, TString xtitle, TString ytitle, bool flag_center)
   {
-    h1->GetXaxis()->SetTitle(xtitle);
-    h1->GetYaxis()->SetTitle(ytitle);
-    if( flag_center ) {
-      h1->GetXaxis()->CenterTitle();
-      h1->GetYaxis()->CenterTitle();
-    }
+	h1->GetXaxis()->SetTitle(xtitle);
+	h1->GetYaxis()->SetTitle(ytitle);
+	if( flag_center ) {
+	  h1->GetXaxis()->CenterTitle();
+	  h1->GetYaxis()->CenterTitle();
+	}
   }
 
   ///////
