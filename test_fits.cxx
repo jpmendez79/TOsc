@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
 
   int display = 0;
   if (!display) {
-    gROOT->SetBatch(1);
+	gROOT->SetBatch(1);
   }
 
   TApplication theApp("theApp", &argc, argv);
@@ -51,11 +51,11 @@ int main(int argc, char **argv) {
   TH1D *h1d_g2 = new TH1D("h1d_g2", "h1d_g2", NUM_g2, G2_LO, G2_HI);
 
   for (int i = 0; i < NUM_dm2; i++) {
-    double val_obj_dm2 = h1d_dm2->GetBinCenter(i);
-    test_val_dm2[i] = pow(10, val_obj_dm2);
-    double val_obj_ttt = h1d_ttt->GetBinCenter(i);
-    test_val_ttt[i] = pow(10, val_obj_ttt);
-    test_val_g2[i] = h1d_g2->GetBinCenter(i);
+	double val_obj_dm2 = h1d_dm2->GetBinCenter(i);
+	test_val_dm2[i] = pow(10, val_obj_dm2);
+	double val_obj_ttt = h1d_ttt->GetBinCenter(i);
+	test_val_ttt[i] = pow(10, val_obj_ttt);
+	test_val_g2[i] = h1d_g2->GetBinCenter(i);
   }
 
 
@@ -80,9 +80,9 @@ int main(int argc, char **argv) {
   osc_test->tosc_scaleF_POT_NuMI = scaleF_POT_NuMI;
 
   osc_test->flag_apply_oscillation_BNB =
-      Configure_Osc::flag_apply_oscillation_BNB;
+	  Configure_Osc::flag_apply_oscillation_BNB;
   osc_test->flag_apply_oscillation_NuMI =
-      Configure_Osc::flag_apply_oscillation_NuMI;
+	  Configure_Osc::flag_apply_oscillation_NuMI;
 
   osc_test->flag_goodness_of_fit_CNP = Configure_Osc::flag_goodness_of_fit_CNP;
 
@@ -94,100 +94,100 @@ int main(int argc, char **argv) {
   osc_test->flag_syst_det = Configure_Osc::flag_syst_det;
 
   osc_test->flag_NuMI_nueCC_from_intnue =
-      Configure_Osc::flag_NuMI_nueCC_from_intnue;
+	  Configure_Osc::flag_NuMI_nueCC_from_intnue;
   osc_test->flag_NuMI_nueCC_from_overlaynumu =
-      Configure_Osc::flag_NuMI_nueCC_from_overlaynumu;
+	  Configure_Osc::flag_NuMI_nueCC_from_overlaynumu;
   osc_test->flag_NuMI_nueCC_from_appnue =
-      Configure_Osc::flag_NuMI_nueCC_from_appnue;
+	  Configure_Osc::flag_NuMI_nueCC_from_appnue;
   osc_test->flag_NuMI_nueCC_from_appnumu =
-      Configure_Osc::flag_NuMI_nueCC_from_appnumu;
+	  Configure_Osc::flag_NuMI_nueCC_from_appnumu;
   osc_test->flag_NuMI_nueCC_from_overlaynueNC =
-      Configure_Osc::flag_NuMI_nueCC_from_overlaynueNC;
+	  Configure_Osc::flag_NuMI_nueCC_from_overlaynueNC;
   osc_test->flag_NuMI_nueCC_from_overlaynumuNC =
-      Configure_Osc::flag_NuMI_nueCC_from_overlaynumuNC;
+	  Configure_Osc::flag_NuMI_nueCC_from_overlaynumuNC;
 
   osc_test->flag_NuMI_numuCC_from_overlaynumu =
-      Configure_Osc::flag_NuMI_numuCC_from_overlaynumu;
+	  Configure_Osc::flag_NuMI_numuCC_from_overlaynumu;
   osc_test->flag_NuMI_numuCC_from_overlaynue =
-      Configure_Osc::flag_NuMI_numuCC_from_overlaynue;
+	  Configure_Osc::flag_NuMI_numuCC_from_overlaynue;
   osc_test->flag_NuMI_numuCC_from_appnue =
-      Configure_Osc::flag_NuMI_numuCC_from_appnue;
+	  Configure_Osc::flag_NuMI_numuCC_from_appnue;
   osc_test->flag_NuMI_numuCC_from_appnumu =
-      Configure_Osc::flag_NuMI_numuCC_from_appnumu;
+	  Configure_Osc::flag_NuMI_numuCC_from_appnumu;
   osc_test->flag_NuMI_numuCC_from_overlaynumuNC =
-      Configure_Osc::flag_NuMI_numuCC_from_overlaynumuNC;
+	  Configure_Osc::flag_NuMI_numuCC_from_overlaynumuNC;
   osc_test->flag_NuMI_numuCC_from_overlaynueNC =
-      Configure_Osc::flag_NuMI_numuCC_from_overlaynueNC;
+	  Configure_Osc::flag_NuMI_numuCC_from_overlaynueNC;
 
   osc_test->flag_NuMI_CCpi0_from_overlaynumu =
-      Configure_Osc::flag_NuMI_CCpi0_from_overlaynumu;
+	  Configure_Osc::flag_NuMI_CCpi0_from_overlaynumu;
   osc_test->flag_NuMI_CCpi0_from_appnue =
-      Configure_Osc::flag_NuMI_CCpi0_from_appnue;
+	  Configure_Osc::flag_NuMI_CCpi0_from_appnue;
   osc_test->flag_NuMI_CCpi0_from_overlaynumuNC =
-      Configure_Osc::flag_NuMI_CCpi0_from_overlaynumuNC;
+	  Configure_Osc::flag_NuMI_CCpi0_from_overlaynumuNC;
   osc_test->flag_NuMI_CCpi0_from_overlaynueNC =
-      Configure_Osc::flag_NuMI_CCpi0_from_overlaynueNC;
+	  Configure_Osc::flag_NuMI_CCpi0_from_overlaynueNC;
 
   osc_test->flag_NuMI_NCpi0_from_overlaynumu =
-      Configure_Osc::flag_NuMI_NCpi0_from_overlaynumu;
+	  Configure_Osc::flag_NuMI_NCpi0_from_overlaynumu;
   osc_test->flag_NuMI_NCpi0_from_appnue =
-      Configure_Osc::flag_NuMI_NCpi0_from_appnue;
+	  Configure_Osc::flag_NuMI_NCpi0_from_appnue;
   osc_test->flag_NuMI_NCpi0_from_overlaynumuNC =
-      Configure_Osc::flag_NuMI_NCpi0_from_overlaynumuNC;
+	  Configure_Osc::flag_NuMI_NCpi0_from_overlaynumuNC;
   osc_test->flag_NuMI_NCpi0_from_overlaynueNC =
-      Configure_Osc::flag_NuMI_NCpi0_from_overlaynueNC;
+	  Configure_Osc::flag_NuMI_NCpi0_from_overlaynueNC;
 
   osc_test->flag_BNB_nueCC_from_intnue =
-      Configure_Osc::flag_BNB_nueCC_from_intnue;
+	  Configure_Osc::flag_BNB_nueCC_from_intnue;
   osc_test->flag_BNB_nueCC_from_overlaynumu =
-      Configure_Osc::flag_BNB_nueCC_from_overlaynumu;
+	  Configure_Osc::flag_BNB_nueCC_from_overlaynumu;
   osc_test->flag_BNB_nueCC_from_appnue =
-      Configure_Osc::flag_BNB_nueCC_from_appnue;
+	  Configure_Osc::flag_BNB_nueCC_from_appnue;
   osc_test->flag_BNB_nueCC_from_appnumu =
-      Configure_Osc::flag_BNB_nueCC_from_appnumu;
+	  Configure_Osc::flag_BNB_nueCC_from_appnumu;
   osc_test->flag_BNB_nueCC_from_overlaynueNC =
-      Configure_Osc::flag_BNB_nueCC_from_overlaynueNC;
+	  Configure_Osc::flag_BNB_nueCC_from_overlaynueNC;
   osc_test->flag_BNB_nueCC_from_overlaynumuNC =
-      Configure_Osc::flag_BNB_nueCC_from_overlaynumuNC;
+	  Configure_Osc::flag_BNB_nueCC_from_overlaynumuNC;
 
   osc_test->flag_BNB_numuCC_from_overlaynumu =
-      Configure_Osc::flag_BNB_numuCC_from_overlaynumu;
+	  Configure_Osc::flag_BNB_numuCC_from_overlaynumu;
   osc_test->flag_BNB_numuCC_from_overlaynue =
-      Configure_Osc::flag_BNB_numuCC_from_overlaynue;
+	  Configure_Osc::flag_BNB_numuCC_from_overlaynue;
   osc_test->flag_BNB_numuCC_from_appnue =
-      Configure_Osc::flag_BNB_numuCC_from_appnue;
+	  Configure_Osc::flag_BNB_numuCC_from_appnue;
   osc_test->flag_BNB_numuCC_from_appnumu =
-      Configure_Osc::flag_BNB_numuCC_from_appnumu;
+	  Configure_Osc::flag_BNB_numuCC_from_appnumu;
   osc_test->flag_BNB_numuCC_from_overlaynumuNC =
-      Configure_Osc::flag_BNB_numuCC_from_overlaynumuNC;
+	  Configure_Osc::flag_BNB_numuCC_from_overlaynumuNC;
   osc_test->flag_BNB_numuCC_from_overlaynueNC =
-      Configure_Osc::flag_BNB_numuCC_from_overlaynueNC;
+	  Configure_Osc::flag_BNB_numuCC_from_overlaynueNC;
 
   osc_test->flag_BNB_CCpi0_from_overlaynumu =
-      Configure_Osc::flag_BNB_CCpi0_from_overlaynumu;
+	  Configure_Osc::flag_BNB_CCpi0_from_overlaynumu;
   osc_test->flag_BNB_CCpi0_from_appnue =
-      Configure_Osc::flag_BNB_CCpi0_from_appnue;
+	  Configure_Osc::flag_BNB_CCpi0_from_appnue;
   osc_test->flag_BNB_CCpi0_from_overlaynumuNC =
-      Configure_Osc::flag_BNB_CCpi0_from_overlaynumuNC;
+	  Configure_Osc::flag_BNB_CCpi0_from_overlaynumuNC;
   osc_test->flag_BNB_CCpi0_from_overlaynueNC =
-      Configure_Osc::flag_BNB_CCpi0_from_overlaynueNC;
+	  Configure_Osc::flag_BNB_CCpi0_from_overlaynueNC;
 
   osc_test->flag_BNB_NCpi0_from_overlaynumu =
-      Configure_Osc::flag_BNB_NCpi0_from_overlaynumu;
+	  Configure_Osc::flag_BNB_NCpi0_from_overlaynumu;
   osc_test->flag_BNB_NCpi0_from_appnue =
-      Configure_Osc::flag_BNB_NCpi0_from_appnue;
+	  Configure_Osc::flag_BNB_NCpi0_from_appnue;
   osc_test->flag_BNB_NCpi0_from_overlaynumuNC =
-      Configure_Osc::flag_BNB_NCpi0_from_overlaynumuNC;
+	  Configure_Osc::flag_BNB_NCpi0_from_overlaynumuNC;
   osc_test->flag_BNB_NCpi0_from_overlaynueNC =
-      Configure_Osc::flag_BNB_NCpi0_from_overlaynueNC;
+	  Configure_Osc::flag_BNB_NCpi0_from_overlaynueNC;
 
   /////// set only one time
   /////// set only one time
 
   osc_test->Set_default_cv_cov(
-      Configure_Osc::default_cv_file, Configure_Osc::default_dirtadd_file,
-      Configure_Osc::default_mcstat_file, Configure_Osc::default_fluxXs_dir,
-      Configure_Osc::default_detector_dir);
+	  Configure_Osc::default_cv_file, Configure_Osc::default_dirtadd_file,
+	  Configure_Osc::default_mcstat_file, Configure_Osc::default_fluxXs_dir,
+	  Configure_Osc::default_detector_dir);
   osc_test->Set_oscillation_base(Configure_Osc::default_eventlist_dir);
 
 
@@ -209,60 +209,60 @@ int main(int argc, char **argv) {
   int percent_target = 0.10 * dimensions; // Report every 10%
   int counter = 0;
   int percent_counter = 0;
-  cout << "Starting IVP Coarse Grid Scan \n";
-  // Record starting time
-    auto start =
-        high_resolution_clock::now();
-  for (int idm2 = 0; idm2 < NUM_dm2; idm2++) {
-    for (int ittt = 0; ittt < NUM_ttt; ittt++) {
-      for (int ig2 = 0; ig2 < NUM_g2; ig2++) {
-        double test_par[4] = {test_val_dm2[idm2], test_val_ttt[ittt], 0, test_val_g2[ig2]};
-        double test_chi2 = osc_test->FCN(test_par);
-
-        if (test_chi2 < min_chi2) {
-          min_chi2 = test_chi2;
-          min_ttt = test_par[1];
-          min_dm2 = test_par[0];
-          min_g2 = test_par[3];
-        }
-        counter++;
-        if ((counter % percent_target) == 0) {
-          percent_counter += 10;
-          cout << percent_counter << "% Done \n";
-
-        }
-      }
-    }
-  }
+  // cout << "Starting IVP Coarse Grid Scan \n";
+  // // Record starting time
+  //   auto start =
+  //       high_resolution_clock::now();
+  // for (int idm2 = 0; idm2 < NUM_dm2; idm2++) {
+  //   for (int ittt = 0; ittt < NUM_ttt; ittt++) {
+  //     for (int ig2 = 0; ig2 < NUM_g2; ig2++) {
+  //       double test_par[4] = {test_val_dm2[idm2], test_val_ttt[ittt], 0, test_val_g2[ig2]};
+  //       double test_chi2 = osc_test->FCN(test_par);
+  //
+  //       if (test_chi2 < min_chi2) {
+  //         min_chi2 = test_chi2;
+  //         min_ttt = test_par[1];
+  //         min_dm2 = test_par[0];
+  //         min_g2 = test_par[3];
+  //       }
+  //       counter++;
+  //       if ((counter % percent_target) == 0) {
+  //         percent_counter += 10;
+  //         cout << percent_counter << "% Done \n";
+  //
+  //       }
+  //     }
+  //   }
+  // }
 
   // Record ending time
-  auto stop =
-    high_resolution_clock::now();
-
- auto duration =
-        duration_cast<microseconds>(
-            stop - start);
-
-    cout << "Time taken: "
-         << duration.count()
-         << " microseconds";
-
-    cout << "Min Chi2: " << min_chi2 << endl;
-    cout << "(ttt, dm2, g2)" << "(" << min_ttt << "," << min_dm2 << ","
-    << min_g2 << ")" << endl;
-    cout << "Actual Parameters" << endl;
-    cout << "(";
-    for (int i = 0; i < 3; i++) {
-      cout << pars_test_meas[i];
-      if (i < 2) cout << ",";
-    }
-    cout << endl;
-
+ //  auto stop =
+ //    high_resolution_clock::now();
+ //
+ // auto duration =
+ //        duration_cast<microseconds>(
+ //            stop - start);
+ //
+ //    cout << "Time taken: "
+ //         << duration.count()
+ //         << " microseconds";
+ //
+ //    cout << "Min Chi2: " << min_chi2 << endl;
+ //    cout << "(ttt, dm2, g2)" << "(" << min_ttt << "," << min_dm2 << ","
+ //    << min_g2 << ")" << endl;
+ //    cout << "Actual Parameters" << endl;
+ //    cout << "(";
+ //    for (int i = 0; i < 3; i++) {
+ //      cout << pars_test_meas[i];
+ //      if (i < 2) cout << ",";
+ //    }
+ //    cout << endl;
+ osc_test->Minimization_OscPars_FullCov(7.989420933245583, 0.23713737056616552, 0, 0, 8.4823001646924414, "t24_t34", 6);
   if (display) {
-    cout << " Enter Ctrl+c to end the program" << endl;
-    cout << " Enter Ctrl+c to end the program" << endl;
-    cout << endl;
-    theApp.Run();
+	cout << " Enter Ctrl+c to end the program" << endl;
+	cout << " Enter Ctrl+c to end the program" << endl;
+	cout << endl;
+	theApp.Run();
   }
 
   return 0;
