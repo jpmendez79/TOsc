@@ -166,12 +166,12 @@ int main(int argc, char **argv) {
   // i = ittt
   // j = idm2
   // k = ig2
-  const int NUM_dm2 = 60;
-  const int NUM_ttt = 60;
-  const int NUM_g2 = 60;
+  const int NUM_dm2 = 10;
+  const int NUM_ttt = 10;
+  const int NUM_g2 =  10;
   const double DM2_LO = -1, DM2_HI = 2;
   const double TTT_LO = -3, TTT_HI = 0;
-  const double G2_LO = 0, G2_HI = 4 * M_PI;
+  const double G2_LO = -3, G2_HI = 1;
   int spectrum_index = -1;
   TString specpath;
   /* setup: load files, initialize, etc. (once) */
@@ -239,6 +239,9 @@ inputfile_toydata_cv->Close();
 
   // cout << "Cached entries: " << spectrum_cache.size() << endl;
   // const int N = spectrum_cache.size();
+  auto center = [](int idx, int n, double lo, double hi) {
+	return lo + (idx + 0.5) * (hi - lo) / n;
+  };
 
 for (int i = 5; i < argc; i++) {
 	int seq = atoi(argv[i]);
@@ -249,13 +252,10 @@ for (int i = 5; i < argc; i++) {
   int idm2 = (seq / NUM_g2) % NUM_dm2;
   int ittt = seq / (NUM_dm2 * NUM_g2);
 
-  auto center = [](int idx, int n, double lo, double hi) {
-	return lo + (idx + 0.5) * (hi - lo) / n;
-  };
 
   double test_dm2 = pow(10, center(idm2, NUM_dm2, DM2_LO, DM2_HI));
   double test_ttt = pow(10, center(ittt, NUM_ttt, TTT_LO, TTT_HI));
-  double test_g2  =         center(ig2,  NUM_g2,  G2_LO,  G2_HI);
+  double test_g2  = pow(10,  center(ig2,  NUM_g2,  G2_LO,  G2_HI));
 
   // // Setup the grid
   // TH1D *h1d_dm2 = new TH1D("h1d_dm2", "h1d_dm2", NUM_dm2, DM2_LO, DM2_HI);
