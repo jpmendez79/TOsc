@@ -177,7 +177,7 @@ cout<<endl;
   const int NUM_g2 =  60;
   const double DM2_LO = -1, DM2_HI = 2;
   const double TTT_LO = -3, TTT_HI = 0;
-  const double G2_LO = -3, G2_HI = 0;
+  const double G2_LO = -3, G2_HI = 1;
 
 
   auto center = [](int idx, int n, double lo, double hi) {
@@ -207,7 +207,7 @@ cout<<endl;
 
 	val_dm2_41 = pow(10, center(idm2, NUM_dm2, DM2_LO, DM2_HI));
 	val_sin2_2theta_14 = pow(10, center(ittt, NUM_ttt, TTT_LO, TTT_HI));
-	val_g2 = (10, center(ig2, NUM_g2, G2_LO, G2_HI));
+	val_g2 = pow(10, center(ig2, NUM_g2, G2_LO, G2_HI));
 
 	osc_test->Set_oscillation_pars(val_dm2_41, val_sin2_2theta_14, val_sin2_theta_24, val_sin2_theta_34, val_g2);
 	osc_test->Apply_oscillation();

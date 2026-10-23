@@ -166,35 +166,40 @@ int main(int argc, char **argv) {
   // i = ittt
   // j = idm2
   // k = ig2
-  const int NUM_dm2 = 10;
-  const int NUM_ttt = 10;
-  const int NUM_g2 =  10;
+  const int NUM_dm2 = 60;
+  const int NUM_ttt = 60;
+  const int NUM_g2 =  60;
   const double DM2_LO = -1, DM2_HI = 2;
   const double TTT_LO = -3, TTT_HI = 0;
   const double G2_LO = -3, G2_HI = 1;
   int spectrum_index = -1;
   TString specpath;
   /* setup: load files, initialize, etc. (once) */
-  if (argc < 3 || strcmp(argv[1], "-f") != 0) {
-	cerr << "Usage: " << argv[0] << " -f <spectrum.root> ..." << endl;
-	exit(1);
-}
-specpath = argv[2];
+  //   if (argc < 3 || strcmp(argv[1], "-f") != 0) {
+  //	cerr << "usage: " << argv[0] << " -f <spectrum.root> ..." << endl;
+  //	exit(1);
+  // }
+	if (argc < 2) {
+	std::cerr << "Usage: " << argv[0] << " spectrum_file index param_seq0 param_seq1 ... param_seqN\n";
+	return 1;
+  }
 
+  specpath = argv[1];
+spectrum_index = atoi(argv[2]);
   // if (strcmp(argv[1], "-f") == 0) {
   //	  stringstream convert(argv[2]);
   //	  if (!(convert >> specpath)) {
-  //		cerr << " Input spectrum file" << endl;
+  //		cerr << " Input spectrum file" << endl;7
   //		exit(1);
   //		  }
   // }
-	if (strcmp(argv[3], "-imeas") == 0) {
-	  stringstream convert(argv[4]);
-	  if (!(convert >> spectrum_index)) {
-		cerr << " Input index for spectrum" << endl;
-		exit(1);
-		  }
-		}
+	// if (strcmp(argv[3], "-imeas") == 0) {
+	//   stringstream convert(argv[4]);
+	//   if (!(convert >> spectrum_index)) {
+	//	cerr << " input index for spectrum" << endl;
+	//	exit(1);
+	//	  }
+	//	}
 
   // if (!inputfile_toydata_cv || inputfile_toydata_cv->iszombie()) {
   //	std::cerr << "error: cannot open input file\n";
@@ -210,7 +215,7 @@ specpath = argv[2];
   }
 
   if (spectrum_index < 0 || spectrum_index >= tree_toydata->GetEntries()) {
-	cerr << "Error: -imeas " << spectrum_index << " out of range [0, "
+	cerr << "Error: spectum index " << spectrum_index << " out of range [0, "
 	  << tree_toydata->GetEntries() << ")\n";
 	return 1;
   }
@@ -243,7 +248,7 @@ inputfile_toydata_cv->Close();
 	return lo + (idx + 0.5) * (hi - lo) / n;
   };
 
-for (int i = 5; i < argc; i++) {
+for (int i = 3; i < argc; i++) {
 	int seq = atoi(argv[i]);
 	if (seq == -1) break;
 	/* existing calculation + print for this seq */

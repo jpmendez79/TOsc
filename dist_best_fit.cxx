@@ -30,8 +30,8 @@ int main(int argc, char **argv) {
   if (!display) {
 	gROOT->SetBatch(1);
   }
-
-  TApplication theApp("theApp", &argc, argv);
+  int dummy_argc = 1;
+  TApplication theApp("theApp", &dummy_argc, argv);
 
 
   double scaleF_POT_BNB = 1;
@@ -154,13 +154,15 @@ int main(int argc, char **argv) {
   osc_test->Set_oscillation_base(Configure_Osc::default_eventlist_dir);
 
   if (argc < 5) {
-	std::cerr << "Usage: " << argv[0] << " index init_ttt init_dm2 init_g2\n";
+	std::cerr << "Usage: " << argv[0] << " spectrum_file index init_ttt init_dm2 init_g2\n";
 	return 1;
   }
-  int index = atoi(argv[1]);
-  double init_ttt = atof(argv[2]);
-  double arg_dm2 = atof(argv[3]);
-  double arg_g2 = atof(argv[4]);
+  TString specpath;
+  specpath = argv[1];
+  int index = atoi(argv[2]);
+  double init_ttt = atof(argv[3]);
+  double arg_dm2 = atof(argv[4]);
+  double arg_g2 = atof(argv[5]);
 
 
   //	// For testing Purposes Create an measurement to be used
@@ -181,7 +183,7 @@ int main(int argc, char **argv) {
   // Load the psuedo from file
   // TString specpath =
   // "jpmendez_presave_spectrums_dm2-6.1_ttt-0.33_g2-2.5pi.root";
-  TString specpath = "jpmendez_presave-asimov-60x60x60-grid.root";
+  // TString specpath = "jpmendez_presave.root";
   TFile *inputfile_toydata_cv = TFile::Open(specpath, "READ");
 
   if (!inputfile_toydata_cv || inputfile_toydata_cv->IsZombie()) {
