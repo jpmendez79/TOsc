@@ -400,9 +400,9 @@ void TOsc::Minimization_OscPars_FullCov(
   min_osc.SetFunction(Chi2Functor_osc);
 
   min_osc.SetLowerLimitedVariable(0, "dm2_41", init_dm2_41, 0.1, 0);
-  min_osc.SetLimitedVariable(1, "sin2_2theta_14", init_sin2_2theta_14, 0.01, 0, 1);
-  min_osc.SetLimitedVariable(2, "sin2_theta_24", init_sin2_theta_24, 0.01, 0, 1);
-  min_osc.SetLimitedVariable(3, "g2", init_g2, 0.1, 0, 4*M_PI);
+  min_osc.SetLimitedVariable(1, "sin2_2theta_14", init_sin2_2theta_14, 0.1, 0, 1);
+  min_osc.SetLimitedVariable(2, "sin2_theta_24", init_sin2_theta_24, 0.1, 0, 1);
+  min_osc.SetLimitedVariable(3, "g2", init_g2, 0.5, 0, 4*M_PI);
   if( roostr_flag_fixpar.Contains("dm2") ) {
 	min_osc.SetFixedVariable( 0, "dm2_41", init_dm2_41 );
   }
@@ -481,6 +481,10 @@ void TOsc::Minimization_OscPars_FullCov(
 
 	// cout<<TString::Format(" ---> best-fit, status %2d, chi2 %6.4f", minimization_status, minimization_chi2)<<endl;
   }
+  for (double g : {0.001, 0.005, 0.05, 0.5, 2.0, 6.0}) {
+  double p[4] = {0.33, 0.0033, 0.0, g};
+  cout << TString::Format("g2 %6.3f  chi2 %12.4e", g, FCN(p)) << endl;
+}
 
 }
 
