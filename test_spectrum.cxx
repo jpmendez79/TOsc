@@ -160,7 +160,6 @@ cout<<endl;
 	vector<double>vec_toydata_spectrum;
 	TFile *outfile_toydata = new TFile("jpmendez_presave_spectrums.root", "recreate");
 	TTree *tree_toydata = new TTree("tree_toydata", "toydata_with_3v_hypothesis ---> i_toydata(1) for real measurement, i_toydata(2) for asimov");
-	tree_toydata->Branch("i_toydata", &i_toydata, "i_toydata/I");
 	tree_toydata->Branch("vec_toydata_spectrum", &vec_toydata_spectrum);
 
 	int ig2 = seq % NUM_g2;

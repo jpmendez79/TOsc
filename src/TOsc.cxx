@@ -89,7 +89,7 @@ double TOsc::FCN(const double *par)
   matrix_cov_total = matrix_cov_syst_total + matrix_cov_stat_total;
   TMatrixD matrix_delta = matrix_pred_total - matrix_data_total;
   /////// cholesky method: decomptakes (~n^3)/6 calcualtion + (~n^2) extral cal
-  chi2_final = Cal_chi2COV(matrix_delta, matrix_cov_total);
+  // chi2_final = Cal_chi2COV(matrix_delta, matrix_cov_total);
 	// map<int, TMatrixD> map_matrix_toy_spectrum;
 	// map_matrix_toy_spectrum[1].ResizeTo(1,bins_eff);
 	// TString fname = "toy_file_output";
@@ -103,10 +103,10 @@ double TOsc::FCN(const double *par)
 	  // /////// calculate chi2_4v_with_3vToy and chi2_3v_with_3vToy
 
   // TMatrixD matrix_delta =  matrix_pred_total - matrix_data_total;
-  //     TMatrixD matrix_delta_T = matrix_delta.T(); matrix_delta.T();
-  //     TMatrixD matrix_cov_total_inv = matrix_cov_total; matrix_cov_total_inv.Invert();
-  //     TMatrixD matrix_chi2 = matrix_delta * matrix_cov_total_inv *matrix_delta_T;
-  //     chi2_final = matrix_chi2(0,0);
+	  TMatrixD matrix_delta_T = matrix_delta.T(); matrix_delta.T();
+	  TMatrixD matrix_cov_total_inv = matrix_cov_total; matrix_cov_total_inv.Invert();
+	  TMatrixD matrix_chi2 = matrix_delta * matrix_cov_total_inv * matrix_delta_T;
+	  chi2_final = matrix_chi2(0,0);
 
 
 
@@ -386,17 +386,167 @@ void TOsc::Minimization_OscPars_FullCov(
   min_osc.SetStrategy(1); //0- cursory, 1- default, 2- thorough yet no more successful
   min_osc.SetMaxFunctionCalls(50000);
   min_osc.SetMaxIterations(50000);
-  min_osc.SetTolerance(1e-4); // tolerance*2e-3 = edm precision
+  min_osc.SetTolerance(1e-30); // tolerance*2e-3 = edm precision
+  // No SetPrecision: Minuit2 estimates the FCN precision itself; a value below
+  // double epsilon breaks the numerical derivatives (spurious negative G2,
+  // forced pos-def Hessian).
+
+  /// set fitting parameters
+  // ROOT::Math::Functor Chi2Functor_osc(
+  //     [&](const double *par) { return FCN(par); }, // FCN
+  //     4 // number of fitting parameters
+  // );
+
+  ROOT::Math::Functor Chi2Functor_osc(
+  [&](const double *p) {
+	double par[4] = { std::pow(10., p[0]), pow(10,p[1]), p[2], p[3] };
+	return FCN(par);
+  }, 4);
+// min_osc.SetFunction(Chi2Functor_osc);
+
+// bounds: 0.01–100 eV^2; adjust to your sensitivity range
+  min_osc.SetLimitedVariable(0, "log10_dm2_41", std::log10(init_dm2_41), 0.1,
+							 -1, 2);
+  min_osc.SetLimitedVariable(1, "log10_ttt", std::log10(init_dm2_41), 0.1, -3, 0);
+// min_osc.SetLimitedVariable(0, "log10_dm2_41", std::log10(init_dm2_41), 0.1, -3, 0);
+  min_osc.SetFunction(Chi2Functor_osc);
+
+  // min_osc.SetLowerLimitedVariable(0, "dm2_41", init_dm2_41, 0.1, 0);
+  // min_osc.SetLimitedVariable(1, "sin2_2theta_14", init_sin2_2theta_14, 0.1, 0, 1);
+  min_osc.SetLimitedVariable(2, "sin2_theta_24", init_sin2_theta_24, 0.1, 0, 1);
+  min_osc.SetLimitedVariable(3, "g2", init_g2, 0.5, 0, 4*M_PI);
+  if( roostr_flag_fixpar.Contains("dm2") ) {
+	min_osc.SetFixedVariable( 0, "dm2_41", init_dm2_41 );
+  }
+  if( roostr_flag_fixpar.Contains("t14") ) {
+	min_osc.SetFixedVariable( 1, "sin2_2theta_14", init_sin2_2theta_14 );
+  }
+  if( roostr_flag_fixpar.Contains("t24") ) {
+	min_osc.SetFixedVariable( 2, "sin2_theta_24", init_sin2_theta_24 );
+  }
+  if( roostr_flag_fixpar.Contains("g2") ) {
+	min_osc.SetFixedVariable( 3, "g2", init_g2 );
+  }
+
+  min_osc.Minimize();
+
+  ///////
+
+  minimization_status = min_osc.Status();
+  minimization_chi2   = min_osc.MinValue();
+  int cov_status      = min_osc.CovMatrixStatus();
+
+  /// null reference: with t14=0 dm2 and g2 have no effect
+  double pars_null[4] = {init_dm2_41, 0, 0, init_g2};
+  double chi2_null = FCN(pars_null);
+  cout<<TString::Format(" ---> chi2 null (t14=0) %8.4f, best fit %8.4f", chi2_null, minimization_chi2)<<endl;
+
+  const double *par_val = min_osc.X();
+  const double *par_err = min_osc.Errors();
+
+  minimization_dm2_41_val = std::pow(10., par_val[0]);
+  minimization_dm2_41_err = par_err[0]; // error on log10(dm2), or store
+  //
+  minimization_sin2_2theta_14_val = std::pow(10., par_val[1]);
+  minimization_sin2_2theta_14_err = par_err[1];   // error on log10(dm2), or store
+//
+// 10^(x-σ), 10^(x+σ) as an asymmetric interval
+  // minimization_dm2_41_val = par_val[0];
+  // minimization_dm2_41_err = par_err[0];
+
+  // minimization_sin2_2theta_14_val = par_val[1];
+  // minimization_sin2_2theta_14_err = par_err[1];
+
+  minimization_sin2_theta_24_val = par_val[2];
+  minimization_sin2_theta_24_err = par_err[2];
+
+  minimization_g2_val = par_val[3];
+  minimization_g2_err = par_err[3];
+
+  if( par_val[0]!=par_val[0] ) minimization_status = 123;
+  if( par_val[1]!=par_val[1] ) minimization_status = 123;
+  if (par_val[2] != par_val[2])
+	minimization_status = 123;
+  if( par_val[3]!=par_val[3] ) minimization_status = 123;
+  if( par_err[0]!=par_err[0] ) minimization_status = 124;
+  if( par_err[1]!=par_err[1] ) minimization_status = 124;
+  if (par_err[2] != par_err[2])
+	minimization_status = 124;
+  if( par_err[3]!=par_err[3] ) minimization_status = 124;
+
+  if( 1 ) {
+	cout<<endl;
+		// cout << TString::Format(" RESULT minimization, status %2d, chi2
+		// %6.4f, dm2 "
+		//                         "%4.2f +/- %4.2f, s22t14 %5.3f +/- %5.3f",
+		//                         minimization_status, minimization_chi2,
+		//                         minimization_dm2_41_val,
+		//                         minimization_dm2_41_err,
+		//                         minimization_sin2_2theta_14_val,
+		//                         minimization_sin2_2theta_14_err)
+		//      << endl;
+		// RESULT N status chi2 ttt dm2 g2 err_ttt err_dm2 err_g2
+		cout << TString::Format(
+			"RESULT %2d %2d %.15g %.15g %.15g %.15g %.15g %.15g %.15g",
+			meas_index, minimization_status, minimization_chi2,
+			minimization_sin2_2theta_14_val, minimization_dm2_41_val,
+			minimization_g2_val, minimization_sin2_2theta_14_err,
+			minimization_dm2_41_err, minimization_g2_err)
+	 << endl;
+		// cout << TString::Format(
+		//						"RESULT %2d %2d %6.4f %5.3f %4.2f %4.2f %5.3f %4.2f %4.2f",
+		//	meas_index, minimization_status, minimization_chi2,
+		//	minimization_sin2_2theta_14_val, minimization_dm2_41_val,
+		//	minimization_g2_val, minimization_sin2_2theta_14_err,
+		//	minimization_dm2_41_err, minimization_g2_err)
+		//   <<endl;
+		if( minimization_status!=0 || cov_status!=3 ) {
+		  cout<<TString::Format(" WARNING: fit %d not clean: status %d, covariance status %d (3 = accurate)",
+								meas_index, minimization_status, cov_status)<<endl;
+		}
+
+	// cout<<TString::Format(" ---> best-fit, status %2d, chi2 %6.4f", minimization_status, minimization_chi2)<<endl;
+  }
+  for (double g : {0.001, 0.005, 0.05, 0.5, 2.0, 6.0}) {
+  double p[4] = {0.33, 0.0033, 0.0, g};
+  cout << TString::Format("g2 %6.3f  chi2 %12.4e", g, FCN(p)) << endl;
+}
+}
+
+// Testing
+void TOsc::Minimization_OscPars_FullCov_TEST(
+	double init_dm2_41, double init_sin2_2theta_14, double init_sin2_theta_24,
+	double init_sin2_theta_34, double init_g2, TString roostr_flag_fixpar,
+	int meas_index) {
+	cout << meas_index <<  " " << init_sin2_2theta_14 << " " << init_dm2_41 << " " << init_g2 << endl;
+  ROOT::Minuit2::Minuit2Minimizer min_osc( ROOT::Minuit2::kMigrad );
+  min_osc.SetPrintLevel(2);
+  min_osc.SetStrategy(1); //0- cursory, 1- default, 2- thorough yet no more successful
+  min_osc.SetMaxFunctionCalls(50000);
+  min_osc.SetMaxIterations(50000);
+  min_osc.SetTolerance(1e-30); // tolerance*2e-3 = edm precision
   // No SetPrecision: Minuit2 estimates the FCN precision itself; a value below
   // double epsilon breaks the numerical derivatives (spurious negative G2,
   // forced pos-def Hessian).
 
   /// set fitting parameters
   ROOT::Math::Functor Chi2Functor_osc(
-					  [&](const double *par) {return FCN( par );},// FCN
-					  4// number of fitting parameters
-					  );
+	  [&](const double *par) { return FCN(par); }, // FCN
+	  4 // number of fitting parameters
+  );
 
+  // ROOT::Math::Functor Chi2Functor_osc(
+  // [&](const double *p) {
+  //	double par[4] = { std::pow(10., p[0]), pow(10,p[1]), p[2], p[3] };
+  //	return FCN(par);
+  // }, 4);
+// min_osc.SetFunction(Chi2Functor_osc);
+
+// bounds: 0.01–100 eV^2; adjust to your sensitivity range
+  // min_osc.SetLimitedVariable(0, "log10_dm2_41", std::log10(init_dm2_41), 0.1,
+  //							 -1, 2);
+  // min_osc.SetLimitedVariable(1, "log10_ttt", std::log10(init_dm2_41), 0.1, -3, 0);
+// min_osc.SetLimitedVariable(0, "log10_dm2_41", std::log10(init_dm2_41), 0.1, -3, 0);
   min_osc.SetFunction(Chi2Functor_osc);
 
   min_osc.SetLowerLimitedVariable(0, "dm2_41", init_dm2_41, 0.1, 0);
@@ -432,6 +582,13 @@ void TOsc::Minimization_OscPars_FullCov(
   const double *par_val = min_osc.X();
   const double *par_err = min_osc.Errors();
 
+  // minimization_dm2_41_val = std::pow(10., par_val[0]);
+  // minimization_dm2_41_err = par_err[0]; // error on log10(dm2), or store
+  // //
+  // minimization_sin2_2theta_14_val = std::pow(10., par_val[1]);
+  // minimization_sin2_2theta_14_err = par_err[1];   // error on log10(dm2), or store
+//
+// 10^(x-σ), 10^(x+σ) as an asymmetric interval
   minimization_dm2_41_val = par_val[0];
   minimization_dm2_41_err = par_err[0];
 
@@ -468,12 +625,19 @@ void TOsc::Minimization_OscPars_FullCov(
 		//      << endl;
 		// RESULT N status chi2 ttt dm2 g2 err_ttt err_dm2 err_g2
 		cout << TString::Format(
-								"RESULT %2d %2d %6.4f %5.3f %4.2f %4.2f %5.3f %4.2f %4.2f",
+			"RESULT %2d %2d %.15g %.15g %.15g %.15g %.15g %.15g %.15g",
 			meas_index, minimization_status, minimization_chi2,
 			minimization_sin2_2theta_14_val, minimization_dm2_41_val,
 			minimization_g2_val, minimization_sin2_2theta_14_err,
 			minimization_dm2_41_err, minimization_g2_err)
-		  <<endl;
+	 << endl;
+		// cout << TString::Format(
+		//						"RESULT %2d %2d %6.4f %5.3f %4.2f %4.2f %5.3f %4.2f %4.2f",
+		//	meas_index, minimization_status, minimization_chi2,
+		//	minimization_sin2_2theta_14_val, minimization_dm2_41_val,
+		//	minimization_g2_val, minimization_sin2_2theta_14_err,
+		//	minimization_dm2_41_err, minimization_g2_err)
+		//   <<endl;
 		if( minimization_status!=0 || cov_status!=3 ) {
 		  cout<<TString::Format(" WARNING: fit %d not clean: status %d, covariance status %d (3 = accurate)",
 								meas_index, minimization_status, cov_status)<<endl;

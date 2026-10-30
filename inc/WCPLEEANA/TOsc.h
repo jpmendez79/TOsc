@@ -463,7 +463,12 @@ void Load_toy_variations(int itoy) {
 
   void Plot_user();
 
- void Minimization_OscPars_FullCov(double init_dm2_41, double init_sin2_2theta_14, double init_sin2_theta_24, double init_sin2_theta_34, double init_g2, TString roostr_flag_fixpar, int meas_index);
+  void Minimization_OscPars_FullCov(double init_dm2_41,
+									double init_sin2_2theta_14,
+									double init_sin2_theta_24,
+									double init_sin2_theta_34, double init_g2,
+									TString roostr_flag_fixpar, int meas_index);
+  void Minimization_OscPars_FullCov_TEST(double init_dm2_41, double init_sin2_2theta_14, double init_sin2_theta_24, double init_sin2_theta_34, double init_g2, TString roostr_flag_fixpar, int meas_index);
 
   double FCN(const double *par);
   double FCN_presave_only_PRED();
